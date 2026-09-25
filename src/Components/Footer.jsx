@@ -3,10 +3,10 @@ import React from 'react';
 export default function Footer() {
   return (
     <footer className="bg-white text-gray-800 border-t border-gray-200 py-10 px-5 font-sans">
-      <div className="max-w-7xl mx-auto flex flex-wrap justify-between gap-8">
+      <div className="max-w-7xl mx-auto flex flex-wrap justify-between gap-8 max-[400px]:flex-col max-[400px]:items-center max-[400px]:text-center">
         
         {/* Ձախ հատված (Լոգո և տվյալներ) */}
-        <div className="flex-1 min-w-[200px]">
+        <div className="flex-1 min-w-[200px] max-[400px]:w-full max-[400px]:flex max-[400px]:flex-col max-[400px]:items-center">
           <div className="text-2xl font-bold text-gray-900 mb-5 flex items-center gap-1">
             evoca<span className="text-purple-700">BANK</span>
           </div>
@@ -24,7 +24,7 @@ export default function Footer() {
         </div>
 
         {/* Բանկի մասին */}
-        <div className="flex-1 min-w-[180px]">
+        <div className="flex-1 min-w-[180px] max-[400px]:w-full">
           <h3 className="text-sm font-bold text-gray-900 mb-4">Բանկի մասին</h3>
           <ul className="space-y-2.5 text-xs">
             <li><a href="#about" className="text-gray-600 hover:text-purple-700 transition">Մեր մասին</a></li>
@@ -41,7 +41,7 @@ export default function Footer() {
         </div>
 
         {/* Օգտակար հղումներ */}
-        <div className="flex-1 min-w-[180px]">
+        <div className="flex-1 min-w-[180px] max-[400px]:w-full">
           <h3 className="text-sm font-bold text-gray-900 mb-4">Օգտակար հղումներ</h3>
           <ul className="space-y-2.5 text-xs">
             <li><a href="#rights" className="text-gray-600 hover:text-purple-700 transition">Հաճախորդի իրավունքները<br />(Բողոքի ներկայացման<br />կանոններ)</a></li>
@@ -55,7 +55,7 @@ export default function Footer() {
         </div>
 
         {/* Այլ հղումներ */}
-        <div className="flex-1 min-w-[180px]">
+        <div className="flex-1 min-w-[180px] max-[400px]:w-full">
           <h3 className="text-sm font-bold text-gray-900 mb-4">Այլ հղումներ</h3>
           <ul className="space-y-2.5 text-xs">
             <li><a href="#online" className="text-gray-600 hover:text-purple-700 transition">EvocaONLINE</a></li>
@@ -70,9 +70,9 @@ export default function Footer() {
         </div>
 
         {/* Աջ հատված (Կապ և հավելվածներ) */}
-        <div className="flex-1 min-w-[180px] flex flex-col gap-4">
+        <div className="flex-1 min-w-[180px] flex flex-col gap-4 max-[400px]:w-full max-[400px]:items-center">
           {/* Սոցցանցեր */}
-          <div className="flex items-center gap-3 text-gray-500 mb-1">
+          <div className="flex items-center gap-3 text-gray-500 mb-1 max-[400px]:justify-center">
             <a href="#facebook" title="Facebook" className="hover:opacity-80 transition">
               <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M9 8h-3v4h3v12h5v-12h3.642l.358-4h-4v-1.667c0-.955.192-1.333 1.115-1.333h2.885v-5h-3.808c-3.596 0-5.192 1.583-5.192 4.615v3.385z"/></svg>
             </a>
@@ -88,7 +88,7 @@ export default function Footer() {
           </div>
           
           {/* Հավելվածների կոճակներ */}
-          <div className="flex flex-col gap-2 mb-1">
+          <div className="flex flex-col gap-2 mb-1 max-[400px]:items-center">
             <a href="#appstore" className="inline-block">
               <img 
                 src="https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg" 
