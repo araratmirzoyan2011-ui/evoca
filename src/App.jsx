@@ -1,13 +1,13 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Main from "./Pages/Evoca-main";
-
+import Busines from "./Pages/business-loans";
 function App() {
   return (
     <BrowserRouter>
       <div className="content">
-        <Routes>
-          {/* Հեռացրել ենք սխալ <path> թեգը և թողել միայն ճիշտ Route-ը */}
+        <Routes>=
           <Route path="/" element={<Main />} />
+          <Route path="/business-loans" element={<Busines />} />
         </Routes>
       </div>
     </BrowserRouter>
