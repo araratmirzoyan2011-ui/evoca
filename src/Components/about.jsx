@@ -18,7 +18,7 @@ function About() {
       <Header />
       <Navbar />
 
-      <div className="w-full mt-[80px] ml-[-20%] px-4">
+      <div className="w-full mt-[80px] px-4">
         <h1 className="text-3xl max-[400px]:text-2xl font-bold text-center mb-8 max-[400px]:mb-4">
           Ընդհանուր տեղեկատվություն
         </h1>
@@ -51,9 +51,28 @@ function About() {
         </div>
       </section>
 
+      {/* vision section */}
+      <section className="w-full bg-[#6400dc] text-white py-14 max-[400px]:py-8">
+        <div className="max-w-6xl mx-auto px-6 max-[400px]:px-4 flex flex-col items-center text-center">
+          <h2 className="text-3xl font-bold mb-8 max-[400px]:text-xl max-[400px]:mb-5">
+            Մեր տեսլականը
+          </h2>
+
+          <div className="flex items-start gap-6 max-[400px]:gap-3">
+            <span className="mt-3 h-[2px] w-10 bg-white shrink-0 max-[400px]:mt-2 max-[400px]:w-6" />
+            <p className="text-[15px] leading-relaxed text-purple-100 max-w-2xl max-[400px]:text-[13px]">
+              Դառնալ գլոբալ ֆինտեխ գործընկեր, որը միավորում է լավագույն փորձն ու
+              տեխնոլոգիական նորարարությունները հարմարավետ և ճկուն ծառայություններ
+              ապահովելու համար։
+            </p>
+          </div>
+        </div>
+      </section>
+
       <Footer />
     </>
   );
 }
 
 export default About;
+
