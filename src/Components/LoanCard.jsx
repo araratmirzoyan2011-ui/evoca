@@ -3,14 +3,12 @@ import React from 'react';
 const LoanCard = ({ 
   title, 
   description, 
-  duration, 
-  limit, 
-  rate, 
+  stats = [], 
   imageSrc, 
   onDetailsClick 
 }) => {
   return (
-    <div className="max-w-5xl mx-auto bg-white rounded-2xl p-6 md:p-8 shadow-sm flex flex-col md:flex-row gap-8 items-center border border-gray-100">
+    <div className="max-w-5xl mx-auto bg-white rounded-2xl p-6 md:p-8 shadow-sm flex flex-col md:flex-row gap-8 items-center border border-gray-100 mb-6">
       
       {/* Ձախ կողմի նկար/իլյուստրացիա */}
       <div className="w-full md:w-5/12 bg-gray-50 rounded-xl p-4 flex items-center justify-center">
@@ -24,7 +22,7 @@ const LoanCard = ({
       {/* Աջ կողմի բովանդակություն */}
       <div className="w-full md:w-7/12 flex flex-col">
         {/* Վերնագիր */}
-        <h2 className="text-2xl md:text-3xl font-extrabold text-gray-900 mb-3">
+        <h2 className="text-xl md:text-2xl font-extrabold text-gray-900 mb-3">
           {title}
         </h2>
 
@@ -33,27 +31,17 @@ const LoanCard = ({
           {description}
         </p>
 
-        {/* Ցուցանիշներ (Ժամկետ, Սահմանաչափ, Տոկոսադրույք) */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
-          {/* Ժամկետ */}
-          <div>
-            <span className="text-xs text-gray-500 block mb-1">{duration.topText || 'Մինչև'}</span>
-            <div className="text-2xl md:text-3xl font-bold text-purple-700">{duration.value}</div>
-            <span className="text-xs text-gray-500 mt-1 block">{duration.label}</span>
-          </div>
-
-          {/* Սահմանաչափ */}
-          <div>
-            <span className="text-xs text-gray-500 block mb-1">{limit.topText || 'Մինչև'}</span>
-            <div className="text-2xl md:text-3xl font-bold text-purple-700">{limit.value}</div>
-            <span className="text-xs text-gray-500 mt-1 block">{limit.label}</span>
-          </div>
-
-          {/* Տոկոսադրույք */}
-          <div>
-            <div className="text-2xl md:text-3xl font-bold text-purple-700 mt-5 sm:mt-0">{rate.value}</div>
-            <span className="text-xs text-gray-500 mt-1 block">{rate.label}</span>
-          </div>
+        {/* Դինամիկ Ցուցանիշներ */}
+        <div className={`grid grid-cols-2 ${stats.length > 3 ? 'sm:grid-cols-4' : 'sm:grid-cols-3'} gap-4 mb-8`}>
+          {stats.map((stat, index) => (
+            <div key={index}>
+              {stat.topText && (
+                <span className="text-xs text-gray-500 block mb-1">{stat.topText}</span>
+              )}
+              <div className="text-xl md:text-2xl font-bold text-purple-700">{stat.value}</div>
+              <span className="text-xs text-gray-500 mt-1 block">{stat.label}</span>
+            </div>
+          ))}
         </div>
 
         {/* Կոճակ */}
