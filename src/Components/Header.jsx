@@ -1,5 +1,6 @@
 import { useState } from 'react';
-
+import { useState } from 'react';
+import { Link } from 'react-router-dom';
 export function Header() {
     const [isOnlineAppsOpen, setIsOnlineAppsOpen] = useState(false);
     const [isContactOpen, setIsContactOpen] = useState(false);
@@ -10,13 +11,13 @@ export function Header() {
             {/* Վերին տող — desktop/tablet-ի համար */}
             <div className="hidden md:flex max-w-7xl mx-auto px-4 h-12 items-center justify-between text-sm border-b border-gray-100">
                 <nav className="flex items-center space-x-4 lg:space-x-6 overflow-x-auto">
-                    <a href="#" className="text-purple-700 font-semibold border-b-2 border-purple-700 pb-3 pt-3 whitespace-nowrap">Անհատ</a>
-                    <a href="#" className="text-gray-700 hover:text-purple-700 whitespace-nowrap">Բիզնես</a>
-                    <a href="#" className="text-gray-700 hover:text-purple-700 whitespace-nowrap">Ակնթարթային վճարումներ</a>
-                    <a href="#" className="text-gray-700 hover:text-purple-700 whitespace-nowrap">Մեր մասին</a>
-                    <a href="#" className="text-gray-700 hover:text-purple-700 whitespace-nowrap">Նորություններ</a>
-                    <a href="#" className="text-gray-700 hover:text-purple-700 whitespace-nowrap">Բլոգ</a>
-                    <a href="#" className="text-gray-700 hover:text-purple-700 whitespace-nowrap">Կարիերա</a>
+                    <Link to="/" className="text-purple-700 font-semibold border-b-2 border-purple-700 pb-3 pt-3 whitespace-nowrap">Անհատ</Link>
+                    <Link to="/business-loans" className="text-gray-700 hover:text-purple-700 whitespace-nowrap">Բիզնես</Link>
+                    <Link to="/instant-payments" className="text-gray-700 hover:text-purple-700 whitespace-nowrap">Ակնթարթային վճարումներ</Link>
+                    <Link to="/about" className="text-gray-700 hover:text-purple-700 whitespace-nowrap">Մեր մասին</Link>
+                    <Link to="/news" className="text-gray-700 hover:text-purple-700 whitespace-nowrap">Նորություններ</Link>
+                    <Link to="/blog" className="text-gray-700 hover:text-purple-700 whitespace-nowrap">Բլոգ</Link>
+                    <Link to="/career" className="text-gray-700 hover:text-purple-700 whitespace-nowrap">Կարիերա</Link>
                 </nav>
 
                 <div className="flex items-center space-x-4 lg:space-x-6 relative flex-shrink-0">
@@ -36,10 +37,10 @@ export function Header() {
 
                         {isOnlineAppsOpen && (
                             <div className="absolute right-0 mt-1 w-56 bg-white border border-gray-100 rounded-lg shadow-xl py-3 z-50 text-gray-800">
-                                <a href="#" className="block px-6 py-2.5 hover:bg-purple-50 hover:text-purple-700 font-medium">ՖՄՁ վարկավորում</a>
-                                <a href="#" className="block px-6 py-2.5 hover:bg-purple-50 hover:text-purple-700 font-medium">Visa Infinite</a>
-                                <a href="#" className="block px-6 py-2.5 hover:bg-purple-50 hover:text-purple-700 font-medium">MasterCard Gold</a>
-                                <a href="#" className="block px-6 py-2.5 hover:bg-purple-50 hover:text-purple-700 font-medium">Visa Gold</a>
+                                <Link to="/online-applications/sme-loan" className="block px-6 py-2.5 hover:bg-purple-50 hover:text-purple-700 font-medium">ՖՄՁ վարկավորում</Link>
+                                <Link to="/online-applications/visa-infinite" className="block px-6 py-2.5 hover:bg-purple-50 hover:text-purple-700 font-medium">Visa Infinite</Link>
+                                <Link to="/online-applications/mastercard-gold" className="block px-6 py-2.5 hover:bg-purple-50 hover:text-purple-700 font-medium">MasterCard Gold</Link>
+                                <Link to="/online-applications/visa-gold" className="block px-6 py-2.5 hover:bg-purple-50 hover:text-purple-700 font-medium">Visa Gold</Link>
                             </div>
                         )}
                     </div>
@@ -107,14 +108,14 @@ export function Header() {
 
                     {/* Desktop navigation */}
                     <nav className="hidden lg:flex items-center space-x-6 text-gray-800 font-medium">
-                        <a href="#" className="hover:text-purple-700 whitespace-nowrap">Վարկեր</a>
-                        <a href="#" className="hover:text-purple-700 whitespace-nowrap">Քարտեր</a>
-                        <a href="#" className="hover:text-purple-700 whitespace-nowrap">Ավանդներ</a>
-                        <a href="#" className="hover:text-purple-700 whitespace-nowrap">Հաշիվներ</a>
-                        <a href="#" className="hover:text-purple-700 whitespace-nowrap">Փոխանցումներ</a>
-                        <a href="#" className="hover:text-purple-700 whitespace-nowrap">Արժեթղթեր</a>
-                        <a href="#" className="hover:text-purple-700 whitespace-nowrap">EvocaSALARY</a>
-                        <a href="#" className="hover:text-purple-700 whitespace-nowrap">EvocaTOUCH</a>
+                        <Link to="/loans" className="hover:text-purple-700 whitespace-nowrap">Վարկեր</Link>
+                        <Link to="/cards" className="hover:text-purple-700 whitespace-nowrap">Քարտեր</Link>
+                        <Link to="/deposits" className="hover:text-purple-700 whitespace-nowrap">Ավանդներ</Link>
+                        <Link to="/accounts" className="hover:text-purple-700 whitespace-nowrap">Հաշիվներ</Link>
+                        <Link to="/transfers" className="hover:text-purple-700 whitespace-nowrap">Փոխանցումներ</Link>
+                        <Link to="/securities" className="hover:text-purple-700 whitespace-nowrap">Արժեթղթեր</Link>
+                        <Link to="/evoca-salary" className="hover:text-purple-700 whitespace-nowrap">EvocaSALARY</Link>
+                        <Link to="/evoca-touch" className="hover:text-purple-700 whitespace-nowrap">EvocaTOUCH</Link>
                     </nav>
 
                     <div className="flex items-center space-x-2 sm:space-x-3 flex-shrink-0">
