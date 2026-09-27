@@ -4,6 +4,21 @@ import Footer from '../Components/Footer';
 import { db } from "../firebase.js";
 import { doc, getDoc } from 'firebase/firestore';
 import Navbar from './Menu.jsx';
+import PromoCard from './AboutCard.jsx';
+import HistorySlider from './HystorySlider.jsx';
+
+const historyData = [
+  {
+    year: 2026,
+    text: "Բանկը բացեց նոր «Աշխափայլ» մասնաճյուղը, կնքեց նոր միջազգային համագործակցության պայմանագրեր, մասնակցեց միջազգային կոնֆերանսների, արժանացավ հեղինակավոր մրցանակների և կյանքի կոչեց Երևանը գունավորող street art-երը:",
+    image: "https://www.evoca.am/images-cache/histories/1/17823049564741/450x330.png",
+  },
+  { year: 2025, text: "", image: "" },
+  { year: 2024, text: "", image: "" },
+  { year: 2023, text: "", image: "" },
+  { year: 2022, text: "", image: "" },
+  { year: 2021, text: "", image: "" },
+];
 
 function About() {
   const paragraphs = [
@@ -100,6 +115,10 @@ function About() {
           </div>
         </div>
       </section>
+
+
+      {/* history slider */}
+      <HistorySlider data={historyData} />
 
       <Footer />
     </>
