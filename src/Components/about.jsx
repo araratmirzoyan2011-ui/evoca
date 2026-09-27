@@ -58,13 +58,45 @@ function About() {
             Մեր տեսլականը
           </h2>
 
-          <div className="flex items-start gap-6 max-[400px]:gap-3">
-            <span className="mt-3 h-[2px] w-10 bg-white shrink-0 max-[400px]:mt-2 max-[400px]:w-6" />
-            <p className="text-[15px] leading-relaxed text-purple-100 max-w-2xl max-[400px]:text-[13px]">
-              Դառնալ գլոբալ ֆինտեխ գործընկեր, որը միավորում է լավագույն փորձն ու
-              տեխնոլոգիական նորարարությունները հարմարավետ և ճկուն ծառայություններ
-              ապահովելու համար։
-            </p>
+          <span className="h-[2px] w-10 bg-white mb-6 max-[400px]:w-6 max-[400px]:mb-4" />
+
+          <p className="text-[15px] leading-relaxed text-purple-100 max-w-2xl max-[400px]:text-[13px]">
+            Դառնալ գլոբալ ֆինտեխ գործընկեր, որը միավորում է լավագույն փորձն ու
+            տեխնոլոգիական նորարարությունները հարմարավետ և ճկուն ծառայություններ
+            ապահովելու համար։
+          </p>
+        </div>
+      </section>
+
+      {/* mission section */}
+      <section className="w-full py-16 max-[400px]:py-10">
+        <div className="max-w-6xl mx-auto px-6 max-[400px]:px-4">
+          <h2 className="text-3xl font-bold mb-8 max-[400px]:text-2xl max-[400px]:mb-5 ml-[35%]">
+            Մեր առաքելությունը
+          </h2>
+
+          <div className="relative mb-24 max-[400px]:mb-0">
+            <img
+              src="https://www.evoca.am/images-cache/about_pages/1/160992374514/946x430.jpg"
+              alt="Evoca office"
+              className="w-full h-[420px] object-cover rounded-2xl shadow-lg
+                         max-[400px]:h-[220px] max-[400px]:rounded-xl"
+            />
+
+            <div
+              className="absolute -bottom-16 left-8 w-[60%]
+                         bg-gradient-to-br from-white to-purple-50 border-l-4 border-[#6400dc]
+                         shadow-xl rounded-lg p-8
+                         max-[400px]:static max-[400px]:w-full max-[400px]:mt-[-1.5rem]
+                         max-[400px]:border-l-0 max-[400px]:border-t-4 max-[400px]:rounded-none
+                         max-[400px]:text-center max-[400px]:p-5"
+            >
+              <p className="text-[15px] leading-relaxed text-gray-700 max-[400px]:text-[13px]">
+                Որպես human-first և խելացի ֆինտեխ ընկերություն` մենք հնարավորություն ենք
+                տալիս մարդկանց երազելու ավելի համարձակ, բիզնեսներին` բացահայտելու նոր
+                հորիզոններ, և հասարակությանը` կառուցելու ավելի լավ ապագա:
+              </p>
+            </div>
           </div>
         </div>
       </section>
@@ -75,4 +107,3 @@ function About() {
 }
 
 export default About;
-
