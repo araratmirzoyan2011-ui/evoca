@@ -7,7 +7,8 @@ export default function EvocaCard({
   textColor = "text-violet-800",
   shadow = "shadow-lg",
   rounded = "rounded-3xl",
-  size = "w-64 h-64",
+  size = "w-80 h-80",          // մեծացրած card-ի չափը
+  imageSize = "w-48 h-48",     // նկարի չափը (կարող ես տալ մինչև w-[400px] h-[400px])
   onClick 
 }) {
   return (
@@ -16,7 +17,7 @@ export default function EvocaCard({
       className={`${size} ${bgColor} ${rounded} ${shadow} flex flex-col items-center justify-center p-6 transition-transform duration-300 hover:scale-105 cursor-pointer`}
     >
       {/* Նկարի հատված */}
-      <div className="mb-6 w-16 h-16 flex items-center justify-center">
+      <div className={`mb-6 ${imageSize} flex items-center justify-center`}>
         {imageSrc ? (
           <img 
             src={imageSrc} 

@@ -45,8 +45,15 @@ function Instant() {
   return (
     <>
       <Header />
+      <div className="w-full mt-[80px]">
+        <h1 className="text-3xl max-[400px]:text-2xl font-bold text-center mb-8 max-[400px]:mb-4">Բիզնես Վարկեր</h1>
+      </div>
+
       <div className="min-h-screen bg-gray-100 p-8 flex justify-center items-center">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 max-w-6xl">
+        <div 
+          className="grid gap-8 justify-center w-full max-w-7xl"
+          style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 320px))' }}
+        >
           {evocaCardsData.map((card) => (
             <EvocaCard 
               key={card.id}
