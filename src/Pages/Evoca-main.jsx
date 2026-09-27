@@ -124,15 +124,15 @@ function Main() {
 
       <div className="w-full relative">
         <Swiper
-          key={slidesData.length}
-          modules={[Pagination, Navigation, Autoplay]}
-          spaceBetween={0}
-          slidesPerView={1}
-          loop={true}
-          autoplay={{ delay: 4000, disableOnInteraction: false }}
-          pagination={{ el: '.custom-pagination', clickable: true }}
-          navigation={{ nextEl: '.custom-next', prevEl: '.custom-prev' }}
-        >
+  key={slidesData.length}
+  modules={[Pagination, Navigation, Autoplay]}
+  spaceBetween={0}
+  slidesPerView={1}
+  loop={false}   // ժամանակավոր անջատում ենք
+  autoplay={{ delay: 4000, disableOnInteraction: false }}
+  pagination={{ el: '.custom-pagination', clickable: true }}
+  navigation={{ nextEl: '.custom-next', prevEl: '.custom-prev' }}
+>
           {slidesData.map((item) => (
             <SwiperSlide key={item.id}>
               {slidecard1(item.bgcol, item.h1, item.p, item.butp, item.butc, item.img)}
