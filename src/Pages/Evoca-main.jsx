@@ -6,10 +6,10 @@ import { EvocaCard } from '../Components/Card1.jsx';
 import { CardSlider } from '../Components/CardSlider.jsx';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Pagination, Navigation, Autoplay } from 'swiper/modules';
-import { collection, getDocs } from 'firebase/firestore';
 import { HeroBackground } from '../Components/HeroBackground.jsx';
 import { Calculators } from '../Components/Calculators.jsx';
 import { db } from "../firebase.js";
+import { collection, getDocs, setDoc, doc } from 'firebase/firestore';
 import { OnlineBanking } from '../Components/OnlineBanking.jsx';
 import 'swiper/css';
 import 'swiper/css/pagination';
@@ -20,78 +20,32 @@ import { EvocaNewsCard } from '../Components/EVocaCard1.jsx';
 import { EvocaReviewCard } from '../Components/EvocaReviewCard.jsx';
 import Footer from '../Components/Footer.jsx';
 function Main() {
-  const [slidesData, setSlidesData] = useState([]);
-  const [bestOffersData, setBestOffersData] = useState([]);
-  const [cardsSliderData, setCardsSliderData] = useState([]);
-  const arrimg=["https://www.evoca.am/images-cache/partners/1/17107493820339/185x80_grayscale.png","https://www.evoca.am/images-cache/partners/1/17072192942611/185x80.png","https://www.evoca.am/images-cache/partners/1/17072192635138/185x80.png","https://www.evoca.am/images-cache/partners/1/17072192435541/185x80_grayscale.png","https://www.evoca.am/images-cache/partners/1/16104577054001/185x80_grayscale.png","https://www.evoca.am/images-cache/partners/1/16104583322099/185x80_grayscale.png","https://www.evoca.am/images-cache/partners/1/17689930369925/185x80.png","https://www.evoca.am/images-cache/partners/1/16104594273635/185x80_grayscale.png","https://www.evoca.am/images-cache/partners/1/1610459808737/185x80_grayscale.png","https://www.evoca.am/images-cache/partners/1/16104599802947/185x80_grayscale.png",'https://www.evoca.am/images-cache/partners/1/16104603665095/185x80_grayscale.png','https://www.evoca.am/images-cache/partners/1/16104604109064/185x80_grayscale.png',"https://www.evoca.am/images-cache/partners/1/16104604382658/185x80_grayscale.png",'https://www.evoca.am/images-cache/partners/1/17104032198171/185x80_grayscale.png',"https://www.evoca.am/images-cache/partners/1/17077436606929/185x80_grayscale.png"]
-  const [reviewIndex, setReviewIndex] = useState(0);
-
-  const reviewsData = [
-    {
-      id: 1,
-      quote: (
-        <>
-          Դեպի նոր իրականություն. ահա թե ուր ենք մենք շարժվում՝ ամեն մի նախագիծ <span className="text-purple-700 font-semibold">Evocabank</span>-ի հետ հաջողությամբ ավարտելիս: Ավելի քան 5 տարի համագործակցելով՝ կարելի է ասել, որ միասին անցել ենք մի մեծ ճանապարհ՝ լի...
-        </>
-      ),
-      author: 'Արամ Ազարյան',
-      title: 'Indigo Branding-ի հիմնադիր',
-    },
-    {
-      id: 2,
-      quote: (
-        <>
-          Բանկ, որ իր ռեբրենդինգի շքեղ միջոցառումով ու աշխատանքային ձևաչափով բանկային ոլորտում ամրապնդեց որակ և ճաշակ թելադրեց։ <span className="text-purple-700 font-semibold">Evocabank</span>-ն առաջին իսկ վայրկյանից ստիպեց նորովի և ժամանակակից հայացքով...
-        </>
-      ),
-      author: 'Կամո Թովմասյան',
-      title: 'KAMOBLOG մեդիա-հարթակի հիմնադիր, influencer',
-    },
-    {
-      id: 3,
-      quote: 'Լավագույն նորարարական և թվային բանկ՝ լավագույն ծառայություններով և անձնակազմով:',
-      author: 'Էլեն Վարդանյան',
-      title: 'Հաճախորդ',
-    },
-    {
-      id: 4,
-      quote: 'Գերազանց սպասարկում, ընտիր ու հավես անձնակազմ Ազատության մասնաճյուղում: Վարկային բաժնից շատ շնորհակալ եմ, վարկս ձևակերպվեց առանց ավելորդ քաշքշուկների՝ հեշտ, արագ, որակով: Սպասարկման',
-      author: 'Նունե Գևորգյան',
-      title: 'Հաճախորդ',
-    },
-    {
-      id: 5,
-      quote: 'Հայաստանի իրականության մեջ բացառիկ հրաչք բանկ: Միայն այս հնարավորությունը ընձեռելով երիտասարդ ընտանիքներին՝ նման ցածր տոկոսով բնակարան ձեռք բերել, արժանի է մեծ հարգանքի: Շնորհակալ ենք, որ Դուք կաք:',
-      author: 'Սուսաննա Վանյան',
-      title: 'Հաճախորդ',
-    }
-  ];
-  const newsItems = [
-    {
-      id: 1,
-      category: 'Պրոդուկտներ',
-      title: 'Evoca-ն մասնակցում է Armenian Auto Show 2026-ին',
-      date: '22.09.2026',
-      image:"https://www.evoca.am/images-cache/news/1/17902383376936/439x320.png"
-    },
-    {
-      id: 2,
-      category: 'Պրոդուկտներ',
-      title: 'Թրենդային հագուստ Rien-a-Porter-ից, 15% cashback Evoca-ից',
-      date: '21.09.2026',
-      image: 'https://www.evoca.am/images-cache/news/1/17901523859882/439x320.png',
-    },
-    {
-      id: 3,
-      category: 'Պրոդուկտներ',
-      title: 'Evocabank-ը ներկայացրեց ArCa-UnionPay համատեղ քարտը',
-      date: '23.09.2026',
-      image: 'https://www.evoca.am/images-cache/news/1/17901528701371/439x320.png',
-    },
-  ];
-
+ const [slidesData, setSlidesData] = useState([]);
+const [bestOffersData, setBestOffersData] = useState([]);
+const [cardsSliderData, setCardsSliderData] = useState([]);
+const [reviewsData, setReviewsData] = useState([]);
+const [newsItems, setNewsItems] = useState([]);
+const [arrimg, setArrimg] = useState([]);
+const [reviewIndex, setReviewIndex] = useState(0);
   useEffect(() => {
     const fetchData = async () => {
+      const reviewsSnapshot = await getDocs(collection(db, "reviewsCollection"));
+const reviewsDocsData = reviewsSnapshot.docs.map((doc) => doc.data());
+if (reviewsDocsData.length > 0 && reviewsDocsData[0].reviews) {
+  setReviewsData(reviewsDocsData[0].reviews);
+}
+
+const newsSnapshot = await getDocs(collection(db, "newsCollection"));
+const newsDocsData = newsSnapshot.docs.map((doc) => doc.data());
+if (newsDocsData.length > 0 && newsDocsData[0].news) {
+  setNewsItems(newsDocsData[0].news);
+}
+
+const partnersSnapshot = await getDocs(collection(db, "partnersCollection"));
+const partnersDocsData = partnersSnapshot.docs.map((doc) => doc.data());
+if (partnersDocsData.length > 0 && partnersDocsData[0].partners) {
+  setArrimg(partnersDocsData[0].partners);
+}
       try {
         const slidesSnapshot = await getDocs(collection(db, "slidersCollection"));
         const slidesDocsData = slidesSnapshot.docs.map((doc) => doc.data());
@@ -117,11 +71,33 @@ function Main() {
 
     fetchData();
   }, []);
+  const handleSeedFirestore = async () => {
+  try {
+    // reviewsData -> plain text (JSX quote-երը մաքրված)
+    const plainReviews = reviewsData.map(({ id, author, title }, index) => {
+      const plainQuoteTexts = [
+        'Դեպի նոր իրականություն. ահա թե ուր ենք մենք շարժվում՝ ամեն մի նախագիծ Evocabank-ի հետ հաջողությամբ ավարտելիս: Ավելի քան 5 տարի համագործակցելով՝ կարելի է ասել, որ միասին անցել ենք մի մեծ ճանապարհ՝ լի...',
+        'Բանկ, որ իր ռեբրենդինգի շքեղ միջոցառումով ու աշխատանքային ձևաչափով բանկային ոլորտում ամրապնդեց որակ և ճաշակ թելադրեց։ Evocabank-ն առաջին իսկ վայրկյանից ստիպեց նորովի և ժամանակակից հայացքով...',
+        'Լավագույն նորարարական և թվային բանկ՝ լավագույն ծառայություններով և անձնակազմով:',
+        'Գերազանց սպասարկում, ընտիր ու հավես անձնակազմ Ազատության մասնաճյուղում: Վարկային բաժնից շատ շնորհակալ եմ, վարկս ձևակերպվեց առանց ավելորդ քաշքշուկների՝ հեշտ, արագ, որակով: Սպասարկման',
+        'Հայաստանի իրականության մեջ բացառիկ հրաչք բանկ: Միայն այս հնարավորությունը ընձեռելով երիտասարդ ընտանիքներին՝ նման ցածր տոկոսով բնակարան ձեռք բերել, արժանի է մեծ հարգանքի: Շնորհակալ ենք, որ Դուք կաք:',
+      ];
+      return { id, author, title, quote: plainQuoteTexts[index] };
+    });
 
+    await setDoc(doc(db, "reviewsCollection", "main"), { reviews: plainReviews });
+    await setDoc(doc(db, "newsCollection", "main"), { news: newsItems });
+    await setDoc(doc(db, "partnersCollection", "main"), { partners: arrimg });
+
+    alert("Հաջողությամբ ստեղծվեցին collection-ները Firebase-ում ✅");
+  } catch (error) {
+    console.error("Seed error:", error);
+    alert("Սխալ տեղի ունեցավ, տես console-ը");
+  }
+};
   return (
     <>
       <Header />
-
       <div className="w-full relative">
         <Swiper
   key={slidesData.length}
@@ -226,15 +202,16 @@ function Main() {
         </div>
       </div>
       <CurrencySection />
-      {/* Կարծիքների բլոկը (Review Section) */}
       <div className="bg-[#fcfbfe] py-16 px-4 w-full overflow-hidden">
-        <div className="w-full min-h-[220px] flex items-center justify-center">
-          <EvocaReviewCard 
-            quote={reviewsData[reviewIndex].quote}
-            author={reviewsData[reviewIndex].author}
-            title={reviewsData[reviewIndex].title}
-          />
-        </div>
+        {reviewsData.length > 0 && (
+  <div className="w-full min-h-[220px] flex items-center justify-center">
+    <EvocaReviewCard 
+      quote={reviewsData[reviewIndex].quote}
+      author={reviewsData[reviewIndex].author}
+      title={reviewsData[reviewIndex].title}
+    />
+  </div>
+)}
 
         {/* Կետային նավարկություն (Dots) */}
         <div className="flex justify-center items-center space-x-3 mt-8">
