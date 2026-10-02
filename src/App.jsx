@@ -2,7 +2,8 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Main from "./Pages/Evoca-main";
 import Busines from "./Pages/business-loans";
 import Instant from "./Pages/instant-payments";
-import About from "./Components/about";
+import About from "./Pages/about";
+import Structure from "./Pages/structure";
 function App() {
   return (
     <BrowserRouter>
@@ -11,6 +12,7 @@ function App() {
           <Route path="/" element={<Main />} />
           <Route path="/business-loans" element={<Busines />} />
           <Route path="/instant-payments" element={<Instant />} />
+          <Route path="/structure" element={<Structure />} />
            <Route path="/about" element={<About/>} />
         </Routes>
       </div>
