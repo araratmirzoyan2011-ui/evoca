@@ -1,9 +1,8 @@
 import React from 'react';
 
-export function DocumentCard({ title, fileSize, onDownload }) {
+export function DocumentCard({ title}) {
   return (
     <div
-      onClick={onDownload}
       className="flex items-center justify-between p-4 bg-[#f9f8fc] hover:bg-[#f2eff8] rounded-xl transition-colors cursor-pointer shadow-sm border border-transparent hover:border-[#7c3aed]/20"
     >
       <div className="flex items-center space-x-4">
@@ -22,9 +21,7 @@ export function DocumentCard({ title, fileSize, onDownload }) {
           <h3 className="text-gray-900 font-semibold text-lg select-none">
             {title}
           </h3>
-          {fileSize && (
-            <span className="text-gray-500 text-xs">{fileSize}</span>
-          )}
+          
         </div>
       </div>
     </div>

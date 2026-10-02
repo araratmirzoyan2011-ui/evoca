@@ -5,7 +5,7 @@ import SocialIcons from '../Components/SocialIcons.jsx';
 import React, { useState, useEffect } from 'react';
 import { doc, getDoc, collection, getDocs } from 'firebase/firestore';
 import { db } from '../firebase';
-
+import { DocumentCard } from '../Components/DocumentCard.jsx';
 function Sarheholder() {
   const [shareholder, setShareholder] = useState(null);
   const [accordionItems, setAccordionItems] = useState([]);
@@ -15,20 +15,14 @@ function Sarheholder() {
     { 
       id: 1, 
       title: "Կանոնադրություն", 
-      fileSize: "2.4 MB", 
-      downloadUrl: "/files/kanonadrutyun.pdf" 
     },
     { 
       id: 2, 
       title: "Բանկային գործունեության լիցենզիա", 
-      fileSize: "1.8 MB", 
-      downloadUrl: "/files/license.pdf" 
     },
     { 
       id: 3, 
       title: "Բանկի Գրանցման վկայականը", 
-      fileSize: "950 KB", 
-      downloadUrl: "/files/certificate.pdf" 
     },
   ];
   useEffect(() => {
@@ -154,7 +148,16 @@ function Sarheholder() {
         </div>
 
       </div>
-
+        <div className="max-w-3xl mx-auto ml-[16%] p-6 space-y-4">
+      <h1 className="text-2xl font-bold text-gray-800 mb-6">փաստաթղթեր</h1>
+      
+      {documentsList.map((doc) => (
+        <DocumentCard 
+          key={doc.id}
+          title={doc.title}
+        />
+      ))}
+    </div>
       <Footer />
     </>
   );
