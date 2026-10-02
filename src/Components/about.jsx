@@ -95,7 +95,6 @@ function About() {
         </div>
       </section>
 
-      {/* vision section */}
       <section className="w-full bg-[#6400dc] text-white py-14 max-[400px]:py-8">
         <div className="max-w-6xl mx-auto px-6 max-[400px]:px-4 flex flex-col items-center text-center">
           <h2 className="text-3xl font-bold mb-8 max-[400px]:text-xl max-[400px]:mb-5">
@@ -112,7 +111,6 @@ function About() {
         </div>
       </section>
 
-      {/* mission section */}
       <section className="w-full py-16 max-[400px]:py-10">
         <div className="max-w-6xl mx-auto px-6 max-[400px]:px-4">
           <h2 className="text-3xl font-bold mb-8 max-[400px]:text-2xl max-[400px]:mb-5 ml-[35%]">
@@ -145,10 +143,8 @@ function About() {
         </div>
       </section>
 
-      {/* history — Firebase-ից */}
       {history.length > 0 && <HistorySlider data={history} />}
 
-      {/* values — Firebase-ից */}
       <section className="w-full py-12 max-[400px]:py-8">
         <div className="max-w-6xl mx-auto px-6 max-[400px]:px-4">
           <h1 className="text-3xl font-bold mb-10 max-[400px]:text-2xl max-[400px]:mb-6 max-[400px]:text-center">
@@ -171,7 +167,6 @@ function About() {
         </div>
       </section>
 
-      {/* CSR section */}
       <section className="w-full bg-gradient-to-b from-[#f2f2f2] to-[#f7f1fc] py-16 max-[400px]:py-10">
         <div className="max-w-6xl mx-auto px-6 max-[400px]:px-4">
           <h2 className="text-3xl font-bold leading-snug max-w-xl mb-8 max-[400px]:text-xl max-[400px]:mb-5 max-[400px]:text-center">
@@ -196,10 +191,8 @@ function About() {
         </div>
       </section>
 
-      {/* Logo / Brandbook / Colors / Video / ISO */}
       <section className="w-full bg-white py-12 max-[400px]:py-8">
         <div className="max-w-3xl mx-auto px-6 max-[400px]:px-4">
-          {/* Բանկի լոգոտիպը */}
           <h2 className="text-2xl font-bold mb-6 max-[400px]:text-lg max-[400px]:mb-4">
             Բանկի լոգոտիպը
           </h2>
@@ -211,13 +204,12 @@ function About() {
           </p>
           <div className="flex justify-center mb-12 max-[400px]:mb-8">
             <img
-              src={LOGO_SRC}
+              src="https://www.evoca.am/file_manager/icons/logo.png"
               alt="Evocabank logo"
               className="w-full max-w-[600px] h-auto object-contain"
             />
           </div>
 
-          {/* Բանկի բրենդբուքը */}
           <h2 className="text-2xl font-bold mb-6 max-[400px]:text-lg max-[400px]:mb-4">
             Բանկի բրենդբուքը
           </h2>
@@ -247,7 +239,6 @@ function About() {
             </span>
           </a>
 
-          {/* Բանկի կորպորատիվ գույները */}
           <h2 className="text-2xl font-bold mb-6 max-[400px]:text-lg max-[400px]:mb-4">
             Բանկի կորպորատիվ գույները
           </h2>
@@ -269,7 +260,6 @@ function About() {
             <iframe className='w-full h-full' src="https://www.youtube.com/embed/QTuqGz3USRE?si=JfAzlEFrhsnW4oTn" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
           </div>
 
-          {/* ISO */}
           <h2 className="text-2xl font-bold mb-6 max-[400px]:text-lg max-[400px]:mb-4">
             ISO27001:2026 միջազգային հավաստագիր
           </h2>
