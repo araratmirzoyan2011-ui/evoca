@@ -6,6 +6,7 @@ import About from "./Pages/about";
 import Structure from "./Pages/structure";
 import Managment from "./Pages/management";
 import Sarheholder from "./Pages/shareholders";
+import Parthner from "./Pages/partners";
 function App() {
   return (
     <BrowserRouter>
@@ -18,6 +19,7 @@ function App() {
           <Route path="/structure" element={<Structure />} />
           <Route path="/shareholders" element={<Sarheholder />} />
           <Route path="/about" element={<About/>} />
+          <Route path="/partners" element={<Parthner/>} />
         </Routes>
       </div>
     </BrowserRouter>
