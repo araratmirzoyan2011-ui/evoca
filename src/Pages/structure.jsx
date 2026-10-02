@@ -4,8 +4,6 @@ import Footer from '../Components/Footer.jsx';
 import Navbar from '../Components/Menu.jsx';
 import SocialIcons from '../Components/SocialIcons.jsx';
 
-const STRUCTURE_IMG =
-  'https://www.evoca.am/file_manager/new-structure/%D5%80%D5%A1%D5%B5.png';
 
 function Structure() {
   return (
