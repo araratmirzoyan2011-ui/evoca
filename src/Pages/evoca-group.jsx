@@ -49,7 +49,7 @@ function Group() {
 
         </div>
       </div>
-
+        <img className='w-[60%] h-auto ml-[20%] mb-[80px]' src="https://www.evoca.am/file_manager/Evoca%20financial%20group/%C2%AB%D4%B7%D5%8E%D5%88%D4%BF%D4%B1%C2%BB%20%D6%86%D5%AB%D5%B6%D5%A1%D5%B6%D5%BD%D5%A1%D5%AF%D5%A1%D5%B6%20%D5%AD%D5%B8%D6%82%D5%B4%D5%A2%20Armenian.png" alt="" />
       <Footer />
     </>
   );
