@@ -6,7 +6,7 @@ export default function Navbar() {
   const menuItems = [
     { label: "Ընդհանուր", path: "/about" },
     { label: "Կառուցվածք", path: "/structure" },
-    { label: "Բամբասետներ", path: "/shareholders" },
+    { label: "Բաժնետերեր", path: "/shareholders" },
     { label: "Ղեկավարություն", path: "/management" },
     { label: "Գործընկերներ", path: "/partners" },
     { label: "Սրտանականներ", path: "/departments" },

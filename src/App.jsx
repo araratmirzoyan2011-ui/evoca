@@ -5,6 +5,7 @@ import Instant from "./Pages/instant-payments";
 import About from "./Pages/about";
 import Structure from "./Pages/structure";
 import Managment from "./Pages/management";
+import Sarheholder from "./Pages/shareholders";
 function App() {
   return (
     <BrowserRouter>
@@ -15,7 +16,8 @@ function App() {
           <Route path="/instant-payments" element={<Instant />} />
           <Route path="/management" element={<Managment/>} />
           <Route path="/structure" element={<Structure />} />
-           <Route path="/about" element={<About/>} />
+          <Route path="/shareholders" element={<Sarheholder />} />
+          <Route path="/about" element={<About/>} />
         </Routes>
       </div>
     </BrowserRouter>
