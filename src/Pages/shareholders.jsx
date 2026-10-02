@@ -11,11 +11,29 @@ function Sarheholder() {
   const [accordionItems, setAccordionItems] = useState([]);
   const [openIndex, setOpenIndex] = useState(null);
   const [loading, setLoading] = useState(true);
-
+    const documentsList = [
+    { 
+      id: 1, 
+      title: "Կանոնադրություն", 
+      fileSize: "2.4 MB", 
+      downloadUrl: "/files/kanonadrutyun.pdf" 
+    },
+    { 
+      id: 2, 
+      title: "Բանկային գործունեության լիցենզիա", 
+      fileSize: "1.8 MB", 
+      downloadUrl: "/files/license.pdf" 
+    },
+    { 
+      id: 3, 
+      title: "Բանկի Գրանցման վկայականը", 
+      fileSize: "950 KB", 
+      downloadUrl: "/files/certificate.pdf" 
+    },
+  ];
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // 1. Բաժնետիրոջ տվյալների բեռնում
         const docRef = doc(db, 'shareholders', 'main');
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
