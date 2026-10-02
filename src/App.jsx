@@ -4,6 +4,7 @@ import Busines from "./Pages/business-loans";
 import Instant from "./Pages/instant-payments";
 import About from "./Pages/about";
 import Structure from "./Pages/structure";
+import Managment from "./Pages/management";
 function App() {
   return (
     <BrowserRouter>
@@ -12,6 +13,7 @@ function App() {
           <Route path="/" element={<Main />} />
           <Route path="/business-loans" element={<Busines />} />
           <Route path="/instant-payments" element={<Instant />} />
+          <Route path="/management" element={<Managment/>} />
           <Route path="/structure" element={<Structure />} />
            <Route path="/about" element={<About/>} />
         </Routes>

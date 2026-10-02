@@ -24,7 +24,7 @@ function Structure() {
             {/* Content */}
             <div className="flex-1 min-w-0 w-full max-[400px]:order-1">
               <h1 className="text-3xl font-medium mb-10 pl-[8%] max-[400px]:pl-0 max-[400px]:text-xl max-[400px]:mb-5">
-                Բանկի կառուցվածքը
+                
               </h1>
 
               <p className="hidden max-[400px]:block text-[11px] text-gray-500 mb-2">
