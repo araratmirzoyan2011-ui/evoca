@@ -9,7 +9,8 @@ export default function PromoCard({ text, image, imageAlt = "", reverse = false 
       <div
         className="flex-1 relative bg-gradient-to-br from-[#f6f2fb] to-[#efe8f8]
                    rounded-tl-[40px] rounded-tr-[40px] rounded-br-[40px]
-                   p-10 shadow-sm max-[400px]:p-6 max-[400px]:rounded-[24px]"
+                   p-10 shadow-sm max-[400px]:p-6 max-[400px]:rounded-[24px]
+                   max-[400px]:text-center max-[400px]:flex max-[400px]:flex-col max-[400px]:items-center"
       >
         <span className="flex items-center justify-center w-10 h-10 rounded-xl bg-[#6400dc] text-white text-lg font-bold mb-5 max-[400px]:w-8 max-[400px]:h-8 max-[400px]:mb-3">
           “
