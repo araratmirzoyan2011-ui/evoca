@@ -6,7 +6,12 @@ import { doc, getDoc } from 'firebase/firestore';
 import Navbar from './Menu.jsx';
 import PromoCard from './AboutCard.jsx';
 import HistorySlider from './HystorySlider.jsx';
-
+import HumanFirstComponent from './X1.jsx';
+const x=[
+  {text:"Առաջին տեղում միշտ մարդիկ են՝ մեր հաճախորդները, էքսպերտների թիմը և հասարակությունը։ Չէ՞ որ աշխարհում ամեն ինչ արվում է մարդկանց կողմից մարդկանց համար։", title:"Human-first"},
+  {text:"Նորարարությունը մեր ԴՆԹ-ի մասն է, իսկ փոփոխությունն այսօր միակ հաստատունն է։ Մենք բաց ենք և պատրաստակամ զարգանալու համար։", title:"Նորարարություն"},
+  {text:"Մենք ձգտում ենք ունենալ դրական ազդեցություն և նպաստել աշխարհն ավելի լավը դարձնելուն։", title:"Դրական ազդեցություն"}
+]
 const historyData = [
   {
     year: 2026,
@@ -202,6 +207,23 @@ function About() {
       </section>
 
       <HistorySlider data={historyData} />
+            <section className="w-full py-12 max-[400px]:py-8">
+  <div className="max-w-6xl mx-auto px-6 max-[400px]:px-4">
+    <h1 className="text-3xl font-bold mb-10 max-[400px]:text-2xl max-[400px]:mb-6 max-[400px]:text-center">
+      Արժեքներ և առաջնայնություններ
+    </h1>
+
+    <div className="grid grid-cols-3 gap-12 max-[400px]:grid-cols-1 max-[400px]:gap-8">
+      {x.map((item, i) => (
+        <HumanFirstComponent
+          key={i}
+          title={item.title}
+          description={item.text}
+        />
+      ))}
+    </div>
+  </div>
+</section>
 
       <Footer />
     </>
