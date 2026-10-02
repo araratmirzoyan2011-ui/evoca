@@ -7,6 +7,7 @@ import Structure from "./Pages/structure";
 import Managment from "./Pages/management";
 import Sarheholder from "./Pages/shareholders";
 import Parthner from "./Pages/partners";
+import Group from "./Pages/evoca-group";
 function App() {
   return (
     <BrowserRouter>
@@ -18,6 +19,7 @@ function App() {
           <Route path="/management" element={<Managment/>} />
           <Route path="/structure" element={<Structure />} />
           <Route path="/shareholders" element={<Sarheholder />} />
+          <Route path="/evoca-group" element={<Group />} />
           <Route path="/about" element={<About/>} />
           <Route path="/partners" element={<Parthner/>} />
         </Routes>
