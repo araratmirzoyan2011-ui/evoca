@@ -11,6 +11,7 @@ import Group from "./Pages/evoca-group";
 import Departments from "./Pages/departments";
 import Csr from "./Pages/csr";
 import News from "./Pages/news";
+import Blog from "./Pages/blog";
 function App() {
   return (
     <BrowserRouter>
@@ -19,6 +20,7 @@ function App() {
           <Route path="/" element={<Main />} />
           <Route path="/business-loans" element={<Busines />} />
           <Route path="/instant-payments" element={<Instant />} />
+          <Route path="blog" element={<Blog />} />
           <Route path="/management" element={<Managment/>} />
           <Route path="/structure" element={<Structure />} />
           <Route path="/shareholders" element={<Sarheholder />} />
