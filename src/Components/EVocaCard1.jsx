@@ -2,7 +2,6 @@ import React from "react";
 export function EvocaNewsCard({ item }) {
   return (
     <div className="w-full max-w-[380px] mx-auto lg:max-w-none rounded-2xl overflow-hidden shadow-lg bg-white border border-gray-100 flex flex-col transition-transform duration-300 hover:scale-[1.01]">
-      {/* Վերևի պատկերային / բաններային հատվածը */}
       <div className="relative w-full h-64 sm:h-72 overflow-hidden bg-purple-600">
         {item.isCustomBanner ? (
           <div className="absolute inset-0 bg-gradient-to-br from-[#9333EA] to-[#7C3AED] flex flex-col justify-between p-4 sm:p-5 text-white">
@@ -39,10 +38,8 @@ export function EvocaNewsCard({ item }) {
         )}
       </div>
 
-      {/* Ստորին սպիտակ բովանդակությունը */}
       <div className="p-4 sm:p-5 bg-white flex flex-col flex-grow justify-between">
         <div>
-          {/* Կատեգորիա մանուշակագույն գծով */}
           <div className="flex items-center space-x-2 mb-2 sm:mb-3">
             <div className="w-1 h-3.5 sm:h-4 bg-[#D946EF] rounded-full"></div>
             <span className="text-[11px] sm:text-xs font-semibold text-gray-900 tracking-wide uppercase">
@@ -50,7 +47,6 @@ export function EvocaNewsCard({ item }) {
             </span>
           </div>
 
-          {/* Վերնագիր */}
           <h4 className="text-sm sm:text-base font-bold text-gray-900 leading-snug mb-4">
             {item.title}
           </h4>
