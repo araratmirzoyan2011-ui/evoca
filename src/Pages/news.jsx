@@ -4,6 +4,29 @@ import Footer from '../Components/Footer.jsx';
 import NewsCard from '../Components/NewsCard.jsx';
 import FeaturedNewsCard from '../Components/FeaturedNewsCard.jsx';
 import LargeNewsCard from '../Components/LargeNewsCard.jsx';
+const bottomNews = [
+  {
+    id: 1,
+    category: 'Կենսակերպ',
+    title: 'Evocabank-ը նոր գույներ է տալիս մեր քաղաքին',
+    date: '12.06.2026',
+    image: 'https://www.evoca.am/images-cache/news/1/17812556342544/438x328.png',
+  },
+  {
+    id: 2,
+    category: 'Բանկային',
+    title: 'ESG կառավարման համակարգը Evocabank-ում',
+    date: '31.03.2026',
+    image: 'https://www.evoca.am/images-cache/news/1/17757342882486/438x328.png',
+  },
+  {
+    id: 3,
+    category: 'Բանկային',
+    title: 'Evocabank-ը միացել է AmCham Armenia-ին',
+    date: '10.02.2026',
+    image: 'https://www.evoca.am/images-cache/news/1/17707319421286/438x328.png',
+  },
+];
 const lom={
     id: 2,
     category: 'Բանկային',
@@ -102,6 +125,18 @@ function News() {
             reverse={true}
           />
         )}
+
+                <section className="mx-auto max-w-[1200px] px-6 pt-16 pb-16 grid gap-x-[45px] gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
+          {bottomNews.map((item) => (
+            <NewsCard key={item.id} item={item} ratio="aspect-[4/3]" />
+          ))}
+        </section>
+
+        <div className="border-t border-gray-100">
+          <div className="mx-auto max-w-[1200px] px-6 py-4 text-right text-[11px] text-gray-500">
+            Թարմացվել է՝ 02/10/2026 17:00
+          </div>
+        </div>
       </main>
 
       <Footer />
