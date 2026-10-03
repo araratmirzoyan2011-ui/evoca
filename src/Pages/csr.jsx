@@ -2,10 +2,10 @@ import React from 'react';
 import { Header } from '../Components/Header.jsx';
 import Footer from '../Components/Footer.jsx';
 import Navbar from '../Components/Menu.jsx';
-import SocialIcons from '../Components/SocialIcons.jsx';
 import { EvocaNewsCard } from '../Components/EVocaCard1.jsx';
 import PromoCard from '../Components/Promocard2.jsx';
 import SocialIcons from '../Components/SocialIcons.jsx';
+import CsrInfoSection from '../Components/CsrInfoSection.jsx';
 function Csr() {
   return (
     <>
@@ -13,11 +13,11 @@ function Csr() {
       <Navbar />
 
         <PromoCard
-                    image="https://www.evoca.am/images-cache/menu/1/17108330711252/780x585.png"
-                    title={"Կորպորատիվ Սոցիալական Պատասխանատվություն"}
-                    text={"Մենք մեծ կարևորություն ենք տալիս CSR-ին՝ ապահովելով մեր գործունեության դրական ազդեցությունը թե՛ հասարակության, թե՛ շրջակա միջավայրի վրա:"}
-                  />
-
+            image="https://www.evoca.am/images-cache/menu/1/17108330711252/780x585.png"
+            title={"Կորպորատիվ Սոցիալական Պատասխանատվություն"}
+            text={"Մենք մեծ կարևորություն ենք տալիս CSR-ին՝ ապահովելով մեր գործունեության դրական ազդեցությունը թե՛ հասարակության, թե՛ շրջակա միջավայրի վրա:"}
+        />
+        <CsrInfoSection />
 
 
 {/* <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
