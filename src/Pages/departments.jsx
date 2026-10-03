@@ -1,91 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { collection, getDocs, orderBy, query } from 'firebase/firestore';
-import { db } from '../firebase.js'; // ← նույն ճանապարհը, ինչ seed-ի ժամանակ
+import { db } from '../firebase.js'; // ← քո firebase config-ի ճանապարհը
 import { Header } from '../Components/Header.jsx';
 import Footer from '../Components/Footer.jsx';
 import Navbar from '../Components/Menu.jsx';
 import CardComponent from '../Components/AwardCard.jsx';
+import Pagination from '../Components/Pagination.jsx';
 
 const ITEMS_PER_PAGE = 20;
 
-// ───────────── Pagination ─────────────
-const Arrow = ({ direction = 'right' }) => (
-  <svg
-    width="28"
-    height="16"
-    viewBox="0 0 28 16"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    className={direction === 'left' ? 'rotate-180' : ''}
-  >
-    <path d="M1 8h25M19 1l7 7-7 7" />
-  </svg>
-);
-
-const Pagination = ({ currentPage, totalPages, onPageChange }) => {
-  const pages = Array.from({ length: totalPages }, (_, i) => i + 1);
-  const isFirst = currentPage === 1;
-  const isLast = currentPage === totalPages;
-
-  return (
-    <nav
-      className="flex items-center justify-center gap-6 sm:gap-10 py-8"
-      aria-label="Pagination"
-    >
-      <button
-        onClick={() => onPageChange(currentPage - 1)}
-        disabled={isFirst}
-        aria-label="Նախորդ էջ"
-        className={`transition ${
-          isFirst
-            ? 'text-gray-300 cursor-not-allowed'
-            : 'text-[#6a00e0] hover:-translate-x-1 cursor-pointer'
-        }`}
-      >
-        <Arrow direction="left" />
-      </button>
-
-      <ul className="flex items-center gap-4 sm:gap-6 m-0 p-0 list-none">
-        {pages.map((p) => {
-          const active = p === currentPage;
-          return (
-            <li key={p}>
-              <button
-                onClick={() => onPageChange(p)}
-                aria-current={active ? 'page' : undefined}
-                className={`w-10 h-10 rounded-full text-sm font-semibold transition cursor-pointer ${
-                  active
-                    ? 'bg-[#6a00e0] text-white'
-                    : 'text-[#1f1f2e] hover:bg-[#6a00e0]/10'
-                }`}
-              >
-                {p}
-              </button>
-            </li>
-          );
-        })}
-      </ul>
-
-      <button
-        onClick={() => onPageChange(currentPage + 1)}
-        disabled={isLast}
-        aria-label="Հաջորդ էջ"
-        className={`transition ${
-          isLast
-            ? 'text-gray-300 cursor-not-allowed'
-            : 'text-[#6a00e0] hover:translate-x-1 cursor-pointer'
-        }`}
-      >
-        <Arrow direction="right" />
-      </button>
-    </nav>
-  );
-};
-
-// ───────────── Էջը ─────────────
 function Departments() {
   const [awards, setAwards] = useState([]);
   const [loading, setLoading] = useState(true);
