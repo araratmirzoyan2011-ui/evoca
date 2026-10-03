@@ -5,6 +5,7 @@ import Navbar from '../Components/Menu.jsx';
 import SocialIcons from '../Components/SocialIcons.jsx';
 import { EvocaNewsCard } from '../Components/EVocaCard1.jsx';
 import PromoCard from '../Components/Promocard2.jsx';
+import SocialIcons from '../Components/SocialIcons.jsx';
 function Csr() {
   return (
     <>
