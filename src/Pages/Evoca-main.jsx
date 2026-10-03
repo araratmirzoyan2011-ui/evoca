@@ -172,9 +172,7 @@ if (partnersDocsData.length > 0 && partnersDocsData[0].partners) {
       <OnlineBanking />
       <PartnersSection partners={arrimg} />
 
-      {/* Վերջին նորությունների բլոկը (Միավորված մեկ ճիշտ div-ի մեջ) */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-        {/* Վերնագրի և կոճակի հատվածը */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
           <h2 className="text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight">
             Վերջին նորությունները
@@ -194,7 +192,6 @@ if (partnersDocsData.length > 0 && partnersDocsData[0].partners) {
           </button>
         </div>
 
-        {/* Քարտերի ցանցը (Grid) */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {newsItems.map((item) => (
             <EvocaNewsCard key={item.id} item={item} />
