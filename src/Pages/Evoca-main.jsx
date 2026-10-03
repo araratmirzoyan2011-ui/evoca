@@ -18,6 +18,7 @@ import PartnersSection from '../Components/PartnerSection.jsx';
 import { CurrencySection } from '../Components/CurrencySection.jsx';
 import { EvocaNewsCard } from '../Components/EVocaCard1.jsx';
 import { EvocaReviewCard } from '../Components/EvocaReviewCard.jsx';
+import { Link } from 'react-router-dom';
 import Footer from '../Components/Footer.jsx';
 function Main() {
  const [slidesData, setSlidesData] = useState([]);
@@ -179,7 +180,8 @@ if (partnersDocsData.length > 0 && partnersDocsData[0].partners) {
           </h2>
           
           <button className="flex items-center space-x-2 bg-purple-100/70 hover:bg-purple-200/80 text-purple-700 px-4 py-2.5 rounded-full font-semibold text-sm transition-colors duration-200 group cursor-pointer">
-            <span>Բոլոր նորությունները</span>
+            <Link></Link>
+            <Link to="/news" >Բոլոր նորությունները </Link>
             <svg 
               className="w-4 h-4 transform group-hover:translate-x-0.5 transition-transform" 
               fill="none" 
