@@ -22,7 +22,7 @@ function Blog() {
 
   useEffect(() => {
     const load = async () => {
-      const names = ['news1', 'newsFeatured', 'newsBottom'];
+      const names = ['news1', 'newsFeautured2', 'newsBottom2'];
       const results = await Promise.allSettled(names.map(fetchCollection));
 
       results.forEach((r, i) => {
