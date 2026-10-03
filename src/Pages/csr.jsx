@@ -4,14 +4,18 @@ import Footer from '../Components/Footer.jsx';
 import Navbar from '../Components/Menu.jsx';
 import SocialIcons from '../Components/SocialIcons.jsx';
 import { EvocaNewsCard } from '../Components/EVocaCard1.jsx';
-
+import PromoCard from '../Components/Promocard2.jsx';
 function Csr() {
   return (
     <>
-      <Header />
+       <Header />
       <Navbar />
 
-
+        <PromoCard
+                    image="https://www.evoca.am/images-cache/menu/1/17108330711252/780x585.png"
+                    title={"Կորպորատիվ Սոցիալական Պատասխանատվություն"}
+                    text={"Մենք մեծ կարևորություն ենք տալիս CSR-ին՝ ապահովելով մեր գործունեության դրական ազդեցությունը թե՛ հասարակության, թե՛ շրջակա միջավայրի վրա:"}
+                  />
 
 
 

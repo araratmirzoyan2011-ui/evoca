@@ -14,11 +14,9 @@ const csrItems = [
   "Հասարակության առավել խոցելի խմբեր, մասնավորապես՝ ծնողազուրկ կամ հատուկ խնամքի տակ գտնվող երեխաներ։",
 ];
 
-// ⚠️ Փոխարինիր քո իրական արժեքներով
-const LOGO_SRC = '/evoca-logo.png';            // Evocabank լոգոյի նկարը
-const BRANDBOOK_URL = '#';                      // Brandbook-ի հղումը
-const YOUTUBE_ID = 'YOUR_VIDEO_ID';             // YouTube տեսանյութի ID-ն
-
+const LOGO_SRC = '/evoca-logo.png';     
+const BRANDBOOK_URL = '#';            
+const YOUTUBE_ID = 'YOUR_VIDEO_ID'; 
 const brandColors = [
   { text: "Սպիտակը խորհրդանշում է նորը։", dot: "bg-white border border-gray-300" },
   { text: "Մոխրագույնը խորհրդանշում է նորագույն տեխնոլոգիաների կիրառումը։", dot: "bg-gray-500" },
