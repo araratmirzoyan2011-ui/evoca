@@ -6,7 +6,7 @@ import FeaturedNewsCard from '../Components/FeaturedNewsCard.jsx';
 import LargeNewsCard from '../Components/LargeNewsCard.jsx';
 import { db } from '../firebase';
 import { collection, getDocs } from 'firebase/firestore';
-
+import BannerNewsCard from '../Components/BannerNewsCard.jsx';
 const fetchCollection = async (name) => {
   const snap = await getDocs(collection(db, name));
   return snap.docs
@@ -15,14 +15,15 @@ const fetchCollection = async (name) => {
 };
 
 function Blog() {
+    
   const [news1, setNews1] = useState([]);
   const [featuredList, setFeaturedList] = useState([]);
   const [bottomNews, setBottomNews] = useState([]);
   const [loading, setLoading] = useState(true);
-
+  const [bannerList, setBannerList] = useState([]);
   useEffect(() => {
     const load = async () => {
-      const names = ['news1', 'newsFeautured2', 'newsBottom2'];
+        const names = ['news1', 'newsFeautured2', 'newsBottom2', 'newsBanner'];
       const results = await Promise.allSettled(names.map(fetchCollection));
 
       results.forEach((r, i) => {
@@ -32,6 +33,7 @@ function Blog() {
       if (results[0].status === 'fulfilled') setNews1(results[0].value);
       if (results[1].status === 'fulfilled') setFeaturedList(results[1].value);
       if (results[2].status === 'fulfilled') setBottomNews(results[2].value);
+      if (results[3].status === 'fulfilled') setBannerList(results[3].value);
       setLoading(false);
     };
     load();
@@ -98,63 +100,9 @@ function Blog() {
             </div>
           </>
         )}
-        import React from "react";
-
-export default function BannerNewsCard({
-  category,
-  title,
-  description,
-  image,
-  bgTitle,
-}) {
-  return (
-    <section className="relative overflow-hidden">
-      {/* Բաց գույնի ֆոնային մեծ գրություն */}
-      {bgTitle && (
-        <h3 className="pointer-events-none select-none absolute left-[8%] top-0 text-[110px] font-extrabold leading-none text-gray-100 whitespace-nowrap">
-          {bgTitle}
-        </h3>
-      )}
-
-      <div className="relative mx-auto max-w-[1200px] px-6 pt-24 pb-4 lg:pb-[78px]">
-        {/* Նկար */}
-        <div className="aspect-[1200/541] w-full overflow-hidden">
-          <img
-            src={image}
-            alt={title}
-            className="h-full w-full object-cover"
-          />
-        </div>
-
-        {/* Սպիտակ card */}
-        <div
-          className="
-            mt-6 bg-white p-8 shadow-[0_8px_30px_rgba(91,18,214,0.08)]
-            lg:absolute lg:bottom-4 lg:left-[calc(1.5rem+103px)]
-            lg:mt-0 lg:w-[480px] lg:min-h-[258px]
-          "
-        >
-          <div className="flex items-center gap-3">
-            <span className="block h-[15px] w-[30px] bg-[#2a0a4a]" />
-            <span className="text-[13px] font-semibold text-[#2a0a4a]">
-              {category}
-            </span>
-          </div>
-
-          <h4 className="mt-6 text-[20px] font-semibold leading-snug text-black">
-            {title}
-          </h4>
-
-          <p className="mt-4 text-[13px] leading-6 text-gray-800">
-            {description}
-          </p>
-        </div>
-      </div>
-    </section>
-  );
-}
+        
       </main>
-
+        {bannerList[0] && <BannerNewsCard {...bannerList[0]} />}
       <Footer />
     </>
   );
