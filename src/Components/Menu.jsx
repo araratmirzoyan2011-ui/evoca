@@ -9,7 +9,7 @@ export default function Navbar() {
     { label: "Բաժնետերեր", path: "/shareholders" },
     { label: "Ղեկավարություն", path: "/management" },
     { label: "Գործընկերներ", path: "/partners" },
-    { label: "Սրտանականներ", path: "/departments" },
+    { label: "Մրցանակններ", path: "/departments" },
     { label: "CSR", path: "/csr" },
     { label: "Էվկա ֆինանսական խումբ", path: "/evoca-group" },
   ];
