@@ -5,7 +5,7 @@ const FeaturedNewsCard = ({
   date,
   image,
   imageAlt = "",
-  reverse = false,
+  reverse ,
 }) => {
   return (
     <section className="relative bg-[#f4f4f4] rounded-bl-[100px] overflow-hidden py-14">

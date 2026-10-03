@@ -4,7 +4,15 @@ import Footer from '../Components/Footer.jsx';
 import NewsCard from '../Components/NewsCard.jsx';
 import FeaturedNewsCard from '../Components/FeaturedNewsCard.jsx';
 import LargeNewsCard from '../Components/LargeNewsCard.jsx';
-
+const lom={
+    id: 2,
+    category: 'Բանկային',
+    title: 'Գործարքների արգելափակում 1 կոճակով',
+    description:
+      'Հուլիսի 1-ից EvocaTOUCH հավելվածում ու EvocaONLINE համակարգում հասանելի կլինի նոր՝ «Գործարքների արգելափակում» ֆունկցիոնալը։',
+    date: '01.06.2026',
+    image: 'https://www.evoca.am/images-cache/news/1/17852444643548/780x585.png',
+  }
 const news = [
   {
     id: 1,
@@ -13,7 +21,7 @@ const news = [
     description:
       'Հոկտեմբերի 5-ին և 6-ին Երևանում կանցկացվի Armenia-UK Business Forum-ը՝ միավորելով երկու երկրի գործարար, ֆինանսական և պետական կառույցների ներկայացուցիչներին։',
     date: '02.10.2026',
-    image: 'https://www.evoca.am/images-cache/news/1/17815943976247/616x462.png',
+    image: 'https://www.evoca.am/images-cache/news/1/17909432776466/780x585.png',
   },
   {
     id: 2,
@@ -53,7 +61,6 @@ const news = [
     image: 'https://www.evoca.am/images-cache/news/1/17683825017248/450x295.jpg',
   },
 ];
-
 function News() {
   const [featured, big, ...small] = news;
 
@@ -69,25 +76,36 @@ function News() {
             description={featured.description}
             date={featured.date}
             image={featured.image}
+            reverse={false}
           />
         )}
 
         {big && (
-  <section className="mx-auto max-w-[1200px] px-6 pt-24 pb-20 grid gap-y-16 lg:grid-cols-[512px_1fr] lg:gap-x-[100px]">
-    <LargeNewsCard item={big} />
+          <section className="mx-auto max-w-[1200px] px-6 pt-24 pb-20 grid gap-y-16 lg:grid-cols-[512px_1fr] lg:gap-x-[100px]">
+            <LargeNewsCard item={big} />
 
-    <div className="grid gap-x-[34px] gap-y-10 sm:grid-cols-2 content-start">
-      {small.slice(0, 4).map((item) => (
-        <NewsCard key={item.id} item={item} />
-      ))}
-    </div>
-  </section>
-)}
+            <div className="grid gap-x-[34px] gap-y-10 sm:grid-cols-2 content-start">
+              {small.slice(0, 4).map((item) => (
+                <NewsCard key={item.id} item={item} />
+              ))}
+            </div>
+          </section>
+        )}
+
+        {lom && (
+          <FeaturedNewsCard
+            category={lom.category}
+            title={lom.title}
+            description={lom.description}
+            date={lom.date}
+            image={lom.image}
+            reverse={true}
+          />
+        )}
       </main>
 
       <Footer />
     </>
   );
 }
-
 export default News;
