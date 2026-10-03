@@ -10,6 +10,7 @@ import Parthner from "./Pages/partners";
 import Group from "./Pages/evoca-group";
 import Departments from "./Pages/departments";
 import Csr from "./Pages/csr";
+import News from "./Pages/news";
 function App() {
   return (
     <BrowserRouter>
@@ -26,6 +27,8 @@ function App() {
           <Route path="/csr" element={<Csr/>} />
           <Route path="/departments" element={<Departments/>} />
           <Route path="/partners" element={<Parthner/>} />
+          <Route path="/news" element={<News/>} />
+
         </Routes>
       </div>
     </BrowserRouter>
