@@ -34,12 +34,8 @@ const FeaturedNewsCard = ({
 
           <span className="block mt-12 text-sm text-gray-800">{date}</span>
         </div>
-
-        {/* Image side */}
         <div className="relative flex-1 w-full max-w-[740px]">
-          {/* Top-left green corner */}
           <span className="absolute -top-5 -left-4 w-8 h-8 border-t-[6px] border-l-[6px] border-[#9dff00]" />
-          {/* Bottom-left green corner */}
           <span className="absolute -bottom-5 -left-4 w-8 h-8 border-b-[6px] border-l-[6px] border-[#9dff00]" />
 
           <img
