@@ -14,7 +14,10 @@ function Career() {
     text: "Evoca-ում աշխատելը հաճելի է: Առօրյան լցված է նորարարություններով: Այստեղ տաղանդները անընդհատ զարգանում ու կատարելագործվում են:",
     bgImage: "/images/culture-banner.png",
   };
-
+  const sliderIntro = {
+  title: "Մշակույթ",
+  text: "Evoca-ում մենք ոչ միայն անում ենք այն, ինչ սիրում ենք, այլ նաև կյանքից վերցնում ենք ամեն ինչ. Անընդհատ սովորում ենք, մեր փորձը կիսում ենք գործընկերների հետ, սպորտով ենք զբաղվում և հանգստանում: Միացեք մեզ!",
+};
   const whyWorkData = {
     title: "Ինչո՞ւ աշխատել Evoca-ում",
     text: "«Բացահայտի՛ր, թե ինչն է Evoca-ն դարձնում այդքան յուրահատուկ: Աշխատակիցներն ուրախ են, մոտիվացված, իսկ առավելությունների մեծ փաթեթն օգնում է հոգ տանել իրենց և ընտանիքների մասին»",
@@ -67,7 +70,7 @@ function Career() {
         <CultureBanner {...cultureData} />
       </div>
       <WhyWorkSection {...whyWorkData} />
-      <CoverflowSlider items={sliderData} />
+        <CoverflowSlider {...sliderIntro} items={sliderData} />
       <Footer />
     </>
   );
