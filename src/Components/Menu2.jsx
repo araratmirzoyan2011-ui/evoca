@@ -12,7 +12,6 @@ export default function Navbar() {
     { label: "Ինչպես ընդունվել աշխատանքի Evocabank-ում", path: "/evocawork" },
   ];
 
-  // էջը բացելիս ակտիվ կետը բերում է տեսադաշտ
   useEffect(() => {
     activeRef.current?.scrollIntoView({
       inline: "center",
