@@ -8,6 +8,8 @@ import CultureBanner from '../Components/CultureBanner.jsx';
 import WhyWorkSection from '../Components/WhyWorkSection.jsx';
 import CoverflowSlider from '../Components/CoverflowSlider.jsx';
 import TeamWordsSlider from '../Components/TeamWordsSlider.jsx';
+import JoinTeamForm from '../Components/JoinTeamForm.jsx';
+import { addDoc, serverTimestamp } from 'firebase/firestore';
 function Career() {
     const teamData = {
   title: "Հարցրու՛ մեր թիմին. «Ինչպիսի՞ն է Evoca-ն՝ 3 բառով»",
@@ -86,7 +88,27 @@ function Career() {
     video: `<iframe width="560" height="315" src="https://www.youtube.com/embed/gowxeSi1iJs?si=Ksy6YpgAS7E_I3xo" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>`,
   },
 ];
+const joinData = {
+  title: "Դառնալ թիմի անդամ",
+  description: (
+    <>
+      Եթե ցանկանում ես միանալ{" "}
+      <span className="font-semibold text-[#6a0fd9]">EvocaTEAM</span>-ին,
+      <br />
+      կարող ես ուղարկել դիմում՝ կցելով ինքնակենսագրականը:
+    </>
+  ),
+  submitText: "Ես ուզում եմ աշխատել Evoca-ում :)",
+  successText: "Շնորհակալություն, Ձեր դիմումը ուղարկվել է։",
+};
 
+const handleJoin = async ({ values, files }) => {
+  await addDoc(collection(db, "teamApplications"), {
+    ...values,
+    resumeFiles: files.map((f) => f.name),
+    createdAt: serverTimestamp(),
+  });
+};
   return (
     <>
       <Header />
@@ -95,6 +117,7 @@ function Career() {
       <WhyWorkSection {...whyWorkData} />
         <CoverflowSlider {...sliderIntro} items={sliderData} />
         <TeamWordsSlider {...teamData} />
+        <JoinTeamForm {...joinData} onSubmit={handleJoin} />
       <Footer />
     </>
   );
