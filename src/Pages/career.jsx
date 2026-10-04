@@ -9,11 +9,11 @@ import WhyWorkSection from '../Components/WhyWorkSection.jsx';
 import CoverflowSlider from '../Components/CoverflowSlider.jsx';
 
 function Career() {
-  const cultureData = {
-    title: "Մշակույթ",
-    text: "Evoca-ում աշխատելը հաճելի է: Առօրյան լցված է նորարարություններով: Այստեղ տաղանդները անընդհատ զարգանում ու կատարելագործվում են:",
-    bgImage: "/images/culture-banner.png",
-  };
+    const cultureData = {
+  title: "Մշակույթ",
+  text: "Evoca-ում աշխատելը հաճելի է: Առօրյան լցված է նորարարություններով: Այստեղ տաղանդները անընդհատ զարգանում ու կատարելագործվում են:",
+  bgImage: "https://www.evoca.am/images-cache/menu/1/16195117975601/1920x634.jpg",
+};
   const sliderIntro = {
   title: "Մշակույթ",
   text: "Evoca-ում մենք ոչ միայն անում ենք այն, ինչ սիրում ենք, այլ նաև կյանքից վերցնում ենք ամեն ինչ. Անընդհատ սովորում ենք, մեր փորձը կիսում ենք գործընկերների հետ, սպորտով ենք զբաղվում և հանգստանում: Միացեք մեզ!",
@@ -66,9 +66,7 @@ function Career() {
     <>
       <Header />
       <Navbar />
-      <div className='w-full mb-[60px] h-[300px] bg-[url("https://www.evoca.am/images-cache/menu/1/16195117975601/1920x634.jpg")] flex justify-center items-center'>
-        <CultureBanner {...cultureData} />
-      </div>
+      <CultureBanner {...cultureData} className="mb-[60px]" />
       <WhyWorkSection {...whyWorkData} />
         <CoverflowSlider {...sliderIntro} items={sliderData} />
       <Footer />
