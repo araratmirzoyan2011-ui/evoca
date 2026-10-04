@@ -12,6 +12,7 @@ import Departments from "./Pages/departments";
 import Csr from "./Pages/csr";
 import News from "./Pages/news";
 import Blog from "./Pages/blog";
+import Career from "./Pages/career";
 function App() {
   return (
     <BrowserRouter>
@@ -30,7 +31,7 @@ function App() {
           <Route path="/departments" element={<Departments/>} />
           <Route path="/partners" element={<Parthner/>} />
           <Route path="/news" element={<News/>} />
-
+          <Route path="/career" element={<Career/>} />
         </Routes>
       </div>
     </BrowserRouter>
