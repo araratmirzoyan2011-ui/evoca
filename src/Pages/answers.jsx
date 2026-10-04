@@ -75,7 +75,6 @@ function Answer() {
         </div>
       ) : (
         <div className="mt-0 mb-[40px]">
-          {/* 1. Culture Banner բաժինը Firebase-ից */}
           {cultureData && (
             <CultureBanner {...cultureData} className="mb-[60px]" />
           )}
