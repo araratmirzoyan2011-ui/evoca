@@ -71,7 +71,7 @@ const evocaCardsData = [
   {
     id: 9,
     title: "Շարունակական կրթության և մասնագիտական զարգացման լայն հնարավորություն",
-    src: "",
+    src: "https://www.evoca.am/images-cache/benefits/1/17431453776119/120x120.png",
   },
 ];
 
