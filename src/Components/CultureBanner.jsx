@@ -1,4 +1,3 @@
-// src/Components/CultureBanner.jsx
 const CultureBanner = ({ title, text, bgImage, className = "" }) => {
   return (
     <section

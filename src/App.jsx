@@ -13,6 +13,7 @@ import Csr from "./Pages/csr";
 import News from "./Pages/news";
 import Blog from "./Pages/blog";
 import Career from "./Pages/career";
+import Plus from "./Pages/plus";
 function App() {
   return (
     <BrowserRouter>
@@ -22,6 +23,7 @@ function App() {
           <Route path="/business-loans" element={<Busines />} />
           <Route path="/instant-payments" element={<Instant />} />
           <Route path="blog" element={<Blog />} />
+          <Route path="plus" element={<Plus/>} />
           <Route path="/management" element={<Managment/>} />
           <Route path="/structure" element={<Structure />} />
           <Route path="/shareholders" element={<Sarheholder />} />
