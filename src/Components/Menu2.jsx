@@ -10,6 +10,9 @@ export default function Navbar() {
     { label: "Առավելություններ", path: "/plus" },
     { label: "Հաճախ տրվող հարցեր", path: "/answers" },
     { label: "Ինչպես ընդունվել աշխատանքի Evocabank-ում", path: "/evocawork" },
+    { label: "Աշխատանք Evoca-ում", path: "/evokawork2" },
+    { label: "Ուսումնական պրակտիկա", path: "/internship" },
+    { label: "EvocaBRIDGE", path: "/bridge" },
   ];
 
   useEffect(() => {

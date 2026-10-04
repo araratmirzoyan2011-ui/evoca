@@ -16,6 +16,7 @@ import Career from "./Pages/career";
 import Plus from "./Pages/plus";
 import EvocaWork from "./Pages/evocawork";
 import Answer from "./Pages/answers";
+import Work2 from "./Pages/evokawork2"
 function App() {
   return (
     <BrowserRouter>
@@ -26,6 +27,7 @@ function App() {
           <Route path="/instant-payments" element={<Instant />} />
           <Route path="blog" element={<Blog />} />
           <Route path="evocawork" element={<EvocaWork />} />
+          <Route path="evokawork2" element={<Work2 />} /> 
           <Route path="answers" element={<Answer />} /> 
           <Route path="plus" element={<Plus/>} />
           <Route path="/management" element={<Managment/>} />
