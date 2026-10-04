@@ -14,20 +14,6 @@ import {
   serverTimestamp,
 } from 'firebase/firestore';
 
-const fallbackJoinData = {
-  title: "Դառնալ թիմի անդամ",
-  description: (
-    <>
-      Եթե ցանկանում ես միանալ{" "}
-      <span className="font-semibold text-[#6a0fd9]">EvocaTEAM</span>-ին,
-      <br />
-      կարող ես ուղարկել դիմում՝ կցելով ինքնակենսագրականը:
-    </>
-  ),
-  submitText: "Ես ուզում եմ աշխատել Evoca-ում :)",
-  successText: "Շնորհակալություն, Ձեր դիմումը ուղարկվել է։",
-};
-
 const handleJoin = async ({ values, files }) => {
   await addDoc(collection(db, "teamApplications"), {
     ...values,
@@ -41,37 +27,6 @@ function Intership() {
   const [benefits, setBenefits] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const intershipinfoDefault = {
-    title: "Աշխատանքի ընդունվելու փուլեր",
-    steps: [
-      {
-        id: 1,
-        title: "Առաջին փուլ` Համագործակցություն",
-        description: "Բարձրագույն ուսումնական հաստատության և Evocabank-ի միջև կնքվում է ուսումնական պրակտիկայի վերաբերյալ պայմանագիր` համաձայն ուսումնական պլանի"
-      },
-      {
-        id: 2,
-        title: "Երկրորդ փուլ` Հարցազրույցներ",
-        description: `Ուսանողը, ով ցանկանում է անցնել պրակտիկա, պետք է լրացնի դիմում-հայտ՝ կցելով ինքնակենսագրականը:`
-      },
-      {
-        id: 3,
-        title: "Երրորդ փուլ` Թեստավորում",
-        description: "Դիմորդներն անցնում են թեստավորում, որն իրականացվում է երկու փուլով: Առաջին փուլը գրավոր թեստ է ընդհանուր զարգացվածության վերաբերյալ` ստուգում է hard skills: Բավարար արդյունքներ ունենալու դեպքում թեկնածուն տեղափոխվում է երկրորդ փուլ, որը թիմային առաջադրանք է, ստուգում է soft skills: "
-      },
-      {
-        id: 4,
-        title: "Չորրորդ փուլ` Ուսումնական պրակտիկա",
-        description: "Նախորդ փուլում լավագույն արդյունք ցուցաբերած դիմորդներն սկսում են պրակտիկան: Ուսանողները, ներածական դասընթաց անցնելուց և կազմակերպությանը ծանոթանալուց հետո, անմիջապես ներգրավվում են ամենօրյա աշխատանքներում` կիրառելով համալսարանական գիտելիքները և հմտությունները:Պրակտիկայի ավարտին ուսանողներն ստանում են մեծ փորձ, պրակտիկ գիտելիքներ և մոտիվացիա: Եվ իհարկե, պրակտիկայի մասնակցության հավաստագիր:"
-      },
-      {
-        id: 5,
-        title: "Հինգերորդ փուլ` Աշխատանքի առաջարկ",
-        description: `Ստուգումների դրական արդյունքներ ստանալուց հետո մեր թիմը կապ կհաստատի Ձեզ հետ և կներկայացնի աշխատանքի առաջարկ: Ձեր կողմից այն ընդունվելուց հետո կիրականացվեն փաստաթղթային ձևակերպումները և կամփոփվեն այլ մանրամասներ: Բարի գալուստ Evocabank!`
-      }
-    ]
-  };
-
   useEffect(() => {
     const loadData = async () => {
       try {
@@ -80,10 +35,12 @@ function Intership() {
           getDocs(collection(db, "CareerBenefits3")),
         ]);
 
+        // 1. CareerSections6 collection-ի փաստաթղթերի ներմուծում
         const s = {};
         sectionsSnap.forEach((d) => (s[d.id] = d.data()));
         setSections6(s);
 
+        // 2. CareerBenefits3 collection-ի ներմուծում (ԲՈՒՀ-երի / առավելությունների ցանկ)
         const bList = benefitsSnap.docs.map((d) => ({
           docId: d.id,
           ...d.data(),
@@ -100,8 +57,8 @@ function Intership() {
     loadData();
   }, []);
 
-  const hiringData = sections6.hiringSteps || sections6.intershipinfo || intershipinfoDefault;
-  const joinFormData = sections6.join || sections6.joinData || fallbackJoinData;
+  const hiringData = sections6.hiringSteps || sections6.intershipinfo;
+  const joinFormData = sections6.joinData || sections6.join;
 
   return (
     <>
@@ -119,7 +76,7 @@ function Intership() {
           )}
 
           <div className="w-full mt-[80px]">
-            <h1 className="text-3xl max-[400px]:text-2xl font-bold text-center mb-8 max-[400px]:mb-4 text-[#2d124d]">
+            <h1 className="text-xl max-[400px]:text-2xl font-bold text-center mb-8 max-[400px]:mb-4 text-[#2d124d]">
               Համալսարանական պրակտիկայի շրջանակներում մենք համագործակցում ենք հետևյալ Բուհերի հետ՝
             </h1>
           </div>
@@ -150,7 +107,9 @@ function Intership() {
             />
           )}
 
-          <JoinTeamForm {...joinFormData} onSubmit={handleJoin} />
+          {joinFormData && (
+            <JoinTeamForm {...joinFormData} onSubmit={handleJoin} />
+          )}
         </div>
       )}
 
