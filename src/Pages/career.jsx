@@ -7,8 +7,33 @@ import { collection, getDocs, query, orderBy } from 'firebase/firestore';
 import CultureBanner from '../Components/CultureBanner.jsx';
 import WhyWorkSection from '../Components/WhyWorkSection.jsx';
 import CoverflowSlider from '../Components/CoverflowSlider.jsx';
-
+import TeamWordsSlider from '../Components/TeamWordsSlider.jsx';
 function Career() {
+    const teamData = {
+  title: "Հարցրու՛ մեր թիմին. «Ինչպիսի՞ն է Evoca-ն՝ 3 բառով»",
+  members: [
+    {
+      words: ["Թրենդային", "Պահանջված", "Ուրախ"],
+      name: "Հարություն Սահակյան",
+      role: "Անվտանգության մասնագետ",
+    },
+    {
+      words: ["Դինամիկ", "Պրպտող", "Զարգացող"],
+      name: "Լիլիթ Գաբոյան",
+      role: "Գլխավոր ֆինանսական տնօրեն",
+    },
+    {
+      words: ["Կրեատիվ", "Նորարար", "Մանուշակագույն"],
+      name: "Ալլա Զաքարյան",
+      role: "Վճարային գործիքների մասնագետ",
+    },
+    {
+      words: ["Գույներ", "Էմոցիաներ", "Նորարարություններ"],
+      name: "Գայանե Առաքելյան",
+      role: "Մասնաճյուղի կառավարիչ",
+    },
+  ],
+};
     const cultureData = {
   title: "Մշակույթ",
   text: "Evoca-ում աշխատելը հաճելի է: Առօրյան լցված է նորարարություններով: Այստեղ տաղանդները անընդհատ զարգանում ու կատարելագործվում են:",
@@ -69,6 +94,7 @@ function Career() {
       <CultureBanner {...cultureData} className="mb-[60px]" />
       <WhyWorkSection {...whyWorkData} />
         <CoverflowSlider {...sliderIntro} items={sliderData} />
+        <TeamWordsSlider {...teamData} />
       <Footer />
     </>
   );
