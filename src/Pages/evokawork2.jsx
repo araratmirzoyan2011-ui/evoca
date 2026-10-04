@@ -76,7 +76,6 @@ function Work2() {
             <CultureBanner {...sections2.culture} className="mb-[60px]" />
           )}
 
-          {/* Բաժին 1․ Թիմակիցներ / Առավելություններ */}
           <div className="w-full mt-[80px]">
             <h1 className="text-3xl max-[400px]:text-2xl font-bold text-center mb-8 max-[400px]:mb-4 text-[#2d124d]">
               Ինչպիսի թիմակից ենք մենք փնտրում ?
