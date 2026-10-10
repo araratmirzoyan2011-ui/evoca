@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Header } from '../Components/Header.jsx';
 import Footer from '../Components/Footer.jsx';
-import Navbar from '../Components/Menu2.jsx';
+import Navbar from '../Components/Menuall.jsx';
 import { db } from '../firebase.js';
 import {
   collection,
@@ -9,12 +9,18 @@ import {
 } from 'firebase/firestore';
 
 function Reports() {
-
+const menuItems = [
+  { label: "Աուդիտորական եզրակացություն", path: "/audit" },
+  { label: "Ֆինանսական հաշվետվություններ", path: "/financial-reports" },
+  { label: "Ներդրողների համար", path: "/investors" },
+  { label: "Կիսամյակային հաշվետվություն", path: "/semiannual-report" },
+  { label: "Տարեկան հաշվետվություն", path: "/annual-report" },
+];
   
   return (
     <>
       <Header />
-      <Navbar />
+      <Navbar items={menuItems} />
 
       <Footer />
     </>
