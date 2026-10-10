@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Header } from "../Components/Header.jsx";
 import Footer from "../Components/Footer.jsx";
 import Navbar from "../Components/Menuall.jsx";
-import { DocumentCard } from "../Components/DocumentCard.jsx";
+import PresentationCard from "../Components/PresentationCard.jsx";
 import { db } from "../firebase.js";
 import { collection, getDocs, orderBy, query } from "firebase/firestore";
 
@@ -211,13 +211,36 @@ const investorPresentations = [
       <Header />
       <Navbar items={menuItems} />
 
-      <main className="max-w-5xl mx-auto px-6 py-10">
-        <h1 className="text-2xl font-bold text-gray-900 mb-12">
-          Ներդրողների համար 
-        </h1>
+      <main className="max-w-[1200px] mx-auto px-6 py-10">
+  <h1 className="text-2xl font-bold text-gray-900 mb-12">
+    Ներդրողների համար
+  </h1>
 
-        
-      </main>
+  <div className="space-y-10">
+    {investorPresentations.map((y) => (
+      <section key={y.year}>
+        <h2 className="text-2xl font-semibold text-gray-900 mb-5">
+          {y.year}
+        </h2>
+
+        <div className="bg-gradient-to-b from-gray-100 to-purple-50 p-8">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+            {y.presentations.map((p) => (
+              <a
+                key={p.title}
+                href={p.url}
+                target="_blank"
+                rel="noreferrer"
+              >
+                <PresentationCard imageSrc={p.image} title={p.title} />
+              </a>
+            ))}
+          </div>
+        </div>
+      </section>
+    ))}
+  </div>
+</main>
 
       <Footer />
     </>
