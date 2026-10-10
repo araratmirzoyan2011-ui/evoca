@@ -19,6 +19,7 @@ import Answer from "./Pages/answers";
 import Work2 from "./Pages/evokawork2"
 import Intership from "./Pages/internship";
 import Bridge from "./Pages/bridge";
+import FinReports from "./Pages/financial-reports";
 import Reports from "./Pages/reports";
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
           <Route path="/" element={<Main />} />
           <Route path="/business-loans" element={<Busines />} />
           <Route path="/instant-payments" element={<Instant />} />
+          <Route path="/financial-reports" element={<FinReports />} />
           <Route path="blog" element={<Blog />} />
           <Route path="bridge" element={<Bridge />} />
           <Route path="reports" element={<Reports />} />
