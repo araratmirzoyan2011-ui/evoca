@@ -7,60 +7,31 @@ import SocialIcons from "../Components/SocialIcons.jsx";
 import { db } from "../firebase.js";
 import { collection, getDocs, orderBy, query } from "firebase/firestore";
 
-const annualReports = [
-  {
-    id: 1,
-    title: "2021 Տարեկան հաշվետվություն",
-    url: "/files/annual-2021.pdf", // փոխիր իրական հղումով
-  },
-  {
-    id: 2,
-    title: "2020 Տարեկան հաշվետվություն",
-    url: "/files/annual-2020.pdf",
-  },
-  {
-    id: 3,
-    title: "2022 Տարեկան հաշվետվություն",
-    url: "/files/annual-2022.pdf",
-  },
-  {
-    id: 4,
-    title: "2023 Տարեկան հաշվետվություն",
-    url: "/files/annual-2023.pdf",
-  },
-  {
-    id: 5,
-    title: "2024 Տարեկան հաշվետվություն",
-    url: "/files/annual-2024.pdf",
-  },
-  {
-    id: 6,
-    title: "2024 Տարեկան հաշվետվություն",
-    url: "/files/annual-2024-2.pdf",
-  },
-  {
-    id: 7,
-    title: "2025 տարեկան հաշվետվություն",
-    url: "/files/annual-2025.pdf",
-  },
-];
-
 function AnualReports() {
   const [menuItems, setMenuItems] = useState([]);
+  const [reports, setReports] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    const loadMenu = async () => {
+    const load = async () => {
       try {
-        const snap = await getDocs(
-          query(collection(db, "reportsMenu"), orderBy("order"))
-        );
-        setMenuItems(snap.docs.map((d) => ({ id: d.id, ...d.data() })));
+        const [menuSnap, reportsSnap] = await Promise.all([
+          getDocs(query(collection(db, "reportsMenu"), orderBy("order"))),
+          getDocs(query(collection(db, "annualReports"), orderBy("order"))),
+        ]);
+
+        setMenuItems(menuSnap.docs.map((d) => ({ id: d.id, ...d.data() })));
+        setReports(reportsSnap.docs.map((d) => ({ id: d.id, ...d.data() })));
       } catch (err) {
         console.error(err);
+        setError("Չհաջողվեց բեռնել տվյալները։");
+      } finally {
+        setLoading(false);
       }
     };
 
-    loadMenu();
+    load();
   }, []);
 
   return (
@@ -85,11 +56,16 @@ function AnualReports() {
               Փաստաթղթեր
             </h2>
 
-            <div className="space-y-5">
-              {annualReports.map((r) => (
-                <DocumentCard key={r.id} title={r.title} url={r.url} />
-              ))}
-            </div>
+            {loading && <p className="text-gray-500">Բեռնվում է...</p>}
+            {error && <p className="text-red-600">{error}</p>}
+
+            {!loading && !error && (
+              <div className="space-y-5">
+                {reports.map((r) => (
+                  <DocumentCard key={r.id} title={r.title} url={r.url} />
+                ))}
+              </div>
+            )}
           </section>
         </div>
       </main>
