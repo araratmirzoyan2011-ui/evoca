@@ -23,6 +23,7 @@ import FinReports from "./Pages/financial-reports";
 import Reports from "./Pages/reports";
 import InvestReports from "./Pages/investors";
 import SemReports from "./Pages/semiannual-report";
+import AnualReports from "./Pages/annual-report";
 function App() {
   return (
     <BrowserRouter>
@@ -32,6 +33,7 @@ function App() {
           <Route path="/business-loans" element={<Busines />} />
           <Route path="/investors" element={<InvestReports />} />
           <Route path="/semiannual-report" element={<SemReports />} />
+          <Route path="/annual-report" element={<AnualReports />} />
           <Route path="/instant-payments" element={<Instant />} />
           <Route path="/financial-reports" element={<FinReports />} />
           <Route path="blog" element={<Blog />} />

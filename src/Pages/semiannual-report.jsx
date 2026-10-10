@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 import { Header } from "../Components/Header.jsx";
 import Footer from "../Components/Footer.jsx";
 import Navbar from "../Components/Menuall.jsx";
@@ -8,52 +7,31 @@ import SocialIcons from "../Components/SocialIcons.jsx";
 import { db } from "../firebase.js";
 import { collection, getDocs, orderBy, query } from "firebase/firestore";
 
-const semiAnnualReports = [
-  {
-    id: 1,
-    title: "Կիսամյակային հաշվետվություն (2025 առաջին կիսամյակ)",
-    url: "/files/semi-annual-2025.pdf", // փոխիր իրական հղումով
-  },
-  {
-    id: 2,
-    title: "Կիսամյակային հաշվետվություն (2024 առաջին կիսամյակ)",
-    url: "/files/semi-annual-2024.pdf",
-  },
-  {
-    id: 3,
-    title: "Կիսամյակային հաշվետվություն (2023 առաջին կիսամյակ)",
-    url: "/files/semi-annual-2023.pdf",
-  },
-  {
-    id: 4,
-    title: "Կիսամյակային հաշվետվություն (2022 առաջին կիսամյակ)",
-    url: "/files/semi-annual-2022.pdf",
-  },
-  {
-    id: 5,
-    title: "Կիսամյակային հաշվետվություն (2021 առաջին կիսամյակ)",
-    url: "/files/semi-annual-2021.pdf",
-  },
-];
-
-
-
 function SemReports() {
   const [menuItems, setMenuItems] = useState([]);
+  const [reports, setReports] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    const loadMenu = async () => {
+    const load = async () => {
       try {
-        const snap = await getDocs(
-          query(collection(db, "reportsMenu"), orderBy("order"))
-        );
-        setMenuItems(snap.docs.map((d) => ({ id: d.id, ...d.data() })));
+        const [menuSnap, reportsSnap] = await Promise.all([
+          getDocs(query(collection(db, "reportsMenu"), orderBy("order"))),
+          getDocs(query(collection(db, "semiAnnualReports"), orderBy("order"))),
+        ]);
+
+        setMenuItems(menuSnap.docs.map((d) => ({ id: d.id, ...d.data() })));
+        setReports(reportsSnap.docs.map((d) => ({ id: d.id, ...d.data() })));
       } catch (err) {
         console.error(err);
+        setError("Չհաջողվեց բեռնել տվյալները։");
+      } finally {
+        setLoading(false);
       }
     };
 
-    loadMenu();
+    load();
   }, []);
 
   return (
@@ -62,7 +40,6 @@ function SemReports() {
       <Navbar items={menuItems} />
 
       <main className="max-w-[1040px] mx-auto px-4 pb-16">
-        
         <h1 className="mt-6 md:ml-[140px] text-3xl md:text-[34px] font-medium text-[#333]">
           Կիսամյակային հաշվետվություն
         </h1>
@@ -79,11 +56,16 @@ function SemReports() {
               Փաստաթղթեր
             </h2>
 
-            <div className="space-y-5">
-              {semiAnnualReports.map((r) => (
-                <DocumentCard key={r.id} title={r.title} url={r.url} />
-              ))}
-            </div>
+            {loading && <p className="text-gray-500">Բեռնվում է...</p>}
+            {error && <p className="text-red-600">{error}</p>}
+
+            {!loading && !error && (
+              <div className="space-y-5">
+                {reports.map((r) => (
+                  <DocumentCard key={r.id} title={r.title} url={r.url} />
+                ))}
+              </div>
+            )}
           </section>
         </div>
       </main>
