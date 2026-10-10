@@ -21,6 +21,7 @@ import Intership from "./Pages/internship";
 import Bridge from "./Pages/bridge";
 import FinReports from "./Pages/financial-reports";
 import Reports from "./Pages/reports";
+import InvestReports from "./Pages/investors";
 function App() {
   return (
     <BrowserRouter>
@@ -28,6 +29,7 @@ function App() {
         <Routes>=
           <Route path="/" element={<Main />} />
           <Route path="/business-loans" element={<Busines />} />
+          <Route path="/investors" element={<InvestReports />} />
           <Route path="/instant-payments" element={<Instant />} />
           <Route path="/financial-reports" element={<FinReports />} />
           <Route path="blog" element={<Blog />} />

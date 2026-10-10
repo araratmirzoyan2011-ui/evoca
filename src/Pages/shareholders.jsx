@@ -34,7 +34,6 @@ function Sarheholder() {
           setShareholder(docSnap.data());
         }
 
-        // 2. Անհրաժեշտ տեղեկատվության (ակորդեոնների) բեռնում
         const querySnapshot = await getDocs(collection(db, 'shareholderInfo'));
         const items = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         setAccordionItems(items);
@@ -75,12 +74,10 @@ function Sarheholder() {
       <div className="min-h-[60vh] bg-white py-6 px-4 sm:px-6 lg:px-8">
         <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-start gap-8">
           
-          {/* Սոց. կոճակներ ձախ մասում */}
           <div className="flex md:flex-col items-center">
             <SocialIcons />
           </div>
 
-          {/* Նկար */}
           <div className="w-full md:w-[400px] flex-shrink-0">
             {shareholder?.photo && (
               <img 
@@ -91,7 +88,6 @@ function Sarheholder() {
             )}
           </div>
 
-          {/* Տեքստային մաս */}
           <div className="flex-1">
             <h2 className="text-2xl sm:text-3xl font-bold text-purple-800 mb-4">
               {shareholder?.name}
@@ -110,7 +106,6 @@ function Sarheholder() {
 
         </div>
 
-        {/* ԱՆՀՐԱԺԵՇՏ ՏԵՂԵԿԱՏՎՈՒԹՅՈՒՆ ԲԱԺԻՆ */}
         <div className="max-w-5xl mx-auto mt-16">
           <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-6 tracking-wide">
             ԱՆՀՐԱԺԵՇՏ ՏԵՂԵԿԱՏՎՈՒԹՅՈՒՆ
