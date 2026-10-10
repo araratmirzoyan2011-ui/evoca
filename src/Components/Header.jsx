@@ -7,7 +7,6 @@ export function Header() {
 
     return (
         <header className="w-full bg-white border-b border-gray-200 font-sans relative">
-            {/* Վերին տող — desktop/tablet-ի համար */}
             <div className="hidden md:flex max-w-7xl mx-auto px-4 h-12 items-center justify-between text-sm border-b border-gray-100">
                 <nav className="flex items-center space-x-4 lg:space-x-6 overflow-x-auto">
                     <Link to="/" className="text-purple-700 font-semibold border-b-2 border-purple-700 pb-3 pt-3 whitespace-nowrap">Անհատ</Link>

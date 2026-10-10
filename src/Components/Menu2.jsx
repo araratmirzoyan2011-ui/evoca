@@ -1,19 +1,9 @@
 import { useEffect, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
 
-export default function Navbar() {
+export default function Navbar({ items = [] }) {
   const { pathname } = useLocation();
   const activeRef = useRef(null);
-
-  const menuItems = [
-    { label: "Մշակույթ", path: "/career" },
-    { label: "Առավելություններ", path: "/plus" },
-    { label: "Հաճախ տրվող հարցեր", path: "/answers" },
-    { label: "Ինչպես ընդունվել աշխատանքի Evocabank-ում", path: "/evocawork" },
-    { label: "Աշխատանք Evoca-ում", path: "/evokawork2" },
-    { label: "Ուսումնական պրակտիկա", path: "/internship" },
-    { label: "EvocaBRIDGE", path: "/bridge" },
-  ];
 
   useEffect(() => {
     activeRef.current?.scrollIntoView({
@@ -23,13 +13,15 @@ export default function Navbar() {
     });
   }, [pathname]);
 
+  if (!items.length) return null;
+
   return (
     <nav
       className="w-full h-12 md:h-14 overflow-x-auto bg-gradient-to-r from-[#3b0a91] via-[#5b1fc7] to-[#7b2ff2]
                  [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
     >
       <ul className="h-full w-max mx-auto flex items-center gap-5 px-4 md:gap-8">
-        {menuItems.map((item) => {
+        {items.map((item) => {
           const isActive = pathname === item.path;
           return (
             <li key={item.path} ref={isActive ? activeRef : null}>
