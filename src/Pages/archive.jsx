@@ -79,22 +79,18 @@ function Archive() {
               </h2>
             </div>
             
-            <div className="min-h-screen bg-gray-50 py-10 space-y-6">
-              {accordionLoading && <p className="text-gray-500 text-center">Բեռնվում են տվյալները Firebase-ից...</p>}
-              {accordionError && <p className="text-red-600 text-center">{accordionError}</p>}
-              
-              {!accordionLoading && !accordionError && accordionsData.map((item, index) => (
-                <Accordion 
-                  key={item.id || index}
-                  title={item.title} 
-                  sections={item.sections} 
-                />
-              ))}
-            </div>
-          </section>
-        </div>
-
-        <section className="mx-auto max-w-[1240px] px-4 pb-16">
+            <div className="w-full h-auto bg-white py-6 space-y-6 mb-[20px]">
+  {accordionLoading && <p className="text-gray-500 text-center">Բեռնվում են տվյալները Firebase-ից...</p>}
+  {accordionError && <p className="text-red-600 text-center">{accordionError}</p>}
+  
+  {!accordionLoading && !accordionError && accordionsData.map((item, index) => (
+    <Accordion 
+      key={item.id || index}
+      title={item.title} 
+      sections={item.sections} 
+    />
+  ))}
+</div>
           <h2 className="text-xl font-bold text-gray-900 mb-6">
             Փաստաթղթեր
           </h2>
@@ -109,7 +105,11 @@ function Archive() {
               ))}
             </div>
           )}
-        </section>
+          </section>
+          
+        </div>
+
+        
       </main>
       <Footer />
     </>
