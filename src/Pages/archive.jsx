@@ -20,6 +20,27 @@ function Archive() {
     <>
       <Header />
       <Navbar items={menuItems} />
+      <main className="relative w-full bg-white">
+        <div className="mx-auto flex max-w-[1240px] gap-8 px-4 py-10">
+          
+          <aside className="hidden shrink-0 pt-[70px] md:block">
+            <SocialIcons />
+          </aside>
+
+          <section className="min-w-0 flex-1 text-[16px] leading-[26px] text-[#333] md:pl-[40px] max-[400px]:text-[14px] max-[400px]:leading-[22px]">
+            <h1 className="mb-14 text-[32px] font-medium text-[#333] max-[400px]:mb-8 max-[400px]:text-[24px]">
+              Արխիվ
+            </h1>
+
+            
+            <h2 className="mb-6 text-[24px] font-bold uppercase text-black max-[400px]:text-[18px]">
+              Անհրաժեշտ տեղեկատվություն
+            </h2>
+
+            
+          </section>
+        </div>
+      </main>
       <Footer />
     </>
   );
