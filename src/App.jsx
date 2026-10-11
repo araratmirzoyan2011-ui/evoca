@@ -28,6 +28,7 @@ import Laws from "./Pages/laws";
 import Bulders from "./Pages/builders";
 import Property from "./Pages/property";
 import Dealers from "./Pages/dealers";
+import Archive from "./Pages/archive";
 function App() {
   return (
     <BrowserRouter>
@@ -40,6 +41,7 @@ function App() {
           <Route path="/builders" element={<Bulders />} />
            <Route path="/dealers" element={<Dealers />} />
           <Route path="/property" element={<Property />} />
+          <Route path="/archive" element={<Archive />} />
           <Route path="/annual-report" element={<AnualReports />} />
           <Route path="/laws" element={<Laws />} />
           <Route path="/instant-payments" element={<Instant />} />
