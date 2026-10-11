@@ -10,17 +10,18 @@ function ConstructionAccordion({
 
   return (
     <div
-      className={`mb-4 rounded-[20px] border bg-white px-6 py-4 transition-colors duration-300 ${
+      className={`mb-4 w-full min-w-0 rounded-[20px] border bg-white px-6 py-4 transition-colors duration-300 max-[400px]:mb-3 max-[400px]:rounded-[14px] max-[400px]:px-3.5 max-[400px]:py-3 ${
         open ? "border-[#6a00f4]" : "border-[#e6d4ff]"
       }`}
     >
       <button
         type="button"
         onClick={() => setOpen((prev) => !prev)}
-        className="flex w-full items-center gap-4 text-left"
+        aria-expanded={open}
+        className="flex w-full items-center gap-4 text-left max-[400px]:gap-3"
       >
         <svg
-          className={`h-4 w-4 shrink-0 text-[#6a00f4] transition-transform duration-300 ${
+          className={`h-4 w-4 shrink-0 text-[#6a00f4] transition-transform duration-300 max-[400px]:h-3.5 max-[400px]:w-3.5 ${
             open ? "rotate-180" : "rotate-0"
           }`}
           viewBox="0 0 16 16"
@@ -33,7 +34,7 @@ function ConstructionAccordion({
           <path d="M3 6l5 5 5-5" />
         </svg>
         <h3
-          className={`text-[16px] font-bold transition-colors duration-300 ${
+          className={`min-w-0 flex-1 break-words text-[16px] font-bold transition-colors duration-300 max-[400px]:text-[14px] max-[400px]:leading-[20px] ${
             open ? "text-black" : "text-[#777]"
           }`}
         >
@@ -46,17 +47,20 @@ function ConstructionAccordion({
           open ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
         }`}
       >
-        <div className="overflow-hidden">
-          <div className="space-y-5 pl-8 pt-6 text-[16px] text-[#333]">
+        <div className="min-w-0 overflow-hidden">
+          <div className="min-w-0 space-y-5 pl-8 pt-6 text-[16px] text-[#333] max-[400px]:space-y-3 max-[400px]:pl-0 max-[400px]:pt-4 max-[400px]:text-[14px]">
             {details.map((d, i) => (
-              <p key={i} className="whitespace-pre-line leading-[26px]">
+              <p
+                key={i}
+                className="whitespace-pre-line break-words leading-[26px] max-[400px]:leading-[21px]"
+              >
                 <span className="font-bold text-[#6a00f4]">{d.label}</span>{" "}
                 {d.href ? (
                   <a
                     href={d.href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-[#6a00f4] underline"
+                    className="break-all text-[#6a00f4] underline"
                   >
                     {d.value}
                   </a>
@@ -67,17 +71,17 @@ function ConstructionAccordion({
             ))}
 
             {images.length > 0 && (
-              <div className="flex overflow-x-auto rounded-lg bg-white shadow-[0_0_20px_rgba(106,0,244,0.12)]">
+              <div className="flex w-full max-w-full snap-x snap-mandatory overflow-x-auto rounded-lg bg-white shadow-[0_0_20px_rgba(106,0,244,0.12)] max-[400px]:rounded-md">
                 {images.map((src, i) => (
                   <div
                     key={i}
-                    className="shrink-0 border-r border-[#e6d4ff] p-3 last:border-r-0"
+                    className="shrink-0 snap-start border-r border-[#e6d4ff] p-3 last:border-r-0 max-[400px]:p-2"
                   >
                     <img
                       src={src}
                       alt={`${name} ${i + 1}`}
                       loading="lazy"
-                      className="h-[335px] w-auto object-cover"
+                      className="block h-[335px] w-auto max-w-none object-cover max-[400px]:h-[220px]"
                     />
                   </div>
                 ))}
