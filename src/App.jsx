@@ -24,6 +24,7 @@ import Reports from "./Pages/reports";
 import InvestReports from "./Pages/investors";
 import SemReports from "./Pages/semiannual-report";
 import AnualReports from "./Pages/annual-report";
+import Laws from "./Pages/laws";
 function App() {
   return (
     <BrowserRouter>
@@ -34,6 +35,7 @@ function App() {
           <Route path="/investors" element={<InvestReports />} />
           <Route path="/semiannual-report" element={<SemReports />} />
           <Route path="/annual-report" element={<AnualReports />} />
+          <Route path="/laws" element={<Laws />} />
           <Route path="/instant-payments" element={<Instant />} />
           <Route path="/financial-reports" element={<FinReports />} />
           <Route path="blog" element={<Blog />} />
