@@ -2,16 +2,18 @@ import React, { useState } from "react";
 
 function ConstructionAccordion({
   name,
-  developer,
-  phones = [],
-  address,
+  details = [],
   images = [],
   defaultOpen = false,
 }) {
   const [open, setOpen] = useState(defaultOpen);
 
   return (
-    <div className="mb-5 rounded-[20px] border border-[#6a00f4] bg-white px-6 py-5">
+    <div
+      className={`mb-4 rounded-[20px] border bg-white px-6 py-4 transition-colors duration-300 ${
+        open ? "border-[#6a00f4]" : "border-[#e6d4ff]"
+      }`}
+    >
       {/* Header */}
       <button
         type="button"
@@ -20,7 +22,7 @@ function ConstructionAccordion({
       >
         <svg
           className={`h-4 w-4 shrink-0 text-[#6a00f4] transition-transform duration-300 ${
-            open ? "rotate-0" : "rotate-180"
+            open ? "rotate-180" : "rotate-0"
           }`}
           viewBox="0 0 16 16"
           fill="none"
@@ -29,9 +31,15 @@ function ConstructionAccordion({
           strokeLinecap="round"
           strokeLinejoin="round"
         >
-          <path d="M3 10l5-5 5 5" />
+          <path d="M3 6l5 5 5-5" />
         </svg>
-        <h3 className="text-[18px] font-bold uppercase text-black">{name}</h3>
+        <h3
+          className={`text-[16px] font-bold transition-colors duration-300 ${
+            open ? "text-black" : "text-[#777]"
+          }`}
+        >
+          {name}
+        </h3>
       </button>
 
       {/* Body */}
@@ -41,27 +49,24 @@ function ConstructionAccordion({
         }`}
       >
         <div className="overflow-hidden">
-          <div className="space-y-6 pl-8 pt-6 text-[18px] text-[#333]">
-            {developer && (
-              <p>
-                <span className="font-bold text-[#6a00f4]">Կառուցապատող՝</span>{" "}
-                {developer}
+          <div className="space-y-5 pl-8 pt-6 text-[16px] text-[#333]">
+            {details.map((d, i) => (
+              <p key={i} className="whitespace-pre-line leading-[26px]">
+                <span className="font-bold text-[#6a00f4]">{d.label}</span>{" "}
+                {d.href ? (
+                  <a
+                    href={d.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-[#6a00f4] underline"
+                  >
+                    {d.value}
+                  </a>
+                ) : (
+                  d.value
+                )}
               </p>
-            )}
-
-            {phones.length > 0 && (
-              <p>
-                <span className="font-bold text-[#6a00f4]">Հեռ.՝</span>{" "}
-                {phones.join(" | ")}
-              </p>
-            )}
-
-            {address && (
-              <p>
-                <span className="font-bold text-[#6a00f4]">Հասցե՝</span>{" "}
-                {address}
-              </p>
-            )}
+            ))}
 
             {images.length > 0 && (
               <div className="flex overflow-x-auto rounded-lg bg-white shadow-[0_0_20px_rgba(106,0,244,0.12)]">
