@@ -27,6 +27,7 @@ import AnualReports from "./Pages/annual-report";
 import Laws from "./Pages/laws";
 import Bulders from "./Pages/builders";
 import Property from "./Pages/property";
+import Dealers from "./Pages/dealers";
 function App() {
   return (
     <BrowserRouter>
@@ -37,6 +38,7 @@ function App() {
           <Route path="/investors" element={<InvestReports />} />
           <Route path="/semiannual-report" element={<SemReports />} />
           <Route path="/builders" element={<Bulders />} />
+           <Route path="/dealers" element={<Dealers />} />
           <Route path="/property" element={<Property />} />
           <Route path="/annual-report" element={<AnualReports />} />
           <Route path="/laws" element={<Laws />} />
