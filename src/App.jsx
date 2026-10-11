@@ -25,6 +25,7 @@ import InvestReports from "./Pages/investors";
 import SemReports from "./Pages/semiannual-report";
 import AnualReports from "./Pages/annual-report";
 import Laws from "./Pages/laws";
+import Bulders from "./Pages/builders";
 import Property from "./Pages/property";
 function App() {
   return (
@@ -35,6 +36,7 @@ function App() {
           <Route path="/business-loans" element={<Busines />} />
           <Route path="/investors" element={<InvestReports />} />
           <Route path="/semiannual-report" element={<SemReports />} />
+          <Route path="/builders" element={<Bulders />} />
           <Route path="/property" element={<Property />} />
           <Route path="/annual-report" element={<AnualReports />} />
           <Route path="/laws" element={<Laws />} />
