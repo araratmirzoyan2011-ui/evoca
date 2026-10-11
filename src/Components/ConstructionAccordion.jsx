@@ -14,7 +14,6 @@ function ConstructionAccordion({
         open ? "border-[#6a00f4]" : "border-[#e6d4ff]"
       }`}
     >
-      {/* Header */}
       <button
         type="button"
         onClick={() => setOpen((prev) => !prev)}
@@ -42,7 +41,6 @@ function ConstructionAccordion({
         </h3>
       </button>
 
-      {/* Body */}
       <div
         className={`grid transition-[grid-template-rows] duration-300 ${
           open ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
