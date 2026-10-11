@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 
-export default function Accordion({ title, year, links = [] }) {
-  const [isOpen, setIsOpen] = useState(true);
+export default function Accordion({ title, sections = [] }) {
+  const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <div className="max-w-3xl mx-auto p-4">
+    <div className="w-full">
       <div className="border border-purple-600 rounded-2xl bg-white shadow-sm overflow-hidden">
         
         <button
@@ -34,32 +34,35 @@ export default function Accordion({ title, year, links = [] }) {
           </div>
         </button>
 
-        {/* Ակորդեոնի բովանդակություն */}
         {isOpen && (
-          <div className="px-6 pb-6 pt-2 border-t border-gray-100">
-            {year && (
-              <div className="mb-4">
-                <h3 className="text-xl font-bold text-purple-700">{year}</h3>
-              </div>
-            )}
-            <div className="space-y-3">
-              {links.map((item, index) => (
-                <div key={index}>
-                  <a
-                    href={item.url || '#'}
-                    className="text-purple-700 font-medium hover:underline leading-relaxed block"
-                  >
-                    {item.text}
-                    {item.subText && (
-                      <>
-                        <br />
-                        <span className="text-sm">{item.subText}</span>
-                      </>
-                    )}
-                  </a>
+          <div className="px-6 pb-6 pt-2 border-t border-gray-100 space-y-6">
+            {sections.map((section, sIndex) => (
+              <div key={sIndex}>
+                {section.year && (
+                  <h3 className="text-xl font-bold text-purple-700 mb-3">
+                    {section.year}
+                  </h3>
+                )}
+                <div className="space-y-3">
+                  {section.links.map((link, lIndex) => (
+                    <div key={lIndex}>
+                      <a
+                        href={link.url}
+                        className="text-purple-700 font-medium hover:underline leading-relaxed block"
+                      >
+                        {link.text}
+                        {link.subText && (
+                          <>
+                            <br />
+                            <span className="text-sm">{link.subText}</span>
+                          </>
+                        )}
+                      </a>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
+              </div>
+            ))}
           </div>
         )}
       </div>
