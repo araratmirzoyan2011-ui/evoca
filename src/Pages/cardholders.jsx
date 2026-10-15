@@ -6,18 +6,38 @@ import { collection, getDocs } from "firebase/firestore";
 import SocialIcons from "../Components/SocialIcons.jsx";
 import { DocumentCard } from "../Components/DocumentCard.jsx";
 
-
 function Cardholders() {
-const CarholderArr=[{title:"Ինչ անել, եթե բողոք ունեք (01.09.2026թ.)"},
-    {title:"Համալիր բանկային ծառայությունների մատուցման պայմաններ 16.05.2025թ."}
-]
+  const [documents, setDocuments] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchDocuments = async () => {
+      try {
+        setLoading(true);
+        const querySnapshot = await getDocs(collection(db, "cardholders"));
+        
+        const docsArray = querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+
+        setDocuments(docsArray);
+      } catch (error) {
+        console.error("Սխալ տվյալները Firebase-ից բեռնելիս:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDocuments();
+  }, []);
+
   return (
     <>
       <Header />
-      
+
       <main className="relative w-full bg-white">
         <div className="mx-auto flex max-w-[1240px] gap-8 px-4 py-10">
-          
           <aside className="hidden shrink-0 pt-[70px] md:block">
             <SocialIcons />
           </aside>
@@ -26,22 +46,30 @@ const CarholderArr=[{title:"Ինչ անել, եթե բողոք ունեք (01.09
             <h1 className="mb-14 text-[32px] font-medium text-[#333] max-[400px]:mb-8 max-[400px]:text-[24px]">
               Արխիվ
             </h1>
-            
-          <h2 className="text-xl font-bold text-gray-900 mb-6">
-            Փաստաթղթեր
-          </h2>
 
-            <div className="space-y-5">
-              {CarholderArr.map((r) => (
-                <DocumentCard key={r.id} title={r.title} url={r.url} />
-              ))}
-            </div>
+            <h2 className="mb-6 text-xl font-bold text-gray-900">
+              Փաստաթղթեր
+            </h2>
+
+            {loading ? (
+              <div className="py-8 text-center text-gray-500">
+                Բեռնվում են փաստաթղթերը...
+              </div>
+            ) : documents.length === 0 ? (
+              <div className="py-8 text-center text-gray-500">
+                Փաստաթղթեր չեն գտնվել:
+              </div>
+            ) : (
+              <div className="space-y-5">
+                {documents.map((doc) => (
+                  <DocumentCard key={doc.id} title={doc.title} url={doc.url} />
+                ))}
+              </div>
+            )}
           </section>
-          
         </div>
-
-        
       </main>
+
       <Footer />
     </>
   );
