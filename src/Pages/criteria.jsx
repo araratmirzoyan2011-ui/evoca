@@ -1,78 +1,30 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Header } from "../Components/Header.jsx";
 import Footer from "../Components/Footer.jsx";
 import SocialIcons from "../Components/SocialIcons.jsx";
-
-// content-ը միշտ զանգված է՝ string կամ { text } (մանուշակագույն թավ տեքստ)
-const blocks = [
-  { type: "heading", content: ["Ո՞վ է համարվում ՀՀ ռեզիդենտ։"] },
-  {
-    type: "paragraph",
-    content: ["Ձեր Ռեզիդենտության կարգավիճակը որոշվում է՝ հաշվի առնելով երկու կարևոր հանգամանք։"],
-  },
-  { type: "paragraph", content: ["Դուք համարվում եք ՀՀ ռեզիդենտ, եթե"] },
-  {
-    type: "bullets",
-    items: [
-      ["տվյալ հարկային տարում ", { text: "ՀՀ-ում գտնվել եք 183 և ավել օր" }, ","],
-      ["Ձեր ", { text: "կենսական շահերի կենտրոնը ՀՀ-ում է" }, "։"],
-    ],
-  },
-  {
-    type: "paragraph",
-    content: [
-      "Կենսական շահերի կենտրոնը գնահատելիս կարող են հաշվի առնվել, օրինակ, Ձեր ընտանիքի բնակության վայրը, մշտական բնակության վայրը, հիմնական աշխատանքը կամ բիզնեսը, գույքը, եկամուտների աղբյուրներն ու տնտեսական գործունեությունը։",
-    ],
-  },
-  { type: "heading", content: ["ՀՀ ռեզիդենտ չե՞ք։"] },
-  {
-    type: "paragraph",
-    content: ["Դուք այլ երկրի քաղաքացի եք և չե՞ք համապատասխանում ՀՀ ռեզիդենտության չափանիշներին։"],
-  },
-  {
-    type: "paragraph",
-    content: [
-      "Բանկի հաճախորդ կարող եք դառնալ, եթե բավարարում եք ստորև նշված պայմաններից ",
-      { text: "առնվազն մեկին" },
-      "։",
-    ],
-  },
-  {
-    type: "orderedList",
-    start: 1,
-    items: [
-      {
-        title: "Անշարժ գույք ՀՀ-ում",
-        description:
-          "ՀՀ-ում ունեք անշարժ գույք և դրա նկատմամբ սեփականության իրավունքը հաստատող գրանցման վկայական։",
-      },
-      {
-        title: "Ավանդ՝ առնվազն 6 ամիս ժամկետով",
-        description:
-          "Evocabank-ում պատրաստվում եք ներդնել առնվազն 6 ամիս ժամկետով ավանդ հետևյալ սահմանաչափերով",
-        bullets: ["20,000 ԱՄՆ դոլար,", "20,000 եվրո,", "1,500,000 ՌԴ ռուբլի", "կամ դրանց համարժեք ՀՀ դրամ"],
-      },
-    ],
-  },
-  {
-    type: "orderedList",
-    start: 1, // կայքում համարակալումը նորից 1-ից է սկսվում, 3, 4 ուզես՝ գրիր 3
-    items: [
-      {
-        title: "Անհատ ձեռնարկատեր ՀՀ-ում",
-        description:
-          "ՀՀ-ում գրանցված եք որպես անհատ ձեռնարկատեր և ունեք համապատասխան գրանցման վկայական։",
-      },
-      {
-        title: "Մասնակից կամ բաժնետեր ՀՀ-ում գրանցված ընկերությունում",
-        description:
-          "ՀՀ-ում գրանցված ընկերության բաժնետեր եք, և այդ կարգավիճակը հաստատված է համապատասխան փաստաթղթերով։",
-      },
-    ],
-  },
-];
+import { db } from "../firebase.js";
+import { collection, getDocs, query, orderBy } from "firebase/firestore";
 
 function Criteria() {
+  const [pageBlocks, setPageBlocks] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchBlocks = async () => {
+      try {
+        const q = query(collection(db, "criteriaBlocks"), orderBy("order"));
+        const snapshot = await getDocs(q);
+        setPageBlocks(snapshot.docs.map((d) => ({ id: d.id, ...d.data() })));
+      } catch (error) {
+        console.error("Fetch error:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBlocks();
+  }, []);
+
   return (
     <>
       <Header />
@@ -88,8 +40,10 @@ function Criteria() {
               Հաճախորդի ռեզիդենտության չափանիշներ
             </h1>
 
-            {blocks.map((block, i) => (
-              <React.Fragment key={i}>
+            {loading && <p>Բեռնվում է...</p>}
+
+            {pageBlocks.map((block) => (
+              <React.Fragment key={block.id}>
                 {block.type === "heading" && (
                   <h3 className="mb-6 font-bold text-[#6200d6] max-[400px]:mb-4">
                     {block.content}
@@ -116,7 +70,7 @@ function Criteria() {
                       <li key={j} className="flex items-start gap-4 max-[400px]:gap-3">
                         <span className="mt-[9px] h-2.5 w-2.5 shrink-0 rounded-full bg-[#6200d6] max-[400px]:mt-[7px] max-[400px]:h-2 max-[400px]:w-2" />
                         <span>
-                          {item.map((part, k) =>
+                          {item.parts.map((part, k) =>
                             typeof part === "string" ? (
                               part
                             ) : (
