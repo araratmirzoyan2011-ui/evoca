@@ -29,6 +29,7 @@ import Bulders from "./Pages/builders";
 import Property from "./Pages/property";
 import Dealers from "./Pages/dealers";
 import Archive from "./Pages/archive";
+import Cardholders from "./Pages/cardholders";
 function App() {
   return (
     <BrowserRouter>
@@ -36,6 +37,7 @@ function App() {
         <Routes>=
           <Route path="/" element={<Main />} />
           <Route path="/business-loans" element={<Busines />} />
+          <Route path="/cardholders" element={<Cardholders />} />
           <Route path="/investors" element={<InvestReports />} />
           <Route path="/semiannual-report" element={<SemReports />} />
           <Route path="/builders" element={<Bulders />} />
