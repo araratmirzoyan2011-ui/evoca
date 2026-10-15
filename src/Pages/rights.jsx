@@ -10,7 +10,6 @@ const linkClass = "font-medium text-[#6200d6] underline";
 const introTitle = "Հարգելի Հաճախորդներ՝";
 const noticeTitle = "Ուշադրություն՝";
 
-// Renders a string or a mixed array of strings and link objects
 function RichText({ content }) {
   if (typeof content === "string") return content;
   if (!Array.isArray(content)) return content;
@@ -38,22 +37,18 @@ function Rights() {
   const [rightsDocs, setRightsDocs] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Տվյալների բեռնումը Firebase-ից էջը բեռնվելիս
   useEffect(() => {
     const fetchDataFromFirebase = async () => {
       try {
         setLoading(true);
 
-        // 1. Բեռնել introParagraphs
         const introSnapshot = await getDocs(collection(db, "introParagraphs"));
         const introData = introSnapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),
         }));
-        // Ցանկության դեպքում կարող եք կարգավորել ըստ originalId-ի կամ ուղղակի թողնել
         setIntroParagraphs(introData.sort((a, b) => (a.originalId || 0) - (b.originalId || 0)));
 
-        // 2. Բեռնել noticeItems
         const noticeSnapshot = await getDocs(collection(db, "noticeItems"));
         const noticeData = noticeSnapshot.docs.map((doc) => ({
           id: doc.id,
@@ -61,7 +56,6 @@ function Rights() {
         }));
         setNoticeItems(noticeData.sort((a, b) => (a.originalId || 0) - (b.originalId || 0)));
 
-        // 3. Բեռնել rightsDocs
         const docsSnapshot = await getDocs(collection(db, "rightsDocs"));
         const docsData = docsSnapshot.docs.map((doc) => ({
           id: doc.id,
