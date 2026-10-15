@@ -26,28 +26,19 @@ const rigtspdp=[{title:"«Անցանկալի հաճախորդների հետ հ�
 
           <section className="min-w-0 flex-1 text-[16px] leading-[26px] text-[#333] md:pl-[40px] max-[400px]:text-[14px] max-[400px]:leading-[22px]">
             <h1 className="mb-14 text-[32px] font-medium text-[#333] max-[400px]:mb-8 max-[400px]:text-[24px]">
-              Արխիվ
+              Հաճախորդի իրավունքները (Բողոքի ներկայացման կանոններ)
             </h1>
 
             <h2 className="mb-6 text-xl font-bold text-gray-900">
               Փաստաթղթեր
             </h2>
 
-            {loading ? (
-              <div className="py-8 text-center text-gray-500">
-                Բեռնվում են փաստաթղթերը...
-              </div>
-            ) : documents.length === 0 ? (
-              <div className="py-8 text-center text-gray-500">
-                Փաստաթղթեր չեն գտնվել:
-              </div>
-            ) : (
               <div className="space-y-5">
-                {documents.map((doc) => (
+                {rigtspdp.map((doc) => (
                   <DocumentCard key={doc.id} title={doc.title} url={doc.url} />
                 ))}
               </div>
-            )}
+            
           </section>
         </div>
       </main>
