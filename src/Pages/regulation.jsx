@@ -7,7 +7,8 @@ import SocialIcons from "../Components/SocialIcons.jsx";
 import { DocumentCard } from "../Components/DocumentCard.jsx";
 
 function Regulation() {
-const regulationpdf=[{title:""},{title:""},{title:""},{title:""},]
+const regulationpdf=[{title:"«Անցանկալի հաճախորդների հետ հարաբերությունների կառավարման» ընթացակարգ (Ուժի մեջ է 30.04.2026-ից)"},{title:"Բնապահպանական և սոցիալական կառավարման համակարգ"},
+    {title:"Հաճախորդների սպասարկման գործելակարգ 01.09.2026թ."},{title:"Տեղեկատվական անվտանգության քաղաքականություն (Ուժի մեջ է 25.12.2025թ.-ից)"},]
 
   return (
     <>
@@ -37,16 +38,11 @@ const regulationpdf=[{title:""},{title:""},{title:""},{title:""},]
             Փաստաթղթեր
           </h2>
 
-          {loading && <p className="text-gray-500">Բեռնվում է...</p>}
-          {error && <p className="text-red-600">{error}</p>}
-
-          {!loading && !error && (
             <div className="space-y-5">
-              {reports.map((r) => (
+              {regulationpdf.map((r) => (
                 <DocumentCard key={r.id} title={r.title} url={r.url} />
               ))}
             </div>
-          )}
           </section>
           
         </div>
