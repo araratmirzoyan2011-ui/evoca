@@ -32,6 +32,7 @@ import Archive from "./Pages/archive";
 import Cardholders from "./Pages/cardholders";
 import Rights from "./Pages/rights";
 import Criteria from "./Pages/criteria";
+import Regulation from "./Pages/regulation";
 function App() {
   return (
     <BrowserRouter>
@@ -40,6 +41,7 @@ function App() {
           <Route path="/" element={<Main />} />
           <Route path="/business-loans" element={<Busines />} />
           <Route path="/criteria" element={<Criteria />} />
+          <Route path="/regulation" element={<Regulation />} />
           <Route path="/cardholders" element={<Cardholders />} />
           <Route path="/rights" element={<Rights />} />
           <Route path="/investors" element={<InvestReports />} />
