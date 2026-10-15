@@ -8,7 +8,9 @@ import { DocumentCard } from "../Components/DocumentCard.jsx";
 
 
 function Cardholders() {
-
+const CarholderArr=[{title:"Ինչ անել, եթե բողոք ունեք (01.09.2026թ.)"},
+    {title:"Համալիր բանկային ծառայությունների մատուցման պայմաններ 16.05.2025թ."}
+]
   return (
     <>
       <Header />
@@ -30,7 +32,7 @@ function Cardholders() {
           </h2>
 
             <div className="space-y-5">
-              {reports.map((r) => (
+              {CarholderArr.map((r) => (
                 <DocumentCard key={r.id} title={r.title} url={r.url} />
               ))}
             </div>
