@@ -35,6 +35,7 @@ import Criteria from "./Pages/criteria";
 import Regulation from "./Pages/regulation";
 import Ombudsman from "./Pages/ombudsman";
 import Tariif from "./Pages/tariffs";
+import LegalLoans from "./Pages/legal-loans";
 function App() {
   return (
     <BrowserRouter>
@@ -43,6 +44,7 @@ function App() {
           <Route path="/" element={<Main />} />
           <Route path="/business-loans" element={<Busines />} />
           <Route path="/criteria" element={<Criteria />} />
+          <Route path="/legal-loans" element={<LegalLoans />} />
           <Route path="/tariffs" element={<Tariif />} />
           <Route path="/ombudsman" element={<Ombudsman />} />
           <Route path="/regulation" element={<Regulation />} />

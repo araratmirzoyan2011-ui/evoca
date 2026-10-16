@@ -29,7 +29,6 @@ function Tariif() {
           ...doc.data()
         }));
 
-        // «Ավտովարկեր» (auto-loans) բաժինը տեղափոխում ենք զանգվածի սկիզբ
         loansList.sort((a, b) => (a.id === "auto-loans" ? -1 : b.id === "auto-loans" ? 1 : 0));
 
         setLoanCategories(loansList);
