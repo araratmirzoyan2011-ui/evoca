@@ -16,7 +16,6 @@ function Tariif() {
       try {
         setLoading(true);
 
-        // Բեռնում ենք menuItems-ը
         const menuSnapshot = await getDocs(collection(db, "menuItems"));
         const menuList = menuSnapshot.docs.map(doc => ({
           id: doc.id,
@@ -24,12 +23,15 @@ function Tariif() {
         }));
         setMenuItems(menuList);
 
-        // Բեռնում ենք loanCategories-ը Firebase-ից
         const loansSnapshot = await getDocs(collection(db, "loanCategories"));
-        const loansList = loansSnapshot.docs.map(doc => ({
+        let loansList = loansSnapshot.docs.map(doc => ({
           id: doc.id,
           ...doc.data()
         }));
+
+        // «Ավտովարկեր» (auto-loans) բաժինը տեղափոխում ենք զանգվածի սկիզբ
+        loansList.sort((a, b) => (a.id === "auto-loans" ? -1 : b.id === "auto-loans" ? 1 : 0));
+
         setLoanCategories(loansList);
 
       } catch (err) {
@@ -51,7 +53,7 @@ function Tariif() {
           Տվյալները բեռնվում են...
         </div>
       ) : (
-        <LoansTable categories={loanCategories} />
+        <LoansTable categories={loanCategories} defaultCategoryId="auto-loans" />
       )}
       <Footer />
     </>

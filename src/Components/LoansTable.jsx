@@ -69,17 +69,23 @@ function LoanTable({ rows }) {
 }
 
 export default function LoansTable({ categories = [] }) {
-  // Accordion-ների բաց/փակ վիճակը
+  const defaultSubId = (() => {
+    const autoCat = categories.find((cat) => cat.id === "auto-loans");
+    if (autoCat && autoCat.subItems && autoCat.subItems.length > 0) {
+      return autoCat.subItems[0].id;
+    }
+    return categories[0]?.subItems?.[0]?.id || "";
+  })();
+
   const [openCategories, setOpenCategories] = useState(() => {
     const initialState = {};
     categories.forEach((cat) => {
-      initialState[cat.id] = !!cat.isOpenDefault;
+      initialState[cat.id] = cat.id === "auto-loans" || !!cat.isOpenDefault;
     });
     return initialState;
   });
 
-  // Ընտրված ենթաբաժնի ID-ն (լռելյայն՝ 'action')
-  const [activeSubId, setActiveSubId] = useState("action");
+  const [activeSubId, setActiveSubId] = useState(defaultSubId);
 
   const toggleCategory = (id) => {
     setOpenCategories((prev) => ({
@@ -88,7 +94,6 @@ export default function LoansTable({ categories = [] }) {
     }));
   };
 
-  // Որոնում ենք ընտրված ենթաբաժինը (subItem) բոլոր կատեգորիաներում
   let activeSubItem = null;
 
   for (const cat of categories) {
@@ -101,14 +106,12 @@ export default function LoansTable({ categories = [] }) {
     }
   }
 
-  // Եթե ընտրված ենթաբաժին չգտնվի, վերցնում ենք առաջին իսկ հասանելի ենթաբաժինը
   if (!activeSubItem && categories.length > 0 && categories[0].subItems?.length > 0) {
     activeSubItem = categories[0].subItems[0];
   }
 
   return (
     <section className="mx-auto flex max-w-[1200px] flex-col gap-8 px-4 py-10 md:flex-row">
-      {/* Sidebar - Accordion մենյու */}
       <aside className="h-fit w-full shrink-0 rounded-2xl bg-white p-3 shadow-[0_4px_24px_rgba(109,20,232,0.12)] md:w-[320px]">
         <ul className="flex flex-col gap-2">
           {categories.map((cat) => {
