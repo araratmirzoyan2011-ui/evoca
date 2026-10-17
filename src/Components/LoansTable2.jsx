@@ -82,8 +82,27 @@ const SimpleTable = ({ head, rows, title }) => (
   </div>
 );
 
-const LoansTable2 = ({ data, onSelect }) => {
-  if (!data) return null;
+// Firebase-ից եկած տվյալը կարող է լինել օբյեկտ, JSON տող կամ { json: "..." } — բերում ենք մեկ տեսքի
+const normalize = (d) => {
+  if (!d) return null;
+  if (typeof d === "string") {
+    try {
+      return normalize(JSON.parse(d));
+    } catch {
+      return null;
+    }
+  }
+  if (typeof d.json === "string") return normalize(d.json);
+  return d;
+};
+
+const LoansTable2 = ({ data: rawData, onSelect }) => {
+  const data = normalize(rawData);
+  const valid = data && data.main && data.sidebar && data.notes && data.extra && data.cards && data.effective;
+  if (!valid) {
+    if (rawData) console.error("LoansTable2: տվյալի կառուցվածքը սխալ է, ստացվել է՝", rawData);
+    return null;
+  }
   const { pageTitle, sidebar, sectionTitle, main, notes, earlyTermination, afterTable = [], extra, cards, effective } = data;
 
   return (
@@ -124,7 +143,7 @@ const LoansTable2 = ({ data, onSelect }) => {
                       <td className="border border-purple-100 p-3">{row.method}</td>
                       {row.values.map((v, k) => (
                         <td key={k} className="border border-purple-100 p-3">
-                          {v === null ? "-" : v}
+                          {v || "-"}
                         </td>
                       ))}
                     </tr>
@@ -273,8 +292,8 @@ const SectionRows = ({ sec, cols }) => (
 
 const FragmentCells = ({ nom, eff }) => (
   <>
-    <td className="border border-purple-100 p-3 font-bold">{nom ?? "-"}</td>
-    <td className="border border-purple-100 p-3 font-bold">{eff ?? "-"}</td>
+    <td className="border border-purple-100 p-3 font-bold">{nom || "-"}</td>
+    <td className="border border-purple-100 p-3 font-bold">{eff || "-"}</td>
   </>
 );
 
