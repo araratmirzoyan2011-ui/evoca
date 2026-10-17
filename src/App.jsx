@@ -38,6 +38,7 @@ import Tariif from "./Pages/tariffs";
 import LegalLoans from "./Pages/legal-loans";
 import IndividualLoans from "./Pages/individual-loans";
 import Deposits from "./Pages/deposits";
+import Privacy from "./Pages/privacy";
 function App() {
   return (
     <BrowserRouter>
@@ -45,6 +46,7 @@ function App() {
         <Routes>=
           <Route path="/" element={<Main />} />
           <Route path="/business-loans" element={<Busines />} />
+          <Route path="/privacy" element={<Privacy />} />
           <Route path="/criteria" element={<Criteria />} />
           <Route path="/deposits" element={<Deposits />} />
           <Route path="/legal-loans" element={<LegalLoans />} />
