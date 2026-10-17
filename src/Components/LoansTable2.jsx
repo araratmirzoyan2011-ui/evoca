@@ -33,7 +33,7 @@ const NumberedText = ({ items }) => (
       const item = typeof t === "string" ? { text: t } : t;
       return (
         <div key={i}>
-          <p>
+          <p className="whitespace-pre-line">
             <span className="text-purple-700">{i + 1}. </span>
             {item.text}
           </p>
@@ -54,10 +54,15 @@ const NumberedText = ({ items }) => (
   </div>
 );
 
-const SimpleTable = ({ head, rows }) => (
+const SimpleTable = ({ head, rows, title }) => (
   <div className="overflow-x-auto rounded-xl bg-white shadow-md my-4">
     <table className="w-full border-collapse text-sm">
       <thead>
+        {title && (
+          <tr>
+            <th colSpan={head.length} className="border border-purple-100 p-3 text-left text-xs font-bold uppercase">{title}</th>
+          </tr>
+        )}
         <tr>
           {head.map((h) => (
             <th key={h} className="border border-purple-100 p-3 text-left font-semibold">{h}</th>
@@ -91,6 +96,10 @@ const LoansTable2 = ({ data, onSelect }) => {
           <h2 className="mb-4 text-2xl font-bold">{sectionTitle}</h2>
 
           {/* Main rates table */}
+          {main.simple ? (
+            <SimpleTable head={main.simple.head} rows={main.simple.rows} />
+          ) : (
+          <>
           <div className="overflow-x-auto rounded-xl bg-white shadow-md">
             <table className="w-full border-collapse text-center text-sm">
               <thead>
@@ -125,11 +134,16 @@ const LoansTable2 = ({ data, onSelect }) => {
             </table>
           </div>
 
+          </>
+          )}
+
           <div className="mt-6">
             <NumberedText items={notes} />
           </div>
 
           {/* Early termination */}
+          {earlyTermination && (
+          <>
           <p className="mt-6 text-[15px]"><span className="text-purple-700">{notes.length + 1}. </span>{earlyTermination.text}</p>
           <div className="overflow-x-auto rounded-xl bg-white shadow-md my-4">
             <table className="w-full border-collapse text-sm">
@@ -156,6 +170,8 @@ const LoansTable2 = ({ data, onSelect }) => {
               </tbody>
             </table>
           </div>
+          </>
+          )}
           {afterTable.map((t) => (
             <p key={t.n} className="mt-4 text-[15px]"><span className="text-purple-700">{t.n}. </span>{t.text}</p>
           ))}
@@ -195,6 +211,9 @@ const LoansTable2 = ({ data, onSelect }) => {
           <h3 className="mt-10 mb-4 text-lg font-bold text-purple-700">{effective.title}</h3>
           <p className="text-[15px] leading-7 whitespace-pre-line">{effective.intro}</p>
 
+          {effective.simple ? (
+            <SimpleTable title={effective.tableTitle} head={effective.simple.head} rows={effective.simple.rows} />
+          ) : (
           <div className="mt-6 overflow-x-auto rounded-xl bg-white shadow-md">
             <table className="w-full min-w-[900px] border-collapse text-sm">
               <thead>
@@ -222,6 +241,7 @@ const LoansTable2 = ({ data, onSelect }) => {
               </tbody>
             </table>
           </div>
+          )}
         </div>
       </div>
     </div>

@@ -214,10 +214,55 @@ const evocaOnlineDeposit = {
     ],
   },
 };
-const depositPages = [classicDeposit, evocaOnlineDeposit];
-  const [menuItems, setMenuItems] = useState([]);
-  const [loading, setLoading] = useState(true);
+// Paste into Deposits.jsx (above `const depositPages`), reusing sidebarItems, extra, cardRows, cardBullets, effectiveCommon
+const childDeposit = {
+  pageTitle: "Ավանդների սակագներ",
+  sidebar: { title: "Ավանդների սակագներ", items: sidebarItems, activeIndex: 2 },
+  sectionTitle: "Մանկական ավանդ",
+  main: {
+    simple: {
+      head: ["Նվազագույն գումար", "Տարեկան տոկոսադրույք"],
+      rows: [
+        ["100,000 ՀՀ դրամ", "9.5 %"],
+        ["250 ԱՄՆ դոլար", "4.5 %"],
+      ],
+    },
+  },
+  notes: [
+    "Ավանդն ընդունվում է ֆիզիկական անձանցից, հօգուտ երեխաների Ավանդ ներդնելու պայմանով՝ 2 տարուց մինչև երեխայի 18 տարին լրանալը։",
+    "Որպես ավանդատու կարող են հանդես գալ ինչպես երեխաների օրինակական ներկայացուցիչները (ծնողները, խնամակալները), այնպես էլ երրորդ անձիք։",
+    "Տոկոսագումարների վճարումը կամ կապիտալացումը իրականացվում է ամենամսյա պարբերականությամբ։",
+    "Ավանդը կարող է համալրվել (ավելացվել)՝ սկսած նվազագույնը 40,000 ՀՀ դրամից կամ 100 ԱՄՆ դոլարից։ Մեկ ամսվա ընթացքում համալրումների ընդհանուր գումարը 5,000,000 ՀՀ դրամը կամ 10,000 ԱՄՆ դոլարը գերազանցելու դեպքում անհրաժեշտ է Բանկի Վարչության որոշումը։ Ավանդային պայմանագրի գործողության վերջին 3 (երեք) ամիսների ընթացքում Ավանդի գումարի համալրում չի թույլատրվում։",
+    "Հօգուտ երեխաների բացված ժամկետային ավանդները տնօրինվում են երեխայի օրինական ներկայացուցիչների կամ երրորդ անձանց կողմից, օրենքով նախատեսված դեպքերում մինչև երեխայի 18 տարին լրանալը։",
+    "Կնքման օրից սկսած 2 տարվա ընթացքում պայմանագիրը դադարեցնելու դեպքում իրականացվում է Ավանդի տոկոսագումարների վերահաշվարկ ՀՀ դրամ 0.5%, ԱՄՆ դոլար 0.1% տարեկան տոկոսադրույքով։\n2 տարին լրանալուց հետո պահպանվում են մինչև վերջին կապիտալացումը (վճարումը) հաշվարկված տոկոսագումարները, իսկ կապիտալացումից (վճարումից) հետո ընկած ժամանակահատվածի համար կատարվում է տոկոսագումարների վերահաշվարկ ՀՀ դրամ 0.5%, ԱՄՆ դոլար 0.1% տարեկան տոկոսադրույքով։",
+    "Պայմանագրի կնքման օրվանից 2 տարի հետո և այնուհետև յուրաքանչյուր հաջորդ տարի Ավանդի տոկոսադրույքը վերանայվում է՝ հիմք ընդունելով վերանայման պահին Բանկում գործող «Դասական» Ավանդատեսակի 366 օր ժամկետի համար սահմանված համապատասխան արժույթի տոկոսադրույքը։",
+    "Ավանդի գումարի մասնակի նվազեցում չի թույլատրվում։",
+  ],
+  // no earlyTermination table and no afterTable on this page
+  extra,
+  cards: {
+    head: ["Ավանդի արժույթ/Քարտի տեսակ *", "ArCa Classic/ Mastercard Standard/ Visa Classic", "Mastercard Gold/Evoca Travel/ Visa Platinum (ըստ հաճախորդի ընտրության)", "VISA Infinite"],
+    rows: cardRows,
+    bullets: cardBullets,
+  },
+  effective: {
+    ...effectiveCommon,
+    tableTitle: "ՄԱՆԿԱԿԱՆ ԱՎԱՆԴԱՏԵՍԱԿԻ ՏԱՐԵԿԱՆ ՏՈԿՈՍԱՅԻՆ ԵԿԱՄՏԱԲԵՐՈՒԹՅՈՒՆ",
+    simple: {
+      head: ["Արժույթ", "ԱՏ", "ՏՏԵ"],
+      rows: [
+        ["ՀՀ դրամ", "9.50%", "9.50%"],
+        ["ԱՄՆ դոլար", "4.50%", "4.50%"],
+      ],
+    },
+  },
+};
 
+// const depositPages = [classicDeposit, evocaOnlineDeposit, childDeposit];
+const depositPages = [classicDeposit, evocaOnlineDeposit, childDeposit];
+    const [menuItems, setMenuItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(0);
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -239,15 +284,12 @@ const depositPages = [classicDeposit, evocaOnlineDeposit];
 
     fetchData();
   }, []);
-  const Deposits = () => {
-  const [page, setPage] = useState(0);
-  return <LoansTable2 data={depositPages[page]} onSelect={setPage} />;
-};
+  
   return (
     <>
       <Header />
       {!loading && <Navbar items={menuItems} />}
-       <LoansTable2 data={depositPages[page]} onSelect={setPage} />
+      <LoansTable2 data={depositPages[page]} onSelect={setPage} />
       <Footer />
     </>
   );
