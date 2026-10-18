@@ -9,6 +9,7 @@ import { collection, getDocs, query, orderBy } from 'firebase/firestore';
 const Loans = () => {
   const [loansData, setLoansData] = useState([]);
   const [menuItems, setMenuItems] = useState([]);
+  const [menuLoading, setMenuLoading] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
