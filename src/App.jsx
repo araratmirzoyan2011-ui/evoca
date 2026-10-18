@@ -41,6 +41,7 @@ import Deposits from "./Pages/deposits";
 import Privacy from "./Pages/privacy";
 import Loans from "./Pages/loans";
 import CreditLoans from "./Pages/credit-history";
+import ImportantInfo from "./Pages/mportant-info";
 function App() {
   return (
     <BrowserRouter>
@@ -50,6 +51,7 @@ function App() {
           <Route path="/business-loans" element={<Busines />} />
           <Route path="/credit-history" element={<CreditLoans />} />
           <Route path="/privacy" element={<Privacy />} />
+          <Route path="/mportant-info" element={<ImportantInfo />} />
           <Route path="/criteria" element={<Criteria />} />
           <Route path="/loans" element={<Loans />} />
           <Route path="/deposits" element={<Deposits />} />
