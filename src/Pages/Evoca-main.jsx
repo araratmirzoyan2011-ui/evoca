@@ -74,7 +74,6 @@ if (partnersDocsData.length > 0 && partnersDocsData[0].partners) {
   }, []);
   const handleSeedFirestore = async () => {
   try {
-    // reviewsData -> plain text (JSX quote-երը մաքրված)
     const plainReviews = reviewsData.map(({ id, author, title }, index) => {
       const plainQuoteTexts = [
         'Դեպի նոր իրականություն. ահա թե ուր ենք մենք շարժվում՝ ամեն մի նախագիծ Evocabank-ի հետ հաջողությամբ ավարտելիս: Ավելի քան 5 տարի համագործակցելով՝ կարելի է ասել, որ միասին անցել ենք մի մեծ ճանապարհ՝ լի...',
