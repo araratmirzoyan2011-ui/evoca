@@ -66,7 +66,6 @@ const MetalAccount = () => {
       <Header />
       <Navbar items={menuItems} />
 
-      {/* Վերին քարտի բաժին */}
       <main className="w-full py-8 px-4 md:px-12 bg-gray-50">
         <div className="max-w-7xl mx-auto">
           <InfoCard
@@ -99,7 +98,6 @@ const MetalAccount = () => {
               </div>
 
               <div className="flex-1 max-w-4xl text-gray-800 leading-relaxed space-y-6">
-                {/* Նախաբան */}
                 {termsIntro.text && (
                   <p>
                     {termsIntro.text}{" "}
@@ -114,7 +112,6 @@ const MetalAccount = () => {
                   </p>
                 )}
 
-                {/* Հիմնական պայմաններ */}
                 <div>
                   <h2 className="text-2xl font-bold text-gray-900 mb-6">
                     {general.mainConditionsTitle}
@@ -161,7 +158,6 @@ const MetalAccount = () => {
                     })}
                   </ul>
 
-                  {/* Վարկերի մասին տեղեկատվություն */}
                   {loansInfo.text && (
                     <p className="mt-6 text-gray-700">
                       {loansInfo.text}
@@ -172,7 +168,6 @@ const MetalAccount = () => {
                     </p>
                   )}
 
-                  {/* Զգուշացում */}
                   {general.warningText && (
                     <p className="mt-4 text-sm text-gray-600 bg-gray-100 p-4 rounded-lg border-l-4 border-purple-800 font-medium">
                       {general.warningText}
@@ -182,7 +177,6 @@ const MetalAccount = () => {
               </div>
             </div>
 
-            {/* Փաստաթղթերի բաժին */}
             <div className="max-w-7xl mx-auto mt-12">
               <div className="md:pl-[calc(3rem+6rem)] max-w-4xl md:max-w-none">
                 <div className="max-w-4xl">
