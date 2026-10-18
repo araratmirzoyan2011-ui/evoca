@@ -6,58 +6,30 @@ import Navbar from '../Components/Menuall.jsx';
 import { db } from "../firebase.js";
 import { collection, getDocs, query, orderBy } from 'firebase/firestore';
 
-const IMG = "https://www.evoca.am/images-cache/deposits/1";
-
-const DepositData = [
-  {
-    id: 1,
-    title: "Դասական ավանդ",
-    description: "Ձեր անհոգ ապագայի համար առաջարկում ենք ավելացնել Ձեր խնայողությունները՝ ներդնելով Դասական ավանդ՝ կայուն և բարձր եկամտաբերությամբ։",
-    imageSrc: `${IMG}/1613390220029/415x261.jpg`,
-    stats: [
-      { label: "Գումար", value: "սկսած 100,000 ֏" },
-      { label: "Ժամկետ", value: "31-1,825 օր" },
-      { label: "Տոկոսադրույք", value: "մինչև 10.5%" },
-      { label: "Համալրման հնարավորություն", value: "սկսած 100,000 ֏" }
-    ]
-  },
-  {
-    id: 2,
-    title: "Մանկական ավանդ",
-    description: "Ձեր երեխայի անհոգ ապագայի համար առաջարկում ենք ներդնել «Մանկական» ավանդ։ «Մանկական» ժամկետային ավանդն ընդունում ենք ֆիզիկական անձանցից՝ երեխաների անունով ներդնելու պայմանով։",
-    imageSrc: `${IMG}/16133900414285/415x261.jpg`,
-    stats: [
-      { label: "Գումար", value: "սկսած 100,000 ֏" },
-      { label: "Ժամկետ", value: "մինչև 18 լրանալը" },
-      { label: "Տոկոսադրույք", value: "9.5%" },
-      { label: "Համալրման հնարավորություն", value: "սկսած 40,000 ֏" }
-    ]
-  },
-  {
-    id: 3,
-    title: "Ավանդ Evoca Online",
-    description: "Ցանկանու՞մ եք ներդնել ավանդ բարձր տոկոսադրույքով, բայց չունե՞ք ժամանակ։ Ձևակերպե՛ք EvocaONLINE ավանդն՝ առանց բանկ այցելելու։ Իսկ մենք բոլոր փաստաթղթերը կուղարկենք Ձեր էլ. հասցեին։",
-    imageSrc: `${IMG}/16133900122121/415x261.jpg`,
-    stats: [
-      { label: "Գումար", value: "սկսած 100,000 ֏" },
-      { label: "Ժամկետ", value: "31-1,825 օր" },
-      { label: "Տոկոսադրույք", value: "մինչև 10.75%" }
-    ]
-  }
-];
-
 const DepositMain = () => {
   const [menuItems, setMenuItems] = useState([]);
+  const [deposits, setDeposits] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
+        setLoading(true);
+
         const menuSnap = await getDocs(
           query(collection(db, "DepositMenu"), orderBy("order"))
         );
         setMenuItems(menuSnap.docs.map((d) => d.data()));
+
+        const depositsSnap = await getDocs(collection(db, "Deposits"));
+        setDeposits(
+          depositsSnap.docs.map((d) => ({
+            docId: d.id,
+            ...d.data()
+          }))
+        );
+
       } catch (e) {
         console.error(e);
         setError("Չհաջողվեց բեռնել տվյալները");
@@ -90,9 +62,9 @@ const DepositMain = () => {
 
         {!loading &&
           !error &&
-          DepositData.map((deposit) => (
+          deposits.map((deposit) => (
             <LoanCard
-              key={deposit.id}
+              key={deposit.docId || deposit.id}
               title={deposit.title}
               description={deposit.description}
               imageSrc={deposit.imageSrc}
