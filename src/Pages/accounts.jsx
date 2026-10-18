@@ -71,7 +71,6 @@ const Accounts = () => {
 
     loadData();
   }, []);
-
   return (
     <>
       <Header />
