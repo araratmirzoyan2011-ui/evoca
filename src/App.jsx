@@ -44,6 +44,7 @@ import CreditLoans from "./Pages/credit-history";
 import DepositMain from "./Pages/depositsmain";
 import ImportantInfo from "./Pages/mportant-info";
 import DepositImportant from "./Pages/deposits-important-information";
+import Accounts from "./Pages/accounts";
 function App() {
   return (
     <BrowserRouter>
@@ -53,6 +54,7 @@ function App() {
           <Route path="/business-loans" element={<Busines />} />
           <Route path="/credit-history" element={<CreditLoans />} />
           <Route path="/privacy" element={<Privacy />} />
+          <Route path="/accounts" element={<Accounts />} />
           <Route path="/deposits-important-information" element={<DepositImportant />} />
           <Route path="/depositsmain" element={<DepositMain />} />
           <Route path="/mportant-info" element={<ImportantInfo />} />
