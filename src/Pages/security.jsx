@@ -6,8 +6,7 @@ import InfoCard from '../Components/AccountsCard.jsx';
 import { DocumentCard } from '../Components/DocumentCard.jsx';
 import SocialIcons from '../Components/SocialIcons.jsx';
 
-// Firebase imports
-import { db } from '../firebase'; // փոխեք ըստ ձեր ֆայլերի կառուցվածքի
+import { db } from '../firebase'; 
 import { collection, getDocs } from 'firebase/firestore';
 
 const Security = () => {
@@ -17,31 +16,26 @@ const Security = () => {
   const [documentsList, setDocumentsList] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Տվյալների բեռնում Firebase-ից
   useEffect(() => {
     const fetchDataFromFirebase = async () => {
       try {
         setLoading(true);
 
-        // 1. Քաշել cardInfo-ն
         const cardSnapshot = await getDocs(collection(db, 'security_card_info'));
         if (!cardSnapshot.empty) {
           setCardInfo(cardSnapshot.docs[0].data());
         }
 
-        // 2. Քաշել introText-ը
         const introSnapshot = await getDocs(collection(db, 'security_intro_text'));
         if (!introSnapshot.empty) {
           setIntroText(introSnapshot.docs[0].data());
         }
 
-        // 3. Քաշել mainConditionsList-ը (դասավորել ըստ id-ի)
         const conditionsSnapshot = await getDocs(collection(db, 'security_main_conditions'));
         const conditionsData = conditionsSnapshot.docs.map(doc => doc.data());
         conditionsData.sort((a, b) => a.id - b.id);
         setMainConditionsList(conditionsData);
 
-        // 4. Քաշել documentsList-ը
         const docsSnapshot = await getDocs(collection(db, 'security_documents'));
         const docsData = docsSnapshot.docs.map(doc => doc.data());
         setDocumentsList(docsData);
