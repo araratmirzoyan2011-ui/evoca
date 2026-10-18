@@ -33,7 +33,7 @@ const Bullet = ({ item }) => (
             <li key={i} className="flex items-start gap-3">
               <span className="mt-2 w-1.5 h-1.5 rounded-full bg-gray-500 shrink-0" />
               <div>
-                <Rich parts={s} />
+                <Rich parts={s.parts} />
               </div>
             </li>
           ))}
