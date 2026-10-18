@@ -39,6 +39,7 @@ import LegalLoans from "./Pages/legal-loans";
 import IndividualLoans from "./Pages/individual-loans";
 import Deposits from "./Pages/deposits";
 import Privacy from "./Pages/privacy";
+import Loans from "./Pages/loans";
 function App() {
   return (
     <BrowserRouter>
@@ -48,6 +49,7 @@ function App() {
           <Route path="/business-loans" element={<Busines />} />
           <Route path="/privacy" element={<Privacy />} />
           <Route path="/criteria" element={<Criteria />} />
+          <Route path="/loans" element={<Loans />} />
           <Route path="/deposits" element={<Deposits />} />
           <Route path="/legal-loans" element={<LegalLoans />} />
           <Route path="/individual-loans" element={<IndividualLoans />} />

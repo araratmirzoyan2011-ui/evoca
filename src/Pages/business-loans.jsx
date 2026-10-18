@@ -9,7 +9,6 @@ const BusinessLoans = () => {
   const [loansData, setLoansData] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Տվյալների ներբեռնումը Firebase Firestore-ից (businessLoansCollection -> main փաստաթղթից)
   useEffect(() => {
     const fetchLoans = async () => {
       try {

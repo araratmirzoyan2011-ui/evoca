@@ -48,7 +48,6 @@ function Privacy() {
   const [loading, setLoading] = useState(true);
   const [seeding, setSeeding] = useState(false);
 
-  // Բեռնել տվյալները Firebase-ից բաղադրիչը բացվելիս
   useEffect(() => {
     const fetchPrivacyData = async () => {
       try {
@@ -59,7 +58,6 @@ function Privacy() {
           data.push(doc.data());
         });
         
-        // Եթե բազայում տվյալներ կան, վերցնում ենք դրանք, հակառակ դեպքում՝ ֆոլբեք զանգվածը
         if (data.length > 0) {
           setPrivacyBlocks(data);
         } else {
@@ -76,7 +74,6 @@ function Privacy() {
     fetchPrivacyData();
   }, []);
 
-  // Կոճակը՝ տվյալները բազա լցնելու (Seed) համար
   const seedFirestore = async () => {
     try {
       setSeeding(true);
