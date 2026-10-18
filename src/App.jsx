@@ -48,6 +48,7 @@ import Accounts from "./Pages/accounts";
 import Savings from "./Pages/savings";
 import MetalAccount from "./Pages/metal-accounts";
 import NonResident from "./Pages/non-resident";
+import Security from "./Pages/security";
 function App() {
   return (
     <BrowserRouter>
@@ -56,6 +57,7 @@ function App() {
           <Route path="/" element={<Main />} />
           <Route path="/business-loans" element={<Busines />} />
           <Route path="/credit-history" element={<CreditLoans />} />
+          <Route path="/security" element={<Security />} />
           <Route path="/privacy" element={<Privacy />} />
           <Route path="/non-resident" element={<NonResident />} />
           <Route path="/metal-accounts" element={<MetalAccount />} />
