@@ -6,7 +6,7 @@ import InfoCard from '../Components/AccountsCard.jsx';
 import { DocumentCard } from '../Components/DocumentCard.jsx';
 import SocialIcons from '../Components/SocialIcons.jsx';
 import InfoAccordion from '../Components/InfoAccordion.jsx';
-
+import { OnlineBanking } from '../Components/OnlineBanking.jsx';
 import { db } from '../firebase';
 import { collection, getDocs, orderBy, query, doc, getDoc, setDoc } from 'firebase/firestore';
 import InfoBanner from '../Components/infoBanner.jsx';
@@ -386,11 +386,13 @@ const Savings = () => {
                   </div>
                 </div>
               </div>
+              
             </div>
           </>
         )}
+    
       </section>
-
+        <OnlineBanking />
       <Footer />
     </>
   );

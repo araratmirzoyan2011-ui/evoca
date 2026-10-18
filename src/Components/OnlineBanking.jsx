@@ -2,7 +2,7 @@ import React from "react";
 
 export function OnlineBanking() {
   return (
-    <section className="relative w-full overflow-hidden rounded-tl-[220px] bg-[#6600dd] px-6 py-14 text-white sm:px-10 lg:px-16 max-[400px]:rounded-tl-[90px] max-[400px]:px-4 max-[400px]:py-10">
+    <section className="relative w-full overflow-hidden rounded-tl-[220px] bg-[#6600dd] px-6 py-14 text-white sm:px-10 lg:px-16 max-[400px]:rounded-tl-[90px] max-[400px]:px-4 max-[400px]:py-10 mb-[60px]">
       {/* decorative shapes */}
       <div className="pointer-events-none absolute left-[9%] top-[14%] h-12 w-12 rounded-full border-[12px] border-fuchsia-400 max-lg:hidden" />
       <div
