@@ -3,6 +3,7 @@ import { Header } from '../Components/Header';
 import Footer from '../Components/Footer';
 import Navbar from '../Components/Menuall.jsx';
 import InfoCard from '../Components/AccountsCard.jsx';
+import { DocumentCard } from '../Components/DocumentCard.jsx';
 import SocialIcons from '../Components/SocialIcons.jsx';
 import InfoAccordion from '../Components/InfoAccordion.jsx';
 const cardData = {
@@ -33,7 +34,7 @@ const benefits = [
   "Խնայելու պարտադիր ժամկետ չկա,",
   "Հաշիվը կարող ես համալրել ցանկացած պահի՝ Evocabank-ում գործող քո այլ հաշվից:",
 ];
-
+const accountsreport=[{title:"Համալիր բանկային ծառայությունների մատուցման պայմաններ 16.05.2025թ."},{title:"Խնայողական հաշվի պայմաններ և սակագներ տեղեկատվական ամփոփագիր 01.10.2026թ."}]
 const yieldPoints = [
   { text: "Եկամտաբերությունը կախված է հաշվի մնացորդից և ընտրված արժույթից:" },
   {
@@ -342,8 +343,21 @@ const Accounts = () => {
         <InfoAccordion key={item.id} title={item.title} blocks={item.blocks} />
       ))}
     </div>
+
+    {/* Փաստաթղթերի բաժինը տեղափոխել ենք այս նույն div-ի ներսում, որպեսզի ստանա նույն margin-ն ու padding-ը */}
+    <div className="mt-10 max-w-4xl">
+      <h2 className="text-xl font-bold text-gray-900 mb-6">
+        Փաստաթղթեր
+      </h2>
+      <div className="space-y-5">
+        {accountsreport.map((r, index) => (
+          <DocumentCard key={r.id || index} title={r.title} url={r.url} />
+        ))}
+      </div>
+    </div>
   </div>
 </div>
+
       </section>
 
       <Footer />
