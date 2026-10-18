@@ -108,7 +108,7 @@ export function Header() {
                     <nav className="hidden lg:flex items-center space-x-6 text-gray-800 font-medium">
                         <Link to="/loans" className="hover:text-purple-700 whitespace-nowrap">Վարկեր</Link>
                         <Link to="/cards" className="hover:text-purple-700 whitespace-nowrap">Քարտեր</Link>
-                        <Link to="/deposits" className="hover:text-purple-700 whitespace-nowrap">Ավանդներ</Link>
+                        <Link to="/depositsmain" className="hover:text-purple-700 whitespace-nowrap">Ավանդներ</Link>
                         <Link to="/accounts" className="hover:text-purple-700 whitespace-nowrap">Հաշիվներ</Link>
                         <Link to="/transfers" className="hover:text-purple-700 whitespace-nowrap">Փոխանցումներ</Link>
                         <Link to="/securities" className="hover:text-purple-700 whitespace-nowrap">Արժեթղթեր</Link>
