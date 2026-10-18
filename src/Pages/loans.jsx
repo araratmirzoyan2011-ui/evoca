@@ -4,7 +4,7 @@ import { Header } from '../Components/Header';
 import Footer from '../Components/Footer';
 import { db } from "../firebase.js";
 import { doc, getDoc } from 'firebase/firestore';
-
+import Navbar from '../Components/Menuall.jsx';
 const Loans = () => {
 const IMG = "https://www.evoca.am/images-cache/loans/1";
 
@@ -366,11 +366,24 @@ const loansData = [
     ]
   }
 ];
-
+const menuItems = [
+  {
+    label: "Վարկեր",
+    path: "/loans",
+  },
+  {
+    label: "Վարկային պատմություն և սքոր",
+    path: "/loans/credit-history",
+  },
+  {
+    label: "Կարևոր տեղեկատվություն",
+    path: "/loans/important-info",
+  },
+];
   return (
     <>
       <Header />
-      
+      <Navbar items={menuItems} />
       <div className="container mx-auto px-4 max-[400px]:px-2 ml-[-18%] max-[400px]:ml-0 mt-[80px] max-[400px]:mt-16">
         <h1 className="text-3xl max-[400px]:text-2xl font-bold text-center mb-8 max-[400px]:mb-4"> Վարկեր</h1>
       </div>
