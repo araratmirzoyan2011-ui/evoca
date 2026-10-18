@@ -16,8 +16,8 @@ const fetchCollection = async (name) => {
   return snap.docs.map((d) => ({ docId: d.id, ...d.data() }));
 };
 
-const accordionsData=[]
-const NonResidentReport=[]
+const accordionsData = [];
+const NonResidentReport = [];
 const cardData = {
   title: "Ոչ ռեզիդենտ հաճախորդների հեռավար սպասարկում",
   description: "Բանկ այցելելն այլևս պարտադիր չէ։ Անգամ եթե չեք բնակվում ՀՀ-ում, Evocabank-ի հետ Դուք կարող եք բացել հաշիվներ օնլայն եղանակով աշխարհի ցանկացած կետից և ցանկացած պահի։",
@@ -34,11 +34,10 @@ const NonResident = () => {
   useEffect(() => {
     const loadData = async () => {
       try {
-        const [m, a, r] = await Promise.all([
+        const [m] = await Promise.all([
           fetchCollection("menuItems"),
         ]);
         setMenuItems(m);
-        setAccountsReport(r);
       } catch (err) {
         console.error("Սխալ Firebase-ից տվյալներ ստանալիս:", err);
         setError(true);
@@ -67,57 +66,54 @@ const NonResident = () => {
       </main>
 
       <section className="w-full bg-white py-10 px-4 md:px-12">
-        
-          <>
-            <div className="max-w-7xl mx-auto flex gap-6 md:gap-24">
-              <div className="hidden md:block">
-                <div className="sticky top-24">
-                  <SocialIcons />
-                </div>
-              </div>
+        <div className="max-w-7xl mx-auto flex gap-6 md:gap-24">
+          <div className="hidden md:block">
+            <div className="sticky top-24">
+              <SocialIcons />
+            </div>
+          </div>
 
-              <div className="flex-1 max-w-4xl text-gray-800 leading-relaxed">
-                <p>
-                  Մեր և Ձեր պայմանագրային փոխհարաբերությունները կարգավորվում են ՀԱՄԱԼԻՐ ԲԱՆԿԱՅԻՆ ԾԱՌԱՅՈՒԹՅՈՒՆՆԵՐԻ ՄԱՏՈՒՑՄԱՆ ՊԱՅՄԱՆՆԵՐՈՎ, որը հրապարակային առաջարկ (օֆերտա) է և Ձեր կողմից համարվում է ընդունված այն պահից, երբ առձեռն կամ հեռակառավարման համակարգերի միջոցով մեզ եք ներկայացնում պատշաճ լրացված և վավերացված բանկային ծառայություններից օգտվելու հայտ/դիմում: Համալիր բանկային ծառայությունների մատուցման պայմաններին կարող եք ծանոթանալ{" "}
-                  <a
-                    href="https://www.evoca.am/files/global_files/1/provision-terms-for-general-banking-services-arm.pdf"
-                    target="_blank"
-                    rel="noreferrer"
-                    className="font-bold text-purple-800 underline"
-                  >
-                    այստեղ
-                  </a>:
-                </p>
+          {/* Թարմացված տեքստային հատվածը */}
+          <div className="flex-1 max-w-4xl text-gray-800 leading-relaxed space-y-4">
+            <p>
+              24/7 անձնական մենեջեր, ֆինանսական ծառայությունների հասանելիություն աշխարհի ցանկացած կետից, փաստաթղթերի անվճար առաքում Ձեր գտնվելու վայր. բոլոր մանրուքները մտածված են, որ Դուք խնայեք Ձեր ժամանակը, չշեղվեք կարևոր գործերից և, իհարկե, օգտվեք prime սպասարկումից:
+            </p>
+            <p>
+              Ուղարկեք փաստաթղթերը, անցեք տեսազանգով նույնականացում և բացեք Ձեր հաշիվը՝ առանց Բանկ այցելելու:
+            </p>
+            <p>
+              Մանրամասները և քայլ առ քայլ ուղեցույցը՝ ներքևում:
+            </p>
+          </div>
+        </div>
+
+        <div className="max-w-7xl mx-auto mt-10">
+          <div className="md:pl-[calc(3rem+6rem)] max-w-4xl md:max-w-none">
+            <h2 className="text-2xl font-extrabold text-gray-900 uppercase mb-6">
+              ԱՆՀՐԱԺԵՇՏ ՏԵՂԵԿԱՏՎՈՒԹՅՈՒՆ
+            </h2>
+            <div className="max-w-4xl space-y-4">
+              {accordionsData.map((item) => (
+                <InfoAccordion
+                  key={item.docId}
+                  title={item.title}
+                  blocks={item.blocks}
+                />
+              ))}
+            </div>
+
+            <div className="mt-10 max-w-4xl">
+              <h2 className="text-xl font-bold text-gray-900 mb-6">
+                Փաստաթղթեր
+              </h2>
+              <div className="space-y-5">
+                {NonResidentReport.map((r) => (
+                  <DocumentCard key={r.docId || r.order} title={r.title} url={r.url} />
+                ))}
               </div>
             </div>
-            <div className="max-w-7xl mx-auto mt-10">
-              <div className="md:pl-[calc(3rem+6rem)] max-w-4xl md:max-w-none">
-                <h2 className="text-2xl font-extrabold text-gray-900 uppercase mb-6">
-                  ԱՆՀՐԱԺԵՇՏ ՏԵՂԵԿԱՏՎՈՒԹՅՈՒՆ
-                </h2>
-                <div className="max-w-4xl space-y-4">
-                  {accordionsData.map((item) => (
-                    <InfoAccordion
-                      key={item.docId}
-                      title={item.title}
-                      blocks={item.blocks}
-                    />
-                  ))}
-                </div>
-
-                <div className="mt-10 max-w-4xl">
-                  <h2 className="text-xl font-bold text-gray-900 mb-6">
-                    Փաստաթղթեր
-                  </h2>
-                  <div className="space-y-5">
-                    {NonResidentReport.map((r) => (
-                      <DocumentCard key={r.docId || r.order} title={r.title} url={r.url} />
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </>
+          </div>
+        </div>
       </section>
       <OnlineBanking />
       <Footer />
