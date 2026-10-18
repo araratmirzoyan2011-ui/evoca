@@ -4,6 +4,7 @@ import { Header } from '../Components/Header';
 import Footer from '../Components/Footer';
 import Navbar from '../Components/Menuall.jsx';
 import { db } from "../firebase.js";
+import { DocumentCard } from '../Components/DocumentCard';
 import { collection, getDocs, query, orderBy } from 'firebase/firestore';
 import SocialIcons from '../Components/SocialIcons.jsx';
 const DepositImportant = () => {
@@ -44,7 +45,7 @@ const DepositImportant = () => {
   const handleDetailsClick = (title) => {
     console.log("Details:", title);
   };
-const depositdata=[]
+const depositdata=[{title:"Տեղեկատվական ամփոփագիր (Ավանդներ) 09․06․2026"},{title:"Համալիր բանկային ծառայությունների մատուցման պայմաններ 16.05.2025թ."},{title:"Դեբետային և կրեդիտային քարտեր (Տեղեկատվական ամփոփագիր) 17.03.2026"}]
   return (
     <>
       <Header />
