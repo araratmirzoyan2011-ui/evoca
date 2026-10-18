@@ -5,69 +5,134 @@ import Navbar from '../Components/Menuall.jsx';
 import InfoCard from '../Components/AccountsCard.jsx';
 import { DocumentCard } from '../Components/DocumentCard.jsx';
 import SocialIcons from '../Components/SocialIcons.jsx';
-import InfoAccordion from '../Components/InfoAccordion.jsx';
 import { OnlineBanking } from '../Components/OnlineBanking.jsx';
-import { db } from '../firebase';
-import { collection, getDocs, orderBy, query, doc, getDoc } from 'firebase/firestore';
 
-const fetchCollection = async (name) => {
-  const snap = await getDocs(query(collection(db, name), orderBy("order")));
-  return snap.docs.map((d) => ({ docId: d.id, ...d.data() }));
-};
+// Տվյալների զանգվածներ և օբյեկտներ ըստ Էվոկաբանկի Ֆինանսական հանցագործությունների կանխարգելման էջի
 const cardInfo = {
-  title: "Ֆինանսական հանցագործությունների կանխարգելում",
+  title: "Ֆինանսական հանցագործությունների կանխարգելման մասին հայտարարություն",
   description: "",
   imageUrl: "https://www.evoca.am/images-cache/menu/1/17387447069114/780x585.png",
-  altText: "Հաշիվների բացում և սպասարկում"
+  altText: "Ֆինանսական հանցագործությունների կանխարգելում"
 };
 
+const introText = {
+  text: "Evocabank-ում մենք պարտավորվել ենք պայքարել ֆինանսական հանցագործությունների բոլոր ձևերի դեմ, ներառյալ՝ փողերի լվացման, ահաբեկչության ֆինանսավորման, խարդախությունների, կաշառակերության, կոռուպցիայի և պատժամիջոցներից խուսափելու դեպքերը։ Որպես պատասխանատու կազմակերպություն՝ մենք ըմբռնումով ենք մոտենում ֆինանսական հանցագործությունների դեմ համընդհանուր պայքարում մեր դերին և ձեռնարկում ենք կանխարգելիչ միջոցներ՝ ֆինանսական համակարգի ամբողջականությունը պաշտպանելու և հաճախորդների վստահությունը Բանկի նկատմամբ ամրապնդելու համար։",
+  subText: "Մենք ընդունել ենք ֆինանսական հանցագործությունների կանխարգելման համապարփակ մոտեցում, որը ներառում է հետևյալ առանցքային տարրերը՝"
+};
+
+// Հիմնական կետերի զանգված
+const mainConditionsList = [
+  {
+    id: 1,
+    title: "1. Ճանաչիր քո հաճախորդին և Հաճախորդի պատշաճ ուսումնասիրություն",
+    content: "Մենք խստորեն հետևում ենք Ճանաչիր քո հաճախորդին (KYC) և Հաճախորդի պատշաճ ուսումնասիրության (CDD) ընդունված գործելակերպերին՝ նպատակ ունենալով լիովին տեղեկացված լինել մեր հաճախորդների ինքնության, բիզնես գործունեության և ռիսկի մակարդակների մասին․",
+    subItems: [
+      "Բոլոր հաճախորդներից անձնական և գործարար տեղեկությունների, այդ թվոմ՝ ֆինանսական միջոցների աղբյուրների և գործունեության բնույթի մասին տվյալների հավաքագրում և ստուգում,",
+      "Ռիսկերի հիման վրա յուրաքանչյուր հաճախորդի ռիսկի մակարդակի գնահատում՝ հաշվի առնելով այնպիսի գործոններ, ինչպիսիք են աշխարհագրական վայրը, հաճախորդի բիզնես մոդելը և գործարքների իրականացման ձևերը,",
+      "Հավելյալ պատշաճ ուսումնասիրության իրականացում բարձր ռիսկային հաճախորդների, այդ թվոմ՝ քաղաքական ազդեցություն ունեցող անձանց, բարձր ռիսկային երկրներ ներկայացնող կամ սեփականության բարդ կառուցվածք ունեցող հաճախորդների համար:"
+    ]
+  },
+  {
+    id: 2,
+    title: "2. Փողերի լվացման դեմ պայքարի միջոցառումներ",
+    content: "Մենք պարտավորվել ենք խստորեն հետևել փողերի լվացման դեմ գործող բոլոր օրենքներին և կանոնակարգերին: Փողերի լվացման դեմ պայքարի մեր միջոցները ներառում են հետևյալը․",
+    subItems: [
+      "Անսովոր կամ կասկածելի գործունեության բացահայտման նպատակով գործարքների շարունակական դիտանցում,",
+      "Նորագույն տեխնոլոգիաների և տվյալների վերլուծության առաջատար գործիքների օգտագործում՝ փողերի լվացման հատկանիշներ ունեցող գործարքների բացահայտման և վերլուծության համար,",
+      "Հաճախորդների բոլոր գործարքների մանրակրկիտ գրանցումների պահպանում և մշտադիտարկում՝ փողերի լվացման կամ ահաբեկչության ֆինանսավորման հատկանիշներ ունեցող դեպքերի բացահայտման նպատակով,",
+      "Համապատասխան կանոնակարգող մարմիններին կասկածելի գործարքների մասին հաշվետվության ներկայացում՝ համաձայն տեղական և միջազգային նորմատիվային պահանջների:"
+    ]
+  },
+  {
+    id: 3,
+    title: "3. Ահաբեկչության ֆինանսավորման դեմ պայքար",
+    content: "Մենք խստորեն հետևում ենք ահաբեկչության ֆինանսավորման դեմ պայքարի բոլոր կանոնակարգերին, այդ թվում․",
+    subItems: [
+      "Երաշխիք, որ ոչ մի ծառայություն կամ պրոդուկտ չի առաջարկվի այն ֆիզիկական կամ իրավաբանական անձանց, որոնք կապված են ահաբեկչական կազմակերպությունների կամ նման գործողությունների հետ,",
+      "Հաճախորդների պարբերական ուսումնասիրություն՝ նպատակ ունենալով բացահայտել ահաբեկչական ցուցակների, ՄԱԿ-ի պատժամիջոցների կամ այլ համապատասխան մարմինների ցուցակների հետ համընկնման դեպքերը,",
+      "Ռիսկերի վրա հիմնված մոտեցման կիրառում՝ գործարքների դիտանցման և ահաբեկչության ֆինանսավորման հավանական դեպքերի բացահայտման նպատակով:"
+    ]
+  },
+  {
+    id: 4,
+    title: "4. Պատժամիջոցներից խուսափում",
+    content: "Evocabank-ը պարտավորվել է ապահովել լիարժեք համապատասխանություն պատժամիջոցների բոլոր կանոններին և կանոնակարգերին, այդ թվում նրանց, որոնք ուժի մեջ են դրվել․",
+    subItems: [
+      "Միավորված ազգերի կազմակերպության Անվտանգության խորհրդի կողմից,",
+      "ԱՄՆ-ի Գանձապետարանի Օտարերկրյա ակտիվների վերահսկման գրասենյակի (OFAC) կողմից,",
+      "ԱՄՆ-ի Առևտրի դեպարտամենտի Արդյունաբերության և անվտանգության բիուրոյի կողմից,",
+      "Եվրոպական հանձնաժողովի կողմից,",
+      "Միացյալ Թագավորության Նորին Մեծության գանձապետարանի կողմից:"
+    ]
+  },
+  {
+    id: 5,
+    title: "5. Խարդախությունների կանխարգելում",
+    content: "Մեր հաճախորդներին խարդախության դեպքերից պաշտպանելու նպատակով Բանկն իրականացնում է մի շարք կանխարգելիչ միջոցառումներ, այդ թվում․",
+    subItems: [
+      "Իրական ժամանակում խարդախությունների դիտանցում (Մեր համակարգերը շարունակաբար հետևում են գործարքների տվյալներին՝ բացահայտելու խարդախության նախանշանները),",
+      "Հաճախորդների կրթում (Մենք նախապես իրազեկում և կրթում ենք մեր հաճախորդներին խարդախությունների վերաբերյալ),",
+      "Բազմագործոն հավաստագրում (MFA) և 3D Secure տեխնոլոգիա:"
+    ]
+  },
+  {
+    id: 6,
+    title: "6. Ուսուցում և իրազեկում",
+    content: "Մենք ապահովում ենք ֆինանսական հանցագործությունների կանխարգելման ոլորտում բոլոր աշխատակիցների շարունակական ուսուցումը, ներառելով՝",
+    subItems: [
+      "Ֆինանսական հանցագործությունների վերջին միտումների, տիպաբանության և առաջացող ռիսկերի պարբերական թարմացումները[cite: 1],",
+      "Փողերի լվացման, ահաբեկչության ֆինանսավորման դեմ պայքարին և ֆինանսական հանցագործությունների կանխարգելմանն առնչվող իրավական և նորմատիվային պահանջների խորացված ուսուցումը[cite: 1],",
+      "Կասկածելի գործունեության կամ գործարքների բացահայտման և դրանց մասին զեկուցման համար աշխատակիցներին խրախուսումը:[cite: 1]"
+    ]
+  },
+  {
+    id: 7,
+    title: "7. Ներքին հսկողության համակարգ և ռիսկերի կառավարում",
+    content: "Ֆինանսական ռիսկերի նվազեցման նպատակով մենք ներդրել ենք ներքին հսկողության ուժեղացված համակարգ, որը ենթադրում է՝",
+    subItems: [
+      "Պարբերական ստուգումների և վերլուծությունների իրականացում՝ ներքին կանոնակարգերին և նորմատիվային պահանջներին համապատասխանության ապահովման նպատակով[cite: 1],",
+      "Ֆինանսական հանցագործությունների նկատմամբ զրոյական հանդուրժողականության քաղաքականության իրականացում՝ զեկուցման, վերլուծության և ռիսկերի մեղմացման հստակ ուղենիշներին համապատասխան:[cite: 1]"
+    ]
+  },
+  {
+    id: 8,
+    title: "8. Կանոնակարգող մարմինների հետ համագործակցություն",
+    content: "Մենք սերտորեն համագործակցում ենք ազգային կանոնակարգող, իրավապահ մարմինների հետ՝ նպատակ ունենալով զարգացող սպառնալիքներից առաջ լինել: Մեր համագործակցությունը ներառում է՝",
+    subItems: [
+      "Ֆինանսական հանցագործությունների հետ կապված ռիսկերի և կասկածելի գործունեության վերաբերյալ տեղեկությունների և գաղտնի տվյալների փոխանակում կանոնակարգող մարմինների և գերատեսչությունների հետ՝ օրենսդրության պահանջների համաձայն[cite: 2],",
+      "Օրենսդրական պահանջներին համապատասխան՝ իրավապահ և կանոնակարգող մարմինների տեղեկությունների պահանջին արագ արձագանքում:[cite: 2]"
+    ]
+  },
+  {
+    id: 9,
+    title: "9. Գլոբալ չափորոշիչների հետ համապատասխանություն",
+    content: "Մենք պարտավորվել ենք ֆինանսական հանցագործությունների դեմ պայքարում համապատասխանել գլոբալ չափորոշիչներին: Սա ենթադրում է, որ պետք է համապատասխանել հետևյալ կետերին՝",
+    subItems: [
+      "Ֆինանսական միջոցառումների աշխատանքային խմբի (FATF) առաջարկություններին և ուղենիշներին[cite: 2],",
+      "Փողերի լվացման և ահաբեկչության ֆինանսավորման դեմ պայքարի լոկալ և միջազգային ֆինանսական կանոնակարգերին և օրենքներին[cite: 2],",
+      "Ոլորտի լավագույն գործելակերպերին, որոնք ընդունվել են այնպիսի կազմակերպությունների կողմից, ինչպիսին է՝ Wolfsberg Group-ը:[cite: 2]"
+    ]
+  },
+  {
+    id: 10,
+    title: "10. Հաճախորդների պատասխանատվություն",
+    content: "Մենք խրախուսում ենք մեր հաճախորդներին զգոն լինել և հայտնել ցանկացած կասկածելի ակտիվության, չարտոնված գործարքների կամ հավանական խարդախության դեպքերի մասին: Բոլոր նախազգուշացումները, որոնք ստացվել են մեր հաճախորդների կողմից, բարձր առաջնահերթություն ունեցող սպառնալիքներ են և փոխանցվում են խարդախությունների կանխարգելման մեր թիմին՝ հետագա վերլուծությունների իրականացման համար:[cite: 2, 3]\n\nԵթե Դուք նկատել եք Ձեր հաշվի հետ կատարված որևէ կասկածելի կամ խարդախ գործարք, խնդրում ենք կապ հաստատել մեզ հետ՝ ifm@evoca.am էլ․ հասցեով։ Մենք պատրաստ ենք օգնել Ձեզ և ապահովել Ձեր ֆինանսական գործարքների անվտանգությունը։[cite: 3]",
+    subItems: []
+  }
+];
+
+// Փաստաթղթերի զանգված
+const documentsList = [
+  { title: "Ֆինանսական հանցագործությունների կանխարգելման քաղաքականություն", url: "#" },
+  { title: "Wolfsberg հարցաթերթ", url: "#" }
+];
+
 const Security = () => {
-  const [menuItems, setMenuItems] = useState([]);
-  const [termsIntro, setTermsIntro] = useState({});
-  const [loansInfo, setLoansInfo] = useState({});
-  const [general, setGeneral] = useState({});
-  const [mainConditionsList, setMainConditionsList] = useState([]);
-  const [documents, setDocuments] = useState([]);
   
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
-
-  const loadData = async () => {
-    try {
-      setLoading(true);
-      
-      const menu = await fetchCollection("menuItems");
-      const conditions = await fetchCollection("metalMainConditions");
-      const docsList = await fetchCollection("metalDocuments");
-
-      const termsIntroSnap = await getDoc(doc(db, "metalPageInfo", "termsIntro"));
-      const loansInfoSnap = await getDoc(doc(db, "metalPageInfo", "loansInfo"));
-      const generalSnap = await getDoc(doc(db, "metalPageInfo", "general"));
-
-      setMenuItems(menu);
-      setMainConditionsList(conditions);
-      setDocuments(docsList);
-
-      if (termsIntroSnap.exists()) setTermsIntro(termsIntroSnap.data());
-      if (loansInfoSnap.exists()) setLoansInfo(loansInfoSnap.data());
-      if (generalSnap.exists()) setGeneral(generalSnap.data());
-
-    } catch (err) {
-      console.error("Սխալ Firebase-ից տվյալներ ստանալիս:", err);
-      setError(true);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    loadData();
-  }, []);
 
   return (
     <>
       <Header />
-      <Navbar items={menuItems} />
 
       <main className="w-full py-8 px-4 md:px-12 bg-gray-50">
         <div className="max-w-7xl mx-auto">
@@ -81,121 +146,53 @@ const Security = () => {
       </main>
 
       <section className="w-full bg-white py-10 px-4 md:px-12">
-        {loading && (
-          <p className="text-center text-gray-500 py-10">Բեռնվում են տվյալները Firebase-ից...</p>
-        )}
+        <div className="max-w-7xl mx-auto flex gap-6 md:gap-24">
+          <div className="hidden md:block">
+            <div className="sticky top-24">
+              <SocialIcons />
+            </div>
+          </div>
 
-        {error && (
-          <p className="text-center text-red-600 py-10">
-            Չհաջողվեց բեռնել տվյալները։ Խնդրում ենք փորձել կրկին։
-          </p>
-        )}
+          <div className="flex-1 max-w-4xl text-gray-800 leading-relaxed space-y-6">
+            <p>{introText.text}</p>
+            <p>{introText.subText}</p>
 
-        {!loading && !error && (
-          <>
-            <div className="max-w-7xl mx-auto flex gap-6 md:gap-24">
-              <div className="hidden md:block">
-                <div className="sticky top-24">
-                  <SocialIcons />
-                </div>
-              </div>
+            <div>
+              <ul className="space-y-6 text-gray-700">
+                {mainConditionsList.map((item) => (
+                  <li key={item.id} className="space-y-2">
+                    <h3 className="text-xl font-bold text-purple-900">{item.title}</h3>
+                    <p className="whitespace-pre-line">{item.content}</p>
+                    {item.subItems && item.subItems.length > 0 && (
+                      <ul className="list-disc pl-6 space-y-2 mt-2">
+                        {item.subItems.map((sub, sIdx) => (
+                          <li key={sIdx}>{sub}</li>
+                        ))}
+                      </ul>
+                    )}
+                  </li>
+                ))}
+              </ul>
 
-              <div className="flex-1 max-w-4xl text-gray-800 leading-relaxed space-y-6">
-                {termsIntro.text && (
-                  <p>
-                    {termsIntro.text}{" "}
-                    <a
-                      href={termsIntro.linkUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="font-bold text-purple-800 underline"
-                    >
-                      {termsIntro.linkText}
-                    </a>:
-                  </p>
-                )}
+              
+            </div>
+          </div>
+        </div>
 
-                <div>
-                  <h2 className="text-2xl font-bold text-gray-900 mb-6">
-                    {general.mainConditionsTitle}
-                  </h2>
-                  <ul className="list-disc pl-5 space-y-4 text-gray-700">
-                    {mainConditionsList.map((item, index) => {
-                      if (item.type === "simple_text" || item.type === "text_with_highlights") {
-                        return (
-                          <li
-                            key={item.docId || index}
-                            dangerouslySetInnerHTML={{ __html: item.content }}
-                          />
-                        );
-                      }
-                      if (item.type === "nested_list") {
-                        return (
-                          <li key={item.docId || index}>
-                            <span>{item.title}</span>
-                            <ul className="list-disc pl-6 mt-2 space-y-2">
-                              {item.subItems?.map((sub, sIdx) => (
-                                <li
-                                  key={sIdx}
-                                  dangerouslySetInnerHTML={{ __html: sub }}
-                                />
-                              ))}
-                            </ul>
-                          </li>
-                        );
-                      }
-                      if (item.type === "link_text") {
-                        return (
-                          <li key={item.docId || index}>
-                            {item.content}
-                            <a
-                              href={item.linkUrl}
-                              className="text-purple-800 underline font-semibold"
-                            >
-                              {item.linkText}
-                            </a>:
-                          </li>
-                        );
-                      }
-                      return null;
-                    })}
-                  </ul>
-
-                  {loansInfo.text && (
-                    <p className="mt-6 text-gray-700">
-                      {loansInfo.text}
-                      <a href={loansInfo.linkUrl} className="text-purple-800 underline font-semibold">
-                        {loansInfo.linkText}
-                      </a>
-                      {loansInfo.suffixText}
-                    </p>
-                  )}
-
-                  {general.warningText && (
-                    <p className="mt-4 text-sm text-gray-600 bg-gray-100 p-4 rounded-lg border-l-4 border-purple-800 font-medium">
-                      {general.warningText}
-                    </p>
-                  )}
-                </div>
+        <div className="max-w-7xl mx-auto mt-12">
+          <div className="md:pl-[calc(3rem+6rem)] max-w-4xl md:max-w-none">
+            <div className="max-w-4xl">
+              <h2 className="text-xl font-bold text-gray-900 mb-2">
+                Փաստաթղթեր
+              </h2>
+              <div className="space-y-5 mt-6">
+                {documentsList.map((docItem, index) => (
+                  <DocumentCard key={index} title={docItem.title} url={docItem.url} />
+                ))}
               </div>
             </div>
-
-            <div className="max-w-7xl mx-auto mt-12">
-              <div className="md:pl-[calc(3rem+6rem)] max-w-4xl md:max-w-none">
-                <div className="max-w-4xl">
-                  <h2 className="text-xl font-bold text-gray-900 mb-6">
-                    Փաստաթղթեր
-                  </h2>
-                  <div className="space-y-5">
-                    {documents.map((docItem, index) => (
-                      <DocumentCard key={docItem.docId || index} title={docItem.title} url={docItem.url} />
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </>
-        )}
+          </div>
+        </div>
       </section>
 
       <OnlineBanking />
