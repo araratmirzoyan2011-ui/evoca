@@ -22,7 +22,7 @@ const Bulletins = () => {
 
           <div className="flex-1">
             <h2 className="text-xl md:text-2xl font-bold text-gray-800 mb-4">
-              Հետադարձ կապ
+              Բուկլետներ
             </h2>
 
             
