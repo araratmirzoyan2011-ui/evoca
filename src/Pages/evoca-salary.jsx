@@ -7,11 +7,13 @@ import SocialIcons from '../Components/SocialIcons.jsx';
 import { OnlineBanking } from '../Components/OnlineBanking.jsx';
 import { EvocaReviewCard } from '../Components/EvocaReviewCard.jsx';
 import { db } from '../firebase';
-import { collection, getDocs, doc, setDoc, getDoc } from 'firebase/firestore';
-
+import { collection, getDocs } from 'firebase/firestore';
+import { EvocaNewsCard } from '../Components/EVocaCard1.jsx';
 import InfoCard from '../Components/AccountsCard.jsx';
 
 const EvocaSalary = () => {
+  const [loading, setLoading] = useState(false);
+
   const cardData = {
     title: "EVOCA ԱՇԽԱՏԱՎԱՐՁԱՅԻՆ ՆԱԽԱԳԻԾ",
     description: "Քո աշխատավարձը կարող է քեզ տալ շատ ավելին։ Պարզապես պետք է ընտրել Evocabank-ը։",
@@ -84,6 +86,53 @@ const EvocaSalary = () => {
       ]
     }
   ];
+
+  // 3. Ճշգրիտ salaryitems զանգվածը՝ ըստ ուղարկված նկարի
+  const [salaryitems, setSalaryitems] = useState([
+    {
+      id: 1,
+      category: 'Կենսակերպ',
+      categoryColor: 'bg-lime-500',
+      title: 'Evocabank-ը` FinComm Armenia 2026-ի գլխավոր գործընկեր',
+      date: '08.10.2026',
+      image: 'https://www.evoca.am/images-cache/news/1/17915391966329/439x320.png',
+    },
+    {
+      id: 2,
+      category: 'Կենսակերպ',
+      categoryColor: 'bg-lime-500',
+      title: 'Evocabank-ը` TRF 2026-ի ֆինանսական գործընկեր',
+      date: '06.10.2026',
+      image: 'https://www.evoca.am/images-cache/news/1/17912685600228/439x320.png',
+    },
+    {
+      id: 3,
+      category: 'Կենսակերպ',
+      categoryColor: 'bg-lime-500',
+      title: 'Evocabank-ը` Armenia-UK Business Forum-ի գլխավոր գործընկեր',
+      date: '06.10.2026',
+      image: 'https://www.evoca.am/images-cache/news/1/17913736819959/439x320.jpg',
+    },
+  ]);
+
+  useEffect(() => {
+    const fetchSalaryNews = async () => {
+      try {
+        setLoading(true);
+        const querySnapshot = await getDocs(collection(db, "salaryNewsCollection"));
+        const newsDocs = querySnapshot.docs.map(doc => doc.data());
+        if (newsDocs.length > 0 && newsDocs[0].items) {
+          setSalaryitems(newsDocs[0].items);
+        }
+      } catch (error) {
+        console.error("Firestore-ից նորությունների բեռնման սխալ:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchSalaryNews();
+  }, []);
 
   return (
     <>
@@ -161,6 +210,38 @@ const EvocaSalary = () => {
                   </ul>
                 </div>
               ))}
+            </div>
+
+            {/* Վերջին նորություններ */}
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
+                <h2 className="text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight">
+                  Վերջին նորությունները
+                </h2>
+                
+                <button className="flex items-center space-x-2 bg-purple-100/70 hover:bg-purple-200/80 text-purple-700 px-4 py-2.5 rounded-full font-semibold text-sm transition-colors duration-200 group cursor-pointer">
+                  <span>Բոլոր նորությունները</span>
+                  <svg 
+                    className="w-4 h-4 transform group-hover:translate-x-0.5 transition-transform" 
+                    fill="none" 
+                    stroke="currentColor" 
+                    strokeWidth="2.5" 
+                    viewBox="0 0 24 24"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                  </svg>
+                </button>
+              </div>
+
+              {loading ? (
+                <div className="text-center py-10 text-gray-500 font-medium">Բեռնվում է տվյալները...</div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {salaryitems.map((item) => (
+                    <EvocaNewsCard key={item.id} item={item} />
+                  ))}
+                </div>
+              )}
             </div>
 
           </div>
