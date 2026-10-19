@@ -12,75 +12,71 @@ import { db } from '../firebase';
 import { collection, getDocs } from 'firebase/firestore';
 
 const Transfers = () => {
-  const cardInfo = {
-    title: "Դրամական փոխանցումներ",
-    description: "Իրականացնում ենք դրամական փոխանցումներ Հայաստանի տարածքում և դեպի արտերկիր՝ դրամով և արտարժույթով: Փոխանցումներն իրականացվում են միջազգային բանկային ստանդարտներին համապատասխանող համակարգերով:",
-    imageUrl: "https://www.evoca.am/images-cache/menu/1/16115828343472/780x585.jpg",
-    altText: "Դրամական փոխանցումներ"
-  };
+  const [cardInfo, setCardInfo] = useState(null);
+  const [banner, setBanner] = useState(null);
+  const [transfersList, setTransfersList] = useState([]);
+  const [menuItems, setMenuItems] = useState([]);
+  const [transfersAccordionsData, setTransfersAccordionsData] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const Banner = {
-    title: "Կարող եք գումարներ փոխանցել ինչպես ձեր հաշվից, այնպես էլ առանց հաշվի բացման:",
-    src: "https://www.evoca.am/images-cache/menu/1/1611294541215/1920x530.jpg"
-  };
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
 
-  const transfersList = [
-    { title: "Միջազգային վճարման հանձնարարականներով փոխանցումների իրականացման կանոններ" },
-    { title: "Համալիր բանկային ծառայությունների մատուցման պայմաններ 16.05.2025թ." },
-    { title: "SWIFT Transfers (20.03.2026)" }
-  ];
+        const cardInfoSnapshot = await getDocs(collection(db, "cardInfo"));
+        if (!cardInfoSnapshot.empty) {
+          setCardInfo(cardInfoSnapshot.docs[0].data());
+        }
 
-  const menuItems = [
-    { label: "Դրամական փոխանցումներ", path: "/transfers", order: 1 },
-    { label: "Վճարային համակարգեր", path: "transfer-payment-systems", order: 2 }
-  ]; 
+        const bannerSnapshot = await getDocs(collection(db, "banner"));
+        if (!bannerSnapshot.empty) {
+          setBanner(bannerSnapshot.docs[0].data());
+        }
 
-  const TransfersAccordionsData = [
-    {
-      docId: "1",
-      title: "Փոխանցումներ դրամով",
-      blocks: [
-        "Մեզ մոտ գործող վճարահաշվարկային համակարգն ապահովում է արագ և հուսալի դրամային փոխանցումներ ինչպես մեր համակարգում, այնպես էլ հայաստանյան այլ բանկերի միջև:",
-        "Դրամով փոխանցումները Հայաստանի տարածքում կատարվում են 1 բանկային օրվա ընթացքում:"
-      ]
-    },
-    {
-      docId: "2",
-      title: "Միջազգային փոխանցումներ",
-      blocks: [
-        "Մենք SWIFT համակարգի անդամ ենք և ձեր արտարժույթային միջազգային փոխանցումներն իրականացնում ենք այս համակարգով: Այն ապահովում է արագ և անվտանգ փոխանցումներ՝ միջազգային բանկային ստանդարտներին համապատասխան:",
-        "Փոխանցումը կատարում ենք միայն փոխանցվող գումարի և միջնորդավճարի գումարի փաստացի առկայության դեպքում:",
-        "Արտարժույթային միջազգային փոխանցում իրականացնելու համար մեզ եք ներկայացնում սահմանված ձևանմուշի վճարման հանձնարարագիր (անհրաժեշտության դեպքում մեր աշխատակիցները կօգնեն լրացնել այն):",
-        "Արտարժույթային միջազգային բանկային փոխանցումները, ըստ մեր սակագների, իրականացվում են OUR (ծախսերը` փոխանցողի հաշվին), Guaranteed OUR (գումարը ստացողին հասնում է ամբողջական) և BEN (ծախսերը` ստացողի հաշվին) տարբերակներով:",
-        "Արտարժույթային միջազգային փոխանցումները, որպես կանոն, տևում են 1-3 բանկային օր: Փոխանցումների կատարման տևողությունը կախված է այն բանկերի թվից, որոնց միջոցով կատարվում է փոխանցումը:"
-      ]
-    },
-    {
-      docId: "3",
-      title: "Վճարային համակարգեր",
-      blocks: [
-        "Դրամական փոխանցումների վճարային համակարգերը հնարավորություն են տալիս շատ արագ՝ առանց բանկային հաշվի բացման, պարզեցված ընթացակարգով, ոչ առևտրային բնույթի փոխանցումներ կատարել ֆիզիկական անձանց միջև՝ դեպի աշխարհի տարբեր երկրներ:",
-        "Մեր կողմից սպասարկվող վճարային համակարգերին կարող եք ծանոթանալ այստեղ:"
-      ]
-    },
-    {
-      docId: "4",
-      title: "Փոխանցման պայմանների փոփոխություն կամ չեղյալացում",
-      blocks: [
-        "Փոխանցումների վավերապայմանների փոփոխությունը կամ փոխանցման չեղյալացումը կատարում ենք փոխանցումը նախաձեռնող անձի գրավոր դիմումի հիման վրա՝ նրանից գանձելով միջնորդավճարներ (սակագներին կարող եք ծանոթանալ Բանկային փոխանցումներ բաժնում):",
-        "Փոխանցման մեջ առկա սխալների ուղղումը, ինչպես նաև փոխանցման չեղյալացում իրականացնում ենք փոխանցող և ստացող բանկերի հնարավորության սահմաններում և ժամկետներում, սովորաբար դա կարող է տևել 2-5 բանկային օր:",
-        "Եթե փոխանցումը նախաձեռնող անձը ներկայացրել է փոխանցման չեղյալացման հայտ, սակայն ըստ հարցման՝ միջոցներն արդեն հաշվեգրված են, ապա մենք չենք կարող պատասխանատվություն կրել գումարների վերադարձի համար: Փոխանցված միջոցները ստացողին չհասնելու դեպքում՝",
-        "• Փոխանցված միջոցները թղթակից բանկի կողմից վերադարձվում են փոխանցում կատարած բանկին: Դրամական միջոցների վերադարձի ժամկետները կախված են թղթակից բանկերում գործող ընթացակարգային ժամկետներից և այն բանկերի թվից, որոնց միջոցով կատարվել է փոխանցումը:",
-        "• Վերադարձված դրամական միջոցները հաշվեգրում ենք փոխանցում իրականացրած անձի բանկային հաշվին, իսկ առանց բանկային հաշվի բացման կատարված փոխանցման դեպքում՝ փոխանցման հանձնարարագրում նշված անձնագրային հիմքերով վերադարձնում ենք փոխանցում իրականացրած անձին:",
-        "Վճարային համակարգերով իրականացված փոխանցումների (ֆիզանձանց միջև ոչ առևտրային բնույթի արագ դրամական փոխանցումներ) վավերապայմանների փոփոխման/սխալների ուղղման, կատարված փոխանցման չեղյալացման, ինչպես նաև փոխանցում ստացողի կողմից գումարի չհայտնաբերման պարագայում դրամական միջոցների հետ վերադարձի համար գործում են տվյալ համակարգերի ներքին ընթացակարգերով սահմանված պայմանները և ժամկետները:"
-      ]
-    }
-  ];
+        const transfersListSnapshot = await getDocs(collection(db, "transfersList"));
+        const transfersListData = transfersListSnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }));
+        setTransfersList(transfersListData);
+
+        const menuItemsSnapshot = await getDocs(collection(db, "menuItems"));
+        const menuItemsData = menuItemsSnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        })).sort((a, b) => (a.order || 0) - (b.order || 0));
+        setMenuItems(menuItemsData);
+
+        const accordionsSnapshot = await getDocs(collection(db, "transfersAccordions"));
+        const accordionsData = accordionsSnapshot.docs.map(doc => ({
+          docId: doc.id,
+          ...doc.data()
+        }));
+        setTransfersAccordionsData(accordionsData);
+
+      } catch (error) {
+        console.error("Սխալ տվյալները ներմուծելիս:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <p className="text-lg font-semibold text-gray-600">Տվյալները բեռնվում են...</p>
+      </div>
+    );
+  }
 
   return (
     <>
       <Header />
-      <Navbar items={menuItems} />
+      {menuItems.length > 0 && <Navbar items={menuItems} />}
       
       <main className="w-full py-8 px-4 md:px-12 bg-gray-50">
         <div className="max-w-7xl mx-auto">
@@ -129,37 +125,39 @@ const Transfers = () => {
             </p>
           </div>
         </div>
-        <InfoBanner title={Banner.title} imageSrc={Banner.src} />
+
+        {banner && <InfoBanner title={banner.title} imageSrc={banner.src} />}
+
         <div className="max-w-7xl mx-auto mt-12">
           <div className="md:pl-[calc(3rem+6rem)] max-w-4xl md:max-w-none">
             <div className="max-w-4xl">
-                <h2 className="text-2xl font-extrabold text-gray-900 uppercase mb-6">
-                  ԱՆՀՐԱԺԵՇՏ ՏԵՂԵԿԱՏՎՈՒԹՅՈՒՆ
-                </h2>
-                <div className="max-w-4xl space-y-4">
-                  {TransfersAccordionsData.map((item) => (
-                    <InfoAccordion
-                      key={item.docId}
-                      title={item.title}
-                      blocks={item.blocks}
-                    />
-                  ))}
-                </div>
+              <h2 className="text-2xl font-extrabold text-gray-900 uppercase mb-6">
+                ԱՆՀՐԱԺԵՇՏ ՏԵՂԵԿԱՏՎՈՒԹՅՈՒՆ
+              </h2>
+              <div className="max-w-4xl space-y-4">
+                {transfersAccordionsData.map((item) => (
+                  <InfoAccordion
+                    key={item.docId || item.id}
+                    title={item.title}
+                    blocks={item.blocks}
+                  />
+                ))}
+              </div>
 
-
-              <h2 className="text-xl font-bold text-gray-900 mb-2 mt-8 mt-[40px]">
+              <h2 className="text-xl font-bold text-gray-900 mb-2 mt-[40px]">
                 Փաստաթղթեր
               </h2>
               <div className="space-y-5 mt-6">
                 {transfersList.map((docItem, index) => (
-                  <DocumentCard key={index} title={docItem.title} url={docItem.url} />
+                  <DocumentCard key={docItem.id || index} title={docItem.title} url={docItem.url} />
                 ))}
               </div>
             </div>
           </div>
         </div>
       </section>
-        <OnlineBanking />
+
+      <OnlineBanking />
       <Footer />
     </>
   );
