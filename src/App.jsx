@@ -55,6 +55,7 @@ import Online from "./Pages/online";
 import Boxes from "./Pages/boxes";
 import Contact from "./Pages/contact";
 import Dibrary from "./Pages/dibrary";
+import Bulletins from "./Pages/bulletins";
 function App() {
   return (
     <BrowserRouter>
@@ -62,6 +63,8 @@ function App() {
         <Routes>=
           <Route path="/" element={<Main />} />
           <Route path="/business-loans" element={<Busines />} />
+          
+          <Route path="/bulletins" element={<Bulletins />} />
           <Route path="/credit-history" element={<CreditLoans />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/dibrary" element={<Dibrary />} />
