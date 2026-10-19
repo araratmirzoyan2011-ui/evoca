@@ -51,6 +51,7 @@ import NonResident from "./Pages/non-resident";
 import Security from "./Pages/security";
 import Transfers from "./Pages/transfers";
 import TransferPaymment from "./Pages/transfer-payment-systems";
+import Online from "./Pages/online";
 function App() {
   return (
     <BrowserRouter>
@@ -60,6 +61,7 @@ function App() {
           <Route path="/business-loans" element={<Busines />} />
           <Route path="/credit-history" element={<CreditLoans />} />
           <Route path="/security" element={<Security />} />
+          <Route path="/online" element={<Online />} />
           <Route path="/transfers" element={<Transfers />} />
           <Route path="/transfer-payment-systems" element={<TransferPaymment />} />
           <Route path="/privacy" element={<Privacy />} />
