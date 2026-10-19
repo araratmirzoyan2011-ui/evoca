@@ -6,7 +6,8 @@ import InfoCard from '../Components/AccountsCard.jsx';
 import { DocumentCard } from '../Components/DocumentCard.jsx';
 import SocialIcons from '../Components/SocialIcons.jsx';
 import InfoBanner from '../Components/infoBanner.jsx';
-import InfoAccordion from '../Components/InfoAccordion.jsx'; // <--- Ավելացրեք այս տողը
+import InfoAccordion from '../Components/InfoAccordion.jsx';
+import { OnlineBanking } from '../Components/OnlineBanking.jsx';
 import { db } from '../firebase'; 
 import { collection, getDocs } from 'firebase/firestore';
 
@@ -158,7 +159,7 @@ const Transfers = () => {
           </div>
         </div>
       </section>
-
+        <OnlineBanking />
       <Footer />
     </>
   );
