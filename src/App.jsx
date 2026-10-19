@@ -53,6 +53,7 @@ import Transfers from "./Pages/transfers";
 import TransferPaymment from "./Pages/transfer-payment-systems";
 import Online from "./Pages/online";
 import Boxes from "./Pages/boxes";
+import Dibrary from "./Pages/dibrary";
 function App() {
   return (
     <BrowserRouter>
@@ -61,6 +62,7 @@ function App() {
           <Route path="/" element={<Main />} />
           <Route path="/business-loans" element={<Busines />} />
           <Route path="/credit-history" element={<CreditLoans />} />
+          <Route path="/dibrary" element={<Dibrary />} />
           <Route path="/boxes" element={<Boxes />} />
           <Route path="/security" element={<Security />} />
           <Route path="/online" element={<Online />} />
