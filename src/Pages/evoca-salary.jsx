@@ -10,7 +10,9 @@ import { db } from '../firebase';
 import { collection, getDocs } from 'firebase/firestore';
 import { EvocaNewsCard } from '../Components/EVocaCard1.jsx';
 import InfoCard from '../Components/AccountsCard.jsx';
+import InfoAccordion from '../Components/InfoAccordion.jsx'; // Համոզվիր, որ ճանապարհը ճիշտ է
 import { Link } from 'react-router-dom';
+
 const EvocaSalary = () => {
   const [loading, setLoading] = useState(false);
 
@@ -87,7 +89,60 @@ const EvocaSalary = () => {
     }
   ];
 
-  // 3. Ճշգրիտ salaryitems զանգվածը՝ ըստ ուղարկված նկարի
+  // 3. Ճշգրիտ salaryreports (FAQ Accordion) զանգվածը՝ InfoAccordion-ի կառուցվածքին համապատասխան
+  const salaryreports = [
+    {
+      docId: "faq-1",
+      title: "Ո՞վ կարող է միանալ Evoca աշխատավարձային նախագծին:",
+      blocks: [
+        "Evoca աշխատավարձային նախագծին կարող է միանալ յուրաքանչյուր ֆիզիկական անձ, ով ցանկանում է իր աշխատավարձը ստանալ Evocabank-ի քարտով անկախ գործունեության ոլորտից կամ զբաղվածությունից:"
+      ]
+    },
+    {
+      docId: "faq-2",
+      title: "Կարո՞ղ եմ օգտվել միայն նոր գործատու ունենալու դեպքում:",
+      blocks: [
+        "Ո'չ: Բավական է ձեր գործատուին ներկայացնել Evoca քարտի տվյալները, և աշխատավարձը կփոխանցվի արդեն Evoca-ում բացված հաշվին:"
+      ]
+    },
+    {
+      docId: "faq-3",
+      title: "Կարո՞ղ եմ դիմել, եթե դեռ Evoca-ի հաճախորդ չեմ:",
+      blocks: [
+        "Իհարկե: Եթե դեռ Evoca-ի հաճախորդ չես, դու նույնպես կարող ես միանալ Evoca աշխատավարձային նախագծին:"
+      ]
+    },
+    {
+      docId: "faq-4",
+      title: "Ե՞րբ կսկսեմ օգտվել արտոնություններից:",
+      blocks: [
+        "Արտոնություններից կարող ես օգտվել այն պահից, երբ առաջին աշխատավարձդ փոխանցվի Evocabank-ի քարտին:",
+        "Քարտերի առավելությունները գործում են անմիջապես, իսկ վարկային առավելություններից կարող ես օգտվել աշխատավարձդ Բանկի քարտին մեկ անգամ ստանալուց հետո:"
+      ]
+    },
+    {
+      docId: "faq-5",
+      title: "Կարո՞ղ եմ ունենալ մի քանի քարտ աշխատավարձային նախագծի շրջանակում:",
+      blocks: [
+        "Այո՛, կարող ես ունենալ Բանկի կողմից թողարկված մի քանի գործող քարտ, սակայն աշխատավարձային նախագծի շրջանակում կարող ես ընտրել նշված քարտերից մեկը, որի վրա էլ կստանաս աշխատավարձդ, իսկ Evoca Travel Card-ը կարող ես ձեռք բերել 50% զեղչով:"
+      ]
+    },
+    {
+      docId: "faq-6",
+      title: "Ինչպե՞ս կարող եմ դիմել աշխատավարձային նախագծին միանալու համար:",
+      blocks: [
+        "Միանալու համար կարող ես՝",
+        {
+          items: [
+            { text: "Զանգահարել +37410605555 | 8444 հեռախոսահամարներով", href: "tel:+37410605555" },
+            { text: "Այցելել Evocabank-ի ցանկացած մասնաճյուղ և ստանալ խորհրդատվություն" }
+          ]
+        }
+      ]
+    }
+  ];
+
+  // 4. salaryitems զանգվածը
   const [salaryitems, setSalaryitems] = useState([
     {
       id: 1,
@@ -216,14 +271,12 @@ const EvocaSalary = () => {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
                 
-                {/* Վերնագիրը դարձրել ենք սեղմվող (Link) դեպի /news */}
                 <Link to="/news" className="hover:opacity-80 transition-opacity">
                   <h2 className="text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight cursor-pointer">
                     Վերջին նորությունները
                   </h2>
                 </Link>
                 
-                {/* Կոճակը փոխարինել ենք Link-ով դեպի /news */}
                 <Link 
                   to="/news" 
                   className="flex items-center space-x-2 bg-purple-100/70 hover:bg-purple-200/80 text-purple-700 px-4 py-2.5 rounded-full font-semibold text-sm transition-colors duration-200 group cursor-pointer"
@@ -250,6 +303,22 @@ const EvocaSalary = () => {
                   ))}
                 </div>
               )}
+            </div>
+
+            {/* Հաճախ տրվող հարցեր (InfoAccordion) */}
+            <div className="pt-8">
+              <h2 className="text-2xl font-extrabold text-gray-900 uppercase mb-6">
+                ՀԱՃԱԽ ՏՐՎՈՂ ՀԱՐՑԵՐ
+              </h2>
+              <div className="max-w-4xl space-y-4">
+                {salaryreports.map((item) => (
+                  <InfoAccordion
+                    key={item.docId}
+                    title={item.title}
+                    blocks={item.blocks}
+                  />
+                ))}
+              </div>
             </div>
 
           </div>
