@@ -50,6 +50,7 @@ import MetalAccount from "./Pages/metal-accounts";
 import NonResident from "./Pages/non-resident";
 import Security from "./Pages/security";
 import Transfers from "./Pages/transfers";
+import TransferPaymment from "./Pages/transfer-payment-systems";
 function App() {
   return (
     <BrowserRouter>
@@ -60,6 +61,7 @@ function App() {
           <Route path="/credit-history" element={<CreditLoans />} />
           <Route path="/security" element={<Security />} />
           <Route path="/transfers" element={<Transfers />} />
+          <Route path="/transfer-payment-systems" element={<TransferPaymment />} />
           <Route path="/privacy" element={<Privacy />} />
           <Route path="/non-resident" element={<NonResident />} />
           <Route path="/metal-accounts" element={<MetalAccount />} />

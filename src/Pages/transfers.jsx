@@ -41,7 +41,7 @@ const Transfers = () => {
         }));
         setTransfersList(transfersListData);
 
-        const menuItemsSnapshot = await getDocs(collection(db, "menuItems"));
+        const menuItemsSnapshot = await getDocs(collection(db, "TransferMenu"));
         const menuItemsData = menuItemsSnapshot.docs.map(doc => ({
           id: doc.id,
           ...doc.data()
