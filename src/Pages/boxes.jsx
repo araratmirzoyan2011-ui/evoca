@@ -24,8 +24,9 @@ const tariffTables = [
     title: "Չհրկիզվող անհատական պահարանների վարձակալման սակագներ",
     sizeLabel: "Պահարանի չափերը",
     align: "center",
-    firstCol: 24,
-    labelWidth: 50,
+    firstColClass: "w-[28%] sm:w-[24%]",
+    otherColClass: "w-[24%] sm:w-[25.33%]",
+    labelColClass: "w-1/2",
     periods: [
       { label: "14 օր", values: ["5,000 ՀՀ դրամ", "7,000 ՀՀ դրամ", "10,000 ՀՀ դրամ"] },
       { label: "1 ամիս", values: ["7,000 ՀՀ դրամ", "10,000 ՀՀ դրամ", "12,000 ՀՀ դրամ"] },
@@ -46,8 +47,9 @@ const tariffTables = [
     title: "Չհրկիզվող անհատական պահարանների վարձակալում օտարերկրյա քաղաքացիների համար",
     sizeLabel: "Պահարանի չափսերը",
     align: "left",
-    firstCol: 20,
-    labelWidth: 60,
+    firstColClass: "w-[28%] sm:w-[20%]",
+    otherColClass: "w-[24%] sm:w-[26.67%]",
+    labelColClass: "w-1/2 sm:w-3/5",
     periods: [
       { label: "14 օր", values: ["25,000 ՀՀ դրամ", "35,000 ՀՀ դրամ", "50,000 ՀՀ դրամ"] },
       { label: "1 ամիս", values: ["35,000 ՀՀ դրամ", "50,000 ՀՀ դրամ", "60,000 ՀՀ դրամ"] },
@@ -64,7 +66,6 @@ const tariffTables = [
     ],
   },
 ];
-
 const Boxes = () => {
   const boxesReports = [
     { title: "Համալիր բանկային ծառայությունների մատուցման պայմաններ 16.05.2025թ." }
@@ -77,8 +78,8 @@ const Boxes = () => {
     altText: ""
   };
 
-  const cellBase = "border border-gray-200 px-3 py-2 align-middle";
-
+const cellBase =
+  "border border-gray-200 px-1.5 py-1.5 align-middle break-words sm:px-3 sm:py-2";
   return (
     <>
       <Header />
@@ -101,84 +102,99 @@ const Boxes = () => {
             </div>
           </div>
 
-          <div className="max-w-4xl flex-1 text-[15px] leading-7 text-gray-900">
-            <div className="space-y-6">
-              {boxesParagraphs.map((text, i) => (
-                <p key={i}>{text}</p>
-              ))}
-            </div>
+          <div className="min-w-0 max-w-4xl flex-1 text-[14px] leading-6 text-gray-900 sm:text-[15px] sm:leading-7">
+  <div className="space-y-6">
+    {boxesParagraphs.map((text, i) => (
+      <p key={i} className="break-words">{text}</p>
+    ))}
+  </div>
 
-            <div className="mt-8 space-y-8">
-              {tariffTables.map((t) => {
-                const textAlign = t.align === "center" ? "text-center" : "text-left";
-                const otherCol = (100 - t.firstCol) / 3;
+  <div className="mt-8 space-y-8">
+    {tariffTables.map((t) => {
+      const textAlign = t.align === "center" ? "text-center" : "text-left";
+      const tableText = "text-[11px] leading-4 sm:text-[13px] sm:leading-5";
 
-                return (
-                  <div key={t.id}>
-                    <h3 className="mb-4 text-[15px] font-bold">{t.title}</h3>
+      return (
+        <div key={t.id}>
+          <h3 className="mb-4 text-[14px] font-bold leading-6 sm:text-[15px]">
+            {t.title}
+          </h3>
 
-                    <div className="overflow-x-auto rounded-lg bg-white shadow-[0_2px_10px_rgba(0,0,0,0.08)]">
-                      <table className="w-full min-w-[560px] table-fixed border-collapse text-[13px] leading-5">
-                        <colgroup>
-                          <col style={{ width: `${t.firstCol}%` }} />
-                          <col style={{ width: `${otherCol}%` }} />
-                          <col style={{ width: `${otherCol}%` }} />
-                          <col style={{ width: `${otherCol}%` }} />
-                        </colgroup>
-                        <thead>
-                          <tr>
-                            <th rowSpan={2} className={`${cellBase} text-left font-normal`}>
-                              ժամկետ
-                            </th>
-                            <th colSpan={3} className={`${cellBase} ${textAlign} font-normal`}>
-                              {t.sizeLabel}
-                            </th>
-                          </tr>
-                          <tr>
-                            {boxSizes.map((size) => (
-                              <th key={size} className={`${cellBase} ${textAlign} font-normal`}>
-                                {size}
-                              </th>
-                            ))}
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {t.periods.map((row) => (
-                            <tr key={row.label}>
-                              <td className={cellBase}>{row.label}</td>
-                              {row.values.map((v, i) => (
-                                <td key={i} className={`${cellBase} ${textAlign}`}>
-                                  {v}
-                                </td>
-                              ))}
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
+          <div className="overflow-x-auto rounded-lg bg-white shadow-[0_2px_10px_rgba(0,0,0,0.08)]">
+            <table className={`w-full table-fixed border-collapse ${tableText}`}>
+              <colgroup>
+                <col className={t.firstColClass} />
+                <col className={t.otherColClass} />
+                <col className={t.otherColClass} />
+                <col className={t.otherColClass} />
+              </colgroup>
+              <thead>
+                <tr>
+                  <th rowSpan={2} className={`${cellBase} text-left font-normal`}>
+                    ժամկետ
+                  </th>
+                  <th colSpan={3} className={`${cellBase} ${textAlign} font-normal`}>
+                    {t.sizeLabel}
+                  </th>
+                </tr>
+                <tr>
+                  {boxSizes.map((size) => (
+                    <th key={size} className={`${cellBase} ${textAlign} font-normal`}>
+                      {size}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {t.periods.map((row) => {
+                  const merged = row.values.every((v) => v === row.values[0]);
+                  return (
+                    <tr key={row.label}>
+                      <td className={cellBase}>{row.label}</td>
+                      {merged && (
+                        <td colSpan={3} className={`${cellBase} ${textAlign} sm:hidden`}>
+                          {row.values[0]}
+                        </td>
+                      )}
+                      {row.values.map((v, i) => (
+                        <td
+                          key={i}
+                          className={`${cellBase} ${textAlign} ${
+                            merged ? "hidden sm:table-cell" : ""
+                          }`}
+                        >
+                          {v}
+                        </td>
+                      ))}
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
 
-                      <table className="-mt-px w-full min-w-[560px] table-fixed border-collapse text-[13px] leading-5">
-                        <colgroup>
-                          <col style={{ width: `${t.labelWidth}%` }} />
-                          <col />
-                        </colgroup>
-                        <tbody>
-                          {t.extras.map((row) => (
-                            <tr key={row.label}>
-                              <td className={cellBase}>{row.label}</td>
-                              <td className={cellBase}>{row.value}</td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
+            <table className={`-mt-px w-full table-fixed border-collapse ${tableText}`}>
+              <colgroup>
+                <col className={t.labelColClass} />
+                <col />
+              </colgroup>
+              <tbody>
+                {t.extras.map((row) => (
+                  <tr key={row.label}>
+                    <td className={cellBase}>{row.label}</td>
+                    <td className={cellBase}>{row.value}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      );
+    })}
+  </div>
 
-            <p className="mt-6 text-[13px]">
-              <span className="font-bold">Նշում</span> - Միջնորդավճարները ներկայացված են ներառյալ ԱԱՀ:
-            </p>
+  <p className="mt-6 text-[12px] sm:text-[13px]">
+    <span className="font-bold">Նշում</span> - Միջնորդավճարները ներկայացված են ներառյալ ԱԱՀ:
+  </p>
 
             <div className="mt-10">
               <h2 className="text-xl font-bold text-gray-900 mb-6">
