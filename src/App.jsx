@@ -53,6 +53,7 @@ import Transfers from "./Pages/transfers";
 import TransferPaymment from "./Pages/transfer-payment-systems";
 import Online from "./Pages/online";
 import Boxes from "./Pages/boxes";
+import Contact from "./Pages/contact";
 import Dibrary from "./Pages/dibrary";
 function App() {
   return (
@@ -62,6 +63,7 @@ function App() {
           <Route path="/" element={<Main />} />
           <Route path="/business-loans" element={<Busines />} />
           <Route path="/credit-history" element={<CreditLoans />} />
+          <Route path="/contact" element={<Contact />} />
           <Route path="/dibrary" element={<Dibrary />} />
           <Route path="/boxes" element={<Boxes />} />
           <Route path="/security" element={<Security />} />
