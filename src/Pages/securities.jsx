@@ -1,13 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { Header } from '../Components/Header';
 import Footer from '../Components/Footer';
-import Navbar from '../Components/Menuall.jsx';
-import { DocumentCard } from '../Components/DocumentCard.jsx';
 import SocialIcons from '../Components/SocialIcons.jsx';
-import { OnlineBanking } from '../Components/OnlineBanking.jsx';
-import { EvocaReviewCard } from '../Components/EvocaReviewCard.jsx';
 import { db } from '../firebase';
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, getDocs, doc, getDoc } from 'firebase/firestore';
 import { EvocaNewsCard } from '../Components/EVocaCard1.jsx';
 import InfoCard from '../Components/AccountsCard.jsx';
 import InfoAccordion from '../Components/InfoAccordion.jsx';
@@ -16,101 +12,49 @@ import { Link } from 'react-router-dom';
 const Securities = () => {
   const [loading, setLoading] = useState(true);
 
-  const [benefitsData, setBenefitsData] = useState([]);
-  const [loanTypesData, setLoanTypesData] = useState([]);
-  const [salaryreports, setSalaryreports] = useState([]);
+  const [securitiesitems, setSecuritiesitems] = useState([]);
+  const [introTexts, setIntroTexts] = useState([]);
+  const [clientSteps, setClientSteps] = useState([]);
+  const [contactInfo, setContactInfo] = useState(null);
+  const [warnings, setWarnings] = useState([]);
+  const [cardData, setCardData] = useState(null);
   const [salaryitems, setSalaryitems] = useState([]);
-const securitiesitems = [
-    {
-      docId: "sec-1",
-      title: "Ներդրումային ծառայությունների մատուցման կանոններ",
-      blocks: [
-        {
-          items: [
-            { text: "Արժեթղթերի շուկայում բրոքերային ծառայությունների մատուցման կանոններ", href: "#" }
-          ]
-        },
-        "Այս կանոնները սահմանում են մեր հաճախորդների կողմից մեզ ներկայացված արժեթղթերով գործարքների կնքման պատվերների ընդունման/հաղորդման, հաճախորդների հետ կապի իրականացման, հաճախորդների հաշվին արժեթղթերով գործարքների կատարման կարգն ու պայմանները, ինչպես նաև տրամադրում գործառնությունների իրականացման հետ կապված հնարավոր ռիսկերի վերաբերյալ ընդհանրական տեղեկություններ: Կանոնները մշակված են Հայաստանի քաղաքացիական օրենսգրքին, «Արժեթղթերի շուկայի մասին» ՀՀ օրենքին, ՀՀ Կենտրոնական բանկի նորմատիվ և այլ իրավական акты-ին համապատասխան:",
-        {
-          items: [
-            { text: "Արժեթղթերի պահառության գործունեության կանոններ", href: "#" }
-          ]
-        },
-        "Այս կանոնները սահմանում են արժեթղթերի հաշիվների հետ կատարվող գործառնությունների ցանկը, ծառայությունների մատուցման/կատարման կարգն ու պայմանները, պահառության հետ կապված հարաբերությունները, ինչպես նաև պահառուի աշխատանքների կանոնները: Կանոնները մշակված են Հայաստանի քաղաքացիական օրենսգրքին, «Արժեթղթերի շուկայի մասին» ՀՀ օրենքին և պահառության գործունեությունը կանոնակարգող իրավական այլ ակտերին (այդ թվում՝ Հայաստանի կենտրոնական դեպոզիտարիայի կանոնների պահանջներին) համապատասխան:"
-      ]
-    },
-    {
-      docId: "sec-2",
-      title: "Ծառայությունների մատուցման սակագներ",
-      blocks: [
-        {
-          items: [
-            { text: "Տեղական և Ռուսական շուկաներում ծառայությունների մատուցման սակագներ", href: "#" },
-            { text: "Միջազգային շուկաներում ծառայությունների մատուցման սակագներ", href: "#" }
-          ]
-        }
-      ]
-    },
-    {
-      docId: "sec-3",
-      title: "Լրացուցիչ տեղեկատվություն",
-      blocks: [
-        {
-          items: [
-            { text: "«Արժեթղթերով գործարքներ կնքելու նպատակով պատվերների ընդունման և կատարման» ընթացակարգ", href: "#" },
-            { text: "«Շահերի բախման սահմանափակման» ընթացակարգ", href: "#" },
-            { text: "Ֆոնդային բորսաներ", href: "#" },
-            { text: "Տեղեկացումներ հնարավոր ռիսկերի վերաբերյալ", href: "#" }
-          ]
-        }
-      ]
-    }
-  ];
-  // Տվյալները զանգվածներում
-  const introTexts = [
-    "Բանկն իր հաճախորդներին ներդրումային ծառայություններ է մատուցում ինչպես տեղական, այնպես էլ՝ միջազգային շուկաներում: Բանկի կողմից առաջարկվող ծառայությունները հասանելի են իրավաբանական և ֆիզիկական անձ հանդիսացող հաճախորդներին[cite: 1]:"
-  ];
-
-  const clientSteps = [
-    {
-      title: "Ինչպե՞ս դառնալ հաճախորդ:",
-      description: "Ներդրումային ծառայություններից օգտվելու համար անհրաժեշտ է Բանկում ունենալ ընթացիկ բանկային հաշիվ, որի բացման համար պահանջվող փաստաթղթերին կարող եք ծանոթանալ[cite: 1]",
-      linkText: "այստեղ",
-      linkUrl: "#"
-    },
-    {
-      description: "Բրոքերային հաշվի բացման համար անհրաժեշտ է այցելել Բանկի գլխամասային գրասենյակ[cite: 1]:"
-    }
-  ];
-
-  const contactInfo = {
-    address: "Երևան, Հանրապետության 44/2[cite: 1]",
-    phones: ["374 33 777 453[cite: 1]", "374 33 603 055[cite: 1]"],
-    email: "investsecurities@evoca.am[cite: 1]"
-  };
-
-  const warnings = [
-    "ՈՒՇԱԴՐՈՒԹՅՈՒՆ. Ֆինանսական շուկաներում գործարքների իրականացման հետ կապված ՌԻՍԿԸ ԿՐՈՒՄ Է ՀԱՃԱԽՈՐԴԸ: Բանկը ՉԻ ՓՈԽՀԱՏՈՒՑԵԼՈՒ հաճախորդի վնասները, եթե դրանք չեն պատճառվել Բանկի կողմից անբարեխիղճ վարքագծի արդյունքում[cite: 1]:"
-  ];
 
   useEffect(() => {
     const fetchDataFromFirebase = async () => {
       try {
         setLoading(true);
 
-        const benefitsSnapshot = await getDocs(collection(db, "benefitsDataCollection"));
-        if (!benefitsSnapshot.empty) {
-          setBenefitsData(benefitsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+        const securitiesSnapshot = await getDocs(collection(db, "securitiesitems"));
+        if (!securitiesSnapshot.empty) {
+          setSecuritiesitems(securitiesSnapshot.docs.map(doc => ({ docId: doc.id, ...doc.data() })));
         }
 
-        const loansSnapshot = await getDocs(collection(db, "loanTypesDataCollection"));
-        if (!loansSnapshot.empty) {
-          setLoanTypesData(loansSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+        const introSnapshot = await getDocs(collection(db, "introTexts"));
+        if (!introSnapshot.empty) {
+          setIntroTexts(introSnapshot.docs.map(doc => doc.data().text));
         }
 
-        const reportsSnapshot = await getDocs(collection(db, "salaryreportsCollection"));
-        if (!reportsSnapshot.empty) {
-          setSalaryreports(reportsSnapshot.docs.map(doc => ({ docId: doc.id, ...doc.data() })));
+        const stepsSnapshot = await getDocs(collection(db, "clientSteps"));
+        if (!stepsSnapshot.empty) {
+          setClientSteps(stepsSnapshot.docs.map(doc => doc.data()));
+        }
+
+        const contactDocRef = doc(db, "contactInfo", "main");
+        const contactDocSnap = await getDoc(contactDocRef);
+        if (contactDocSnap.exists()) {
+          setContactInfo(contactDocSnap.data());
+        }
+
+        const warningsSnapshot = await getDocs(collection(db, "warnings"));
+        if (!warningsSnapshot.empty) {
+          setWarnings(warningsSnapshot.docs.map(doc => doc.data().text));
+        }
+
+        const cardDocRef = doc(db, "cardData", "main");
+        const cardDocSnap = await getDoc(cardDocRef);
+        if (cardDocSnap.exists()) {
+          setCardData(cardDocSnap.data());
         }
 
         const newsSnapshot = await getDocs(collection(db, "salaryNewsCollection"));
@@ -136,13 +80,6 @@ const securitiesitems = [
       </div>
     );
   }
-
-  const cardData = {
-    title: "Ներդրումային ծառայություններ",
-    description: "Evocabank-ն առաջարկում է ներդրումային ծառայություններ և տալիս եկամտի նոր աղբյուրների հնարավորություն՝ ձեր պահանջներին և ցանկություններին համապատասխան։",
-    imageUrl: "https://www.evoca.am/images-cache/menu/1/16781890566687/780x585.jpg",
-    altText: ""
-  };
 
   return (
     <>
@@ -171,14 +108,12 @@ const securitiesitems = [
 
           <div className="flex-1 max-w-4xl text-gray-800 space-y-8">
             
-            {/* Ներածական տեքստեր զանգվածից */}
             <div className="space-y-4 text-gray-700 leading-relaxed">
               {introTexts.map((text, index) => (
                 <p key={index}>{text}</p>
               ))}
             </div>
 
-            {/* Հաճախ դառնալու քայլեր զանգվածից */}
             <div className="space-y-4">
               {clientSteps.map((step, index) => (
                 <div key={index} className="space-y-2">
@@ -190,15 +125,17 @@ const securitiesitems = [
               ))}
             </div>
 
-            {/* Հասցե և կոնտակտային տվյալներ */}
-            <div className="space-y-3">
-              <h3 className="text-xl font-bold text-purple-800">Հասցե`</h3>
-              <p>{contactInfo.address}</p>
+            {contactInfo && (
+              <div className="space-y-3">
+                <h3 className="text-xl font-bold text-purple-800">Հասցե`</h3>
+                <p>{contactInfo.address}</p>
 
-              <h3 className="text-xl font-bold text-purple-800 pt-2">Հետադարձ կապ`</h3>
-              <p>Հեռ.՝ {contactInfo.phones.join(', ')}</p>
-              <p>Էլ. հասցե՝ <a href={`mailto:${contactInfo.email}`} className="text-purple-600 underline">{contactInfo.email}</a></p>
-            </div>
+                <h3 className="text-xl font-bold text-purple-800 pt-2">Հետադարձ կապ`</h3>
+                <p>Հեռ.՝ {contactInfo.phones?.join(', ')}</p>
+                <p>Էլ. հասցե՝ <a href={`mailto:${contactInfo.email}`} className="text-purple-600 underline">{contactInfo.email}</a></p>
+              </div>
+            )}
+            
             <div className="bg-gray-100 p-4 rounded-lg border-l-4 border-purple-800 space-y-2">
               {warnings.map((warn, index) => (
                 <p key={index} className="text-sm font-semibold text-gray-800">{warn}</p>
