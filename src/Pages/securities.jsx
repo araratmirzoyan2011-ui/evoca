@@ -21,6 +21,33 @@ const Securities = () => {
   const [salaryreports, setSalaryreports] = useState([]);
   const [salaryitems, setSalaryitems] = useState([]);
 
+  // Տվյալները զանգվածներում
+  const introTexts = [
+    "Բանկն իր հաճախորդներին ներդրումային ծառայություններ է մատուցում ինչպես տեղական, այնպես էլ՝ միջազգային շուկաներում: Բանկի կողմից առաջարկվող ծառայությունները հասանելի են իրավաբանական և ֆիզիկական անձ հանդիսացող հաճախորդներին[cite: 1]:"
+  ];
+
+  const clientSteps = [
+    {
+      title: "Ինչպե՞ս դառնալ հաճախորդ:",
+      description: "Ներդրումային ծառայություններից օգտվելու համար անհրաժեշտ է Բանկում ունենալ ընթացիկ բանկային հաշիվ, որի բացման համար պահանջվող փաստաթղթերին կարող եք ծանոթանալ[cite: 1]",
+      linkText: "այստեղ",
+      linkUrl: "#"
+    },
+    {
+      description: "Բրոքերային հաշվի բացման համար անհրաժեշտ է այցելել Բանկի գլխամասային գրասենյակ[cite: 1]:"
+    }
+  ];
+
+  const contactInfo = {
+    address: "Երևան, Հանրապետության 44/2[cite: 1]",
+    phones: ["374 33 777 453[cite: 1]", "374 33 603 055[cite: 1]"],
+    email: "investsecurities@evoca.am[cite: 1]"
+  };
+
+  const warnings = [
+    "ՈՒՇԱԴՐՈՒԹՅՈՒՆ. Ֆինանսական շուկաներում գործարքների իրականացման հետ կապված ՌԻՍԿԸ ԿՐՈՒՄ Է ՀԱՃԱԽՈՐԴԸ: Բանկը ՉԻ ՓՈԽՀԱՏՈՒՑԵԼՈՒ հաճախորդի վնասները, եթե դրանք չեն պատճառվել Բանկի կողմից անբարեխիղճ վարքագծի արդյունքում[cite: 1]:"
+  ];
+
   useEffect(() => {
     const fetchDataFromFirebase = async () => {
       try {
@@ -64,7 +91,14 @@ const Securities = () => {
       </div>
     );
   }
-const cardData={title:"Ներդրումային ծառայություններ",description:"Evocabank-ն առաջարկում է ներդրումային ծառայություններ և տալիս եկամտի նոր աղբյուրների հնարավորություն՝ ձեր պահանջներին և ցանկություններին համապատասխան։",imageUrl:"https://www.evoca.am/images-cache/menu/1/16781890566687/780x585.jpg",altText:""}
+
+  const cardData = {
+    title: "Ներդրումային ծառայություններ",
+    description: "Evocabank-ն առաջարկում է ներդրումային ծառայություններ և տալիս եկամտի նոր աղբյուրների հնարավորություն՝ ձեր պահանջներին և ցանկություններին համապատասխան։",
+    imageUrl: "https://www.evoca.am/images-cache/menu/1/16781890566687/780x585.jpg",
+    altText: ""
+  };
+
   return (
     <>
       <Header />
@@ -92,7 +126,41 @@ const cardData={title:"Ներդրումային ծառայություններ",
 
           <div className="flex-1 max-w-4xl text-gray-800 space-y-8">
             
-           
+            {/* Ներածական տեքստեր զանգվածից */}
+            <div className="space-y-4 text-gray-700 leading-relaxed">
+              {introTexts.map((text, index) => (
+                <p key={index}>{text}</p>
+              ))}
+            </div>
+
+            {/* Հաճախ դառնալու քայլեր զանգվածից */}
+            <div className="space-y-4">
+              {clientSteps.map((step, index) => (
+                <div key={index} className="space-y-2">
+                  {step.title && <h3 className="text-xl font-bold text-purple-800">{step.title}</h3>}
+                  <p>
+                    {step.description} {step.linkText && <a href={step.linkUrl} className="text-purple-600 underline font-medium">{step.linkText}</a>}
+                  </p>
+                </div>
+              ))}
+            </div>
+
+            {/* Հասցե և կոնտակտային տվյալներ */}
+            <div className="space-y-3">
+              <h3 className="text-xl font-bold text-purple-800">Հասցե`</h3>
+              <p>{contactInfo.address}</p>
+
+              <h3 className="text-xl font-bold text-purple-800 pt-2">Հետադարձ կապ`</h3>
+              <p>Հեռ.՝ {contactInfo.phones.join(', ')}</p>
+              <p>Էլ. հասցե՝ <a href={`mailto:${contactInfo.email}`} className="text-purple-600 underline">{contactInfo.email}</a></p>
+            </div>
+
+            {/* Ուշադրություն բաժին զանգվածից */}
+            <div className="bg-gray-100 p-4 rounded-lg border-l-4 border-purple-800 space-y-2">
+              {warnings.map((warn, index) => (
+                <p key={index} className="text-sm font-semibold text-gray-800">{warn}</p>
+              ))}
+            </div>
 
             <div className="pt-8">
               <h2 className="text-2xl font-extrabold text-gray-900 uppercase mb-6">
