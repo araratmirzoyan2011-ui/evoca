@@ -6,13 +6,6 @@ import InfoCard from '../Components/AccountsCard.jsx';
 import { db } from '../firebase';
 import { collection, getDocs } from 'firebase/firestore';
 import ResourceLogos from '../Components/ResourceLogos.jsx';
-const Dibrary = () => {
-  const cardData = {
-    title: "Dibrary - Digital Library",
-    description: "Evocabank-ի նոր և գերժամանակակից «Թումանյան» մասնաճյուղում` Թումանյան 15 հասցեով, բացի ստանդարտ բանկային ծառայություններից, կգործի նաև Dibrary – digital library:",
-    imageUrl: "https://www.evoca.am/images-cache/menu/1/16117479662777/780x585.jpg",
-    altText: "."
-  };
 
 const BASE = "https://www.evoca.am/file_manager/Dibrary";
 const logos = [
@@ -58,6 +51,14 @@ const logos = [
   { name: "Bookboon Free E-textbooks", src: `${BASE}/Logo_BookBoon.png`, href: "https://bookboon.com/" },
   { name: "IDEAS", src: `${BASE}/ideas.png`, href: "https://www.thesaurus.com/browse/ideas" },
 ];
+const Dibrary = () => {
+  const cardData = {
+    title: "Dibrary - Digital Library",
+    description: "Evocabank-ի նոր և գերժամանակակից «Թումանյան» մասնաճյուղում` Թումանյան 15 հասցեով, բացի ստանդարտ բանկային ծառայություններից, կգործի նաև Dibrary – digital library:",
+    imageUrl: "https://www.evoca.am/images-cache/menu/1/16117479662777/780x585.jpg",
+    altText: "."
+  };
+
   const contentSections = [
     {
       id: 1,
