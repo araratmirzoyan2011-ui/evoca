@@ -57,6 +57,7 @@ import Contact from "./Pages/contact";
 import Dibrary from "./Pages/dibrary";
 import EvocaTouch from "./Pages/evoca-touch";
 import Bulletins from "./Pages/bulletins";
+import EvocaSalary from "./Pages/evoca-salary";
 function App() {
   return (
     <BrowserRouter>
@@ -64,7 +65,8 @@ function App() {
         <Routes>=
           <Route path="/" element={<Main />} />
           <Route path="/business-loans" element={<Busines />} />
-          <Route path="/business-loans" element={<Busines />} />
+          <Route path="/evoca-salary" element={<EvocaSalary />} />
+          <Route path="/bulletins" element={<Bulletins />} />
           <Route path="/evoca-touch" element={<EvocaTouch />} />
           <Route path="/credit-history" element={<CreditLoans />} />
           <Route path="/contact" element={<Contact />} />
