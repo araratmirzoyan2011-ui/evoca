@@ -14,10 +14,11 @@ const cardInfo={title:"Դրամական փոխանցումներ",description:"�
     imageUrl:"https://www.evoca.am/images-cache/menu/1/16115828343472/780x585.jpg",altText:"Դրամական փոխանցումներ"
 }
 const transfersList=[{title:"Միջազգային վճարման հանձնարարականներով փոխանցումների իրականացման կանոններ"},{title:"Համալիր բանկային ծառայությունների մատուցման պայմաններ 16.05.2025թ."},{title:"SWIFT Transfers (20.03.2026)"}]
-  return (
+const menuItems=[{label:"Դրամական փոխանցումներ", path:"/transfers",order:1},{label:"Վճարային համակարգեր",path:"transfer-payment-systems",order:2}] 
+return (
     <>
       <Header />
-
+        <Navbar items={menuItems} />
       <main className="w-full py-8 px-4 md:px-12 bg-gray-50">
         <div className="max-w-7xl mx-auto">
           {cardInfo && (
