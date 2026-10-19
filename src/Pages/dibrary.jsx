@@ -1,13 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { Header } from '../Components/Header';
 import Footer from '../Components/Footer';
-import { DocumentCard } from '../Components/DocumentCard.jsx';
 import SocialIcons from '../Components/SocialIcons.jsx';
-import { OnlineBanking } from '../Components/OnlineBanking.jsx';
 import InfoCard from '../Components/AccountsCard.jsx';
 import { db } from '../firebase';
 import { collection, getDocs } from 'firebase/firestore';
-
+import ResourceLogos from '../Components/ResourceLogos.jsx';
 const Dibrary = () => {
   const cardData = {
     title: "Dibrary - Digital Library",
@@ -16,6 +14,50 @@ const Dibrary = () => {
     altText: "."
   };
 
+const BASE = "https://www.evoca.am/file_manager/Dibrary";
+const logos = [
+  // Տող 1
+  { name: "EBSCO", src: `${BASE}/1_Ebso.jpg`, href: "https://search.ebscohost.com/" },
+  { name: "OpenStax", src: `${BASE}/Openstax.jpg`, href: null },
+  { name: "OAPEN", src: `${BASE}/5_Logo_OAPEN.png`, href: "https://www.oapen.org/home" },
+  { name: "Նորավանք", src: `${BASE}/N.jpg`, href: "http://www.noravank.am/arm/jurnals/index.php" },
+  { name: "Springer", src: `${BASE}/2_Sp%5B1%5D.jpg`, href: null },
+
+  // Տող 2
+  { name: "Polpred", src: `${BASE}/3_POlP.jpg`, href: "https://polpred.com/news" },
+  { name: "Search", src: `${BASE}/431ea875.jpg`, href: "https://cse.google.com/cse?cx=004286394939895931631:yqpm8pjcllz" },
+  { name: "The Royal Society", src: `${BASE}/RS.jpg`, href: "https://royalsociety.org/" },
+  { name: "eLibrary.ru", src: `${BASE}/Library.ru.jpg`, href: null },
+  { name: "Open Textbook Library", src: `${BASE}/4_71691ad9.jpg`, href: "https://open.umn.edu/opentextbooks/textbooks/web-literacy-for-student-fact-checkers" },
+
+  // Տող 3
+  { name: "DOAJ", src: `${BASE}/e6797964.jpg`, href: "https://doaj.org/" },
+  { name: "NLA", src: `${BASE}/NLA.jpg`, href: "http://etd.asj-oa.am/" },
+  { name: "DOAB", src: `${BASE}/4_Doab.jpg`, href: "https://www.doabooks.org/doab?uiLanguage=en" },
+  { name: "OER Commons", src: `${BASE}/1_c55c00d4.jpg`, href: "https://www.oercommons.org/advanced-search" },
+  { name: "OpenDOAR", src: `${BASE}/OpD.jpg`, href: "https://v2.sherpa.ac.uk/opendoar/" },
+
+  // Տող 4
+  { name: "Duke University Press", src: `${BASE}/Duke.jpg`, href: "https://read.dukeupress.edu/" },
+  { name: "JSTOR", src: `${BASE}/5_JS%5B1%5D.jpg`, href: null },
+  { name: "OpenBook Publishers", src: `${BASE}/2_OBP.jpg`, href: "https://openresearchlibrary.org/curation/3ea805a2-7b74-4396-beac-325fc0b1b726" },
+  { name: "SAGE Journals", src: `${BASE}/Sage.jpg`, href: "https://journals.sagepub.com/" },
+  { name: "Bookboon", src: `${BASE}/3e144dee.jpg`, href: "https://bookboon.com/" },
+
+  // Տող 5
+  { name: "Questia", src: `${BASE}/6_Quest.jpg`, href: "https://www.gale.com/databases/questia" },
+  { name: "Journals for Free", src: `${BASE}/Logo_Journals4free.png`, href: "http://www.journals4free.com/" },
+  { name: "ScienceDirect", src: `${BASE}/SD.jpg`, href: "https://www.sciencedirect.com/" },
+  { name: "Open Knowledge Maps", src: `${BASE}/OKM.jpg`, href: "https://openknowledgemaps.org/" },
+  { name: "B-OK", src: `${BASE}/dibrary-2.jpg`, href: null },
+
+  // Տող 6
+  { name: "Open Knowledge Repository", src: `${BASE}/4_Logo_OpenKnowledgeRepository.png`, href: "https://openknowledge.worldbank.org/" },
+  { name: "Elgar Online", src: `${BASE}/Elg.jpg`, href: "https://www.elgaronline.com/" },
+  { name: "Search", src: `${BASE}/Search.jpg`, href: "https://cse.google.com/cse?cx=004286394939895931631:gt4aweqr270" },
+  { name: "Bookboon Free E-textbooks", src: `${BASE}/Logo_BookBoon.png`, href: "https://bookboon.com/" },
+  { name: "IDEAS", src: `${BASE}/ideas.png`, href: "https://www.thesaurus.com/browse/ideas" },
+];
   const contentSections = [
     {
       id: 1,
@@ -93,7 +135,6 @@ const Dibrary = () => {
             </div>
           </div>
 
-          {/* Զանգվածի արտածումը mapping-ի միջոցով */}
           <div className="flex-1 text-gray-800 leading-relaxed space-y-6">
             {contentSections.map((section) => (
               <p key={section.id}>
@@ -121,8 +162,13 @@ const Dibrary = () => {
               </p>
             ))}
           </div>
+          
         </div>
+        
       </section>
+      <div className="mx-auto max-w-6xl px-4 py-8">
+      <ResourceLogos logos={logos} />
+    </div>
 
       <Footer />
     </>
