@@ -8,10 +8,31 @@ import { EvocaNewsCard } from '../Components/EVocaCard1.jsx';
 import InfoCard from '../Components/AccountsCard.jsx';
 import InfoAccordion from '../Components/InfoAccordion.jsx';
 import { Link } from 'react-router-dom';
-
+import Navbar from '../Components/Menuall.jsx';
 const Securities = () => {
   const [loading, setLoading] = useState(true);
-
+ const securitiesmenu = [
+  {
+    label: "Ներդրումային ծառայություններ",
+    path: "/securities",
+  },
+  {
+    label: "Պարտատոմսեր",
+    path: "/securities-bonds",
+  },
+  {
+    label: "ՀԿԴ ծառայություններ",
+    path: "/securities-cda-services",
+  },
+  {
+    label: "Ռեպո/Հակադարձ Ռեպո գործարքներ",
+    path: "/securities-repo-transactions",
+  },
+  {
+    label: "EvocaINVEST",
+    path: "/securities-evoca-invest",
+  },
+];
   const [securitiesitems, setSecuritiesitems] = useState([]);
   const [introTexts, setIntroTexts] = useState([]);
   const [clientSteps, setClientSteps] = useState([]);
@@ -84,6 +105,7 @@ const Securities = () => {
   return (
     <>
       <Header />
+        <Navbar items={  securitiesmenu } />
       <main className="w-full py-8 px-4 md:px-12 bg-gray-50">
         <div className="max-w-7xl mx-auto space-y-6">
           {cardData && (
