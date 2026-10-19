@@ -52,6 +52,7 @@ import Security from "./Pages/security";
 import Transfers from "./Pages/transfers";
 import TransferPaymment from "./Pages/transfer-payment-systems";
 import Online from "./Pages/online";
+import Boxes from "./Pages/boxes";
 function App() {
   return (
     <BrowserRouter>
@@ -60,6 +61,7 @@ function App() {
           <Route path="/" element={<Main />} />
           <Route path="/business-loans" element={<Busines />} />
           <Route path="/credit-history" element={<CreditLoans />} />
+          <Route path="/boxes" element={<Boxes />} />
           <Route path="/security" element={<Security />} />
           <Route path="/online" element={<Online />} />
           <Route path="/transfers" element={<Transfers />} />
