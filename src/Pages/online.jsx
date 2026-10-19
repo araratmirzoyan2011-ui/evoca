@@ -11,7 +11,25 @@ import { db } from '../firebase';
 import { collection, getDocs, doc, setDoc, orderBy, query } from 'firebase/firestore';
 
 const OnlineReports=[{title:"Համալիր բանկային ծառայությունների մատուցման պայմաններ 16.05.2025թ."},{title:"SWIFT Transfers (20.03.2026)"},{title:"SWIFT переводы в РФ (20.03.2026)"}]
-
+const OnlineAccordionsData = [
+  {
+    title: "Անվտանգությունը",
+    blocks: [
+      "Համակարգն առավել անվտանգ դարձնելու նպատակով մեր EvocaOnline համակարգի օգտատերերին առաջարկում ենք Vasco Token Digipass GO-6 սարք:",
+      "Vasco Token Digipass GO-6 անվտանգության սարքը մեր սեփականությունն է, որը տրամադրում ենք ձեզ EvocaOnline համակարգ մուտք գործելու անվտանգության համապատասխան գաղտնանիշերի գեներացման համար:",
+      "Տվյալների գաղտնագրման համար օգտագործվում է Secure Socket Layer (SSL) տեխնոլոգիան:",
+    ],
+  },
+  {
+    title: "Ակտիվացման կարգը",
+    blocks: [
+      "Հավելվածը մեր հաճախորդներին տրամադրում ենք «Միայն դիտելու» կամ «Դիտելու և գործարքներ կատարելու» հնարավորությամբ:",
+      "Մեր և ձեր միջև բանկային ծառայությունների մատուցման որևէ պայմանագիր կնքելու դեպքում (հաշիվների բացում, վարկերի տրամադրում, ավանդների ներգրավում և այլն), հավելվածն ակտիվանում է ավտոմատ կերպով՝ «Միայն դիտելու» հնարավորությամբ: Համակարգեր մուտք գործելու տվյալները (Login, Password) առկա են ծառայությունների մատուցման պայմանագրերում: Պայմանագրերում առկա է նաև QR կոդի տեսքով հղում՝ հավելվածը App Store-ից կամ Play-Store-ից ներբեռնելու համար:",
+      "Ցանկության դեպքում կարող եք ակտիվացնել հավելվածը՝ «Դիտելու և գործարքներ կատարելու» հնարավորությամբ:",
+      "Եթե արդեն օգտվում եք մեր ծառայություններից, ապա կարող եք դիմել մեզ և ակտիվացնել հավելվածը՝ «Միայն դիտելու» կամ «Դիտելու և գործարքներ կատարելու» հնարավորությամբ:",
+    ],
+  },
+];
 const Dot = () => (
   <span className="mt-[9px] h-2 w-2 shrink-0 rounded-full bg-[#6a00d4]" />
 );
@@ -152,15 +170,15 @@ const Online = () => {
             <h2 className="text-2xl font-extrabold text-gray-900 uppercase mb-6">
               ԱՆՀՐԱԺԵՇՏ ՏԵՂԵԿԱՏՎՈՒԹՅՈՒՆ
             </h2>
-            {/* <div className="max-w-4xl space-y-4">
-              {accordionsData.map((item) => (
+            <div className="max-w-4xl space-y-4">
+              {OnlineAccordionsData.map((item) => (
                 <InfoAccordion
                   key={item.docId}
                   title={item.title}
                   blocks={item.blocks}
                 />
               ))}
-            </div> */}
+            </div>
 
             <div className="mt-10 max-w-4xl">
               <h2 className="text-xl font-bold text-gray-900 mb-6">
@@ -175,7 +193,7 @@ const Online = () => {
           </div>
         </div>
       </section>
-      {/* <OnlineBanking /> */}
+      <OnlineBanking />
       <Footer />
     </>
   );
