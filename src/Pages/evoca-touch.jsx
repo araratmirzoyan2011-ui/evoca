@@ -33,7 +33,7 @@ const EvocaTouch = () => {
     "Կատարել փոխանցումներ կոնտակտային տվյալներով,",
     "24/7 ուղղել հարցեր նամակի միջոցով:"
   ];
-
+const EvocaTouchReport=[{title:"Համալիր բանկային ծառայությունների մատուցման պայմաններ 16.05.2025թ."}]
   // 3. Նկար 2-ի վերջնական պարբերությունների զանգվածը
   const bottomParagraphs = [
     "Հավելվածի հիմնական ուժեղ կողմերից մեկն անհատականացված բանկային ծառայության տրամադրումն է: Հաճախորդակենտրոն մոտեցման շնորհիվ Բանկը հնարավորություն է տալիս օգտատերերին հավելվածը հարմարեցնել իրենց նախասիրություններին և կարիքներին:",
@@ -44,7 +44,6 @@ const EvocaTouch = () => {
   return (
     <>
       <Header />
-      <Navbar items={menuItems} />
 
       <section className="w-full bg-white py-10 px-4 md:px-12">
         <div className="max-w-7xl mx-auto flex gap-6 md:gap-24">
@@ -55,10 +54,8 @@ const EvocaTouch = () => {
           </div>
 
           <div className="flex-1 max-w-4xl">
-            {/* Վերնագիր */}
             <h1 className="text-3xl font-bold text-gray-900 mb-6">EvocaTOUCH</h1>
 
-            {/* Սկզբնական տեքստեր զանգվածից */}
             <div className="space-y-4 text-gray-700 leading-relaxed">
               {introParagraphs.map((text, index) => (
                 <p key={index}>{text}</p>
@@ -89,7 +86,6 @@ const EvocaTouch = () => {
           </div>
         </div>
 
-        {/* Փաստաթղթերի բաժին */}
         <div className="max-w-7xl mx-auto mt-10">
           <div className="md:pl-[calc(3rem+6rem)] max-w-4xl md:max-w-none">
             <div className="mt-10 max-w-4xl">
@@ -97,7 +93,7 @@ const EvocaTouch = () => {
                 Փաստաթղթեր
               </h2>
               <div className="space-y-5">
-                {accountsReport.map((r) => (
+                {EvocaTouchReport.map((r) => (
                   <DocumentCard key={r.docId || r.order} title={r.title} url={r.url} />
                 ))}
               </div>
