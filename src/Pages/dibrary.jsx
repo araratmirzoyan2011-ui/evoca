@@ -4,7 +4,7 @@ import Footer from '../Components/Footer';
 import SocialIcons from '../Components/SocialIcons.jsx';
 import InfoCard from '../Components/AccountsCard.jsx';
 import { db } from '../firebase';
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, doc, writeBatch } from 'firebase/firestore';
 import ResourceLogos from '../Components/ResourceLogos.jsx';
 
 const BASE = "https://www.evoca.am/file_manager/Dibrary";
@@ -51,7 +51,10 @@ const logos = [
   { name: "Bookboon Free E-textbooks", src: `${BASE}/Logo_BookBoon.png`, href: "https://bookboon.com/" },
   { name: "IDEAS", src: `${BASE}/ideas.png`, href: "https://www.thesaurus.com/browse/ideas" },
 ];
+
 const Dibrary = () => {
+  const [loading, setLoading] = useState(false);
+
   const cardData = {
     title: "Dibrary - Digital Library",
     description: "Evocabank-ի նոր և գերժամանակակից «Թումանյան» մասնաճյուղում` Թումանյան 15 հասցեով, բացի ստանդարտ բանկային ծառայություններից, կգործի նաև Dibrary – digital library:",
@@ -111,9 +114,52 @@ const Dibrary = () => {
     }
   ];
 
+  // Ֆունկցիա, որը կրճատում/գրում է տվյալները Firebase-ում
+  const handleUploadToFirebase = async () => {
+    try {
+      setLoading(true);
+      const batch = writeBatch(db);
+
+      // 1. Logos collection
+      logos.forEach((logo, index) => {
+        const docRef = doc(collection(db, "logos"), `logo_${index + 1}`);
+        batch.set(docRef, logo);
+      });
+
+      // 2. CardData collection (կամ մեկ փաստաթուղթ)
+      const cardRef = doc(collection(db, "cardData"), "mainCard");
+      batch.set(cardRef, cardData);
+
+      // 3. ContentSections collection
+      contentSections.forEach((section) => {
+        const docRef = doc(collection(db, "contentSections"), `section_${section.id}`);
+        batch.set(docRef, section);
+      });
+
+      await batch.commit();
+      alert("Տվյալները հաջողությամբ ավելացվեցին Firebase-ում!");
+    } catch (error) {
+      console.error("Սխալ տվյալների ուղարկման ժամանակ:", error);
+      alert("Տեղի ունեցավ սխալ: Մանրամասները console-ում:");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <>
       <Header />
+
+      {/* Կոճակ՝ Firebase-ում սարքելու և լցնելու համար */}
+      <div className="bg-purple-100 py-4 px-4 text-center border-b border-purple-200">
+        <button
+          onClick={handleUploadToFirebase}
+          disabled={loading}
+          className="bg-purple-700 hover:bg-purple-800 text-white font-semibold px-6 py-2.5 rounded-lg shadow transition disabled:opacity-50"
+        >
+          {loading ? "Բեռնվում է..." : "🚀 Սարքել ու լցնել Firebase collection-ները"}
+        </button>
+      </div>
 
       <main className="w-full py-8 px-4 md:px-12 bg-gray-50">
         <div className="max-w-7xl mx-auto">
@@ -163,13 +209,12 @@ const Dibrary = () => {
               </p>
             ))}
           </div>
-          
         </div>
-        
       </section>
+
       <div className="mx-auto max-w-6xl px-4 py-8">
-      <ResourceLogos logos={logos} />
-    </div>
+        <ResourceLogos logos={logos} />
+      </div>
 
       <Footer />
     </>
