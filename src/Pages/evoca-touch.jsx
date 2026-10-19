@@ -7,57 +7,47 @@ import SocialIcons from '../Components/SocialIcons.jsx';
 import { OnlineBanking } from '../Components/OnlineBanking.jsx';
 import { EvocaReviewCard } from '../Components/EvocaReviewCard.jsx';
 import { db } from '../firebase';
-import { collection, getDocs } from 'firebase/firestore';
-import InfoBanner from '../Components/infoBanner.jsx';
+import { collection, getDocs, doc, setDoc, getDoc } from 'firebase/firestore';
 
 const EvocaTouch = () => {
-  // 1. Նկար 1-ի հիմնական տեքստերի զանգվածը
-  const introParagraphs = [
-    "Շատերին թվում է` դժվար ու անիրական է ֆինանսական ոլորտում լինել կրեատիվ, սակայն Evocabank-ին տարիներ շարունակ հաջողվում է գտնել out of box լուծումներ և շուկային ներկայանալ նոր և ժամանակակից պրոդուկտներով:",
-    "Այդ գաղափարների շարքից է նոր EvocaTOUCH հավելվածը, որն առանձնանում է ժամանակակից թվային լուծումներով և հնարավորություններով:",
-    "EvocaTOUCH հավելվածն անվտանգ է, հարմար և նախատեսված է անմիջապես smartphone-ից մի շարք բանկային ծառայություններից օգտվելու համար: Կարևորելով հավելվածի անվտանգ օգտագործումը` Բանկնապահովում է օգտատերերի մասին ինֆորմացիայի և կատարած գործարքների պաշտպանությունը` օգտագործելով գաղտնագրման վերջին տեխնոլոգիաները:",
-    "EvocaTOUCH հավելվածը կառուցված է այս պահին հայտնի ամենավերջին մոբայլ տեխնոլոգիաներով:",
-    "Հավելվածը գրվել է User Interface և User Experience նորագույն սկզբունքներով, ունի գունային 2 appearance` Dark և Light: Այն ավելի նման է facebook-ի կամ instagram-ի feed-ի` ամենակարևոր ու շատ օգտագործվող ֆունկցիաներն անմիջապես առաջին էջին են` Քարտեր, Հաշիվներ, Վարկեր, Ավանդներ: Օգտատերերը հնարավորություն ունեն ստեղծել Template-ներ, որի շնորհիվ բանկային փոխանցումները կատարվում են ավելի արագ ու հեշտ: Հնարավոր է ծանոթանալ Բանկի նորություններին ու ամենաակտուալ պրոդուկտներին` թերթվող story-ների միջոցով:",
-    "EvocaTOUCH հավելվածը 24/7 հասանելի է իր բոլոր օգտատերերին աշխարհի ցանկացած կետից, ցանկացած ժամի:"
-  ];
-
-  // 2. Նկար 2-ի ցանկի (bullet points) տվյալների զանգվածը
-  const featuresList = [
-    "Բացել բանկային հաշիվներ,",
-    "Պատվիրել քարտ կամ բացել թվային քարտ վայրկյանների ընթացքում,",
-    "Ստանալ վարկ,",
-    "Ներդնել ավանդ,",
-    "Կատարել փոխանցումներ հաշիվներին և քարտերին, ինչպես հայաստանյան, այնպես էլ արտերկրյա բանկերին,",
-    "Կատարել բանկային փոխանցումներ և վճարումներ,",
-    "Կատարել կոմունալ վճարումներ,",
-    "Առցանց ստանալ ավտոմեքենաների տուգանքները և իրականացնել վճարումներ մեկ հպումով,",
-    "Կատարել փոխանցումներ կոնտակտային տվյալներով,",
-    "24/7 ուղղել հարցեր նամակի միջոցով:"
-  ];
-
-  const EvocaTouchReport = [
-    { title: "Համալիր բանկային ծառայությունների մատուցման պայմաններ 16.05.2025թ." }
-  ];
-
-  // 3. Նկար 2-ի վերջնական պարբերությունների զանգվածը
-  const bottomParagraphs = [
-    "Հավելվածի հիմնական ուժեղ կողմերից մեկն անհատականացված բանկային ծառայության տրամադրումն է: Հաճախորդակենտրոն մոտեցման շնորհիվ Բանկը հնարավորություն է տալիս օգտատերերին հավելվածը հարմարեցնել իրենց նախասիրություններին և կարիքներին:",
-    "Հավելվածից օգտվելու հարմարավետությունն ու անվտանգությունը բարձրացնելու համար օգտատերը կարող է ակտիվացնել կենսաչափական նույնականացումը` օգտագործելով մատնահետքի կամ դեմքի ճանաչման համակարգերը: Բացի այդ, նոր հավելվածն առաջարկում է արագ և հեշտ ինտեգրում այլ ֆինանսական գործիքների հետ, ինչը թույլ է տալիս օգտատերերին կառավարել իրենց ֆինանսները մեկ հավելվածի միջոցով:",
-    "EvocaTOUCH-ի միջոցով օգտատերերը կարող են 24/7 հասանելիություն ունենալ իրենց ֆինանսներին, վերահսկել իրենց դրամական միջոցները, արագ ու անվտանգ գործարքներ կատարել աշխարհի ցանկացած կետից, ցանկացած ժամի:"
-  ];
+  const [introParagraphs, setIntroParagraphs] = useState([]);
+  const [featuresList, setFeaturesList] = useState([]);
+  const [EvocaTouchReport, setEvocaTouchReport] = useState([]);
+  const [bottomParagraphs, setBottomParagraphs] = useState([]);
 
   const [reviewsData, setReviewsData] = useState([]);
   const [reviewIndex, setReviewIndex] = useState(0); 
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const reviewsSnapshot = await getDocs(collection(db, "reviewsCollection"));
         const reviewsDocsData = reviewsSnapshot.docs.map((doc) => doc.data());
-        
         if (reviewsDocsData.length > 0 && reviewsDocsData[0].reviews) {
           setReviewsData(reviewsDocsData[0].reviews);
         }
+
+        const introDoc = await getDoc(doc(db, "introParagraphsCollection", "data"));
+        if (introDoc.exists()) {
+          setIntroParagraphs(introDoc.data().paragraphs || []);
+        }
+
+        const featuresDoc = await getDoc(doc(db, "featuresListCollection", "data"));
+        if (featuresDoc.exists()) {
+          setFeaturesList(featuresDoc.data().features || []);
+        }
+
+        const reportDoc = await getDoc(doc(db, "EvocaTouchReportCollection", "data"));
+        if (reportDoc.exists()) {
+          setEvocaTouchReport(reportDoc.data().reports || []);
+        }
+
+        const bottomDoc = await getDoc(doc(db, "bottomParagraphsCollection", "data"));
+        if (bottomDoc.exists()) {
+          setBottomParagraphs(bottomDoc.data().paragraphs || []);
+        }
+
       } catch (error) {
         console.error("Տվյալները Firestore-ից բեռնելիս սխալ տեղի ունեցավ:", error);
       }
@@ -79,7 +69,9 @@ const EvocaTouch = () => {
           </div>
 
           <div className="flex-1 max-w-4xl">
-            <h1 className="text-3xl font-bold text-gray-900 mb-6">EvocaTOUCH</h1>
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+              <h1 className="text-3xl font-bold text-gray-900">EvocaTOUCH</h1>
+            </div>
 
             <div className="space-y-4 text-gray-700 leading-relaxed">
               {introParagraphs.map((text, index) => (
@@ -87,12 +79,12 @@ const EvocaTouch = () => {
               ))}
             </div>
 
-            {/* Ցանկի նախաբան */}
-            <p className="mt-6 font-medium text-gray-800">
-              Նոր հավելվածն առաջարկում է գործառույթների լայն շրջանակ, որը ներառում է ամենօրյա բանկային գործընթացները՝ վերացնելով ֆիզիկական մասնաճյուղ այցելելու անհրաժեշտությունը։ Առանց գրանցման և սպասարկման վճարի՝ օգտատերերը կարող են․
-            </p>
+            {introParagraphs.length > 0 && (
+              <p className="mt-6 font-medium text-gray-800">
+                Նոր հավելվածն առաջարկում է գործառույթների լայն շրջանակ, որը ներառում է ամենօրյա բանկային գործընթացները՝ վերացնելով ֆիզիկական մասնաճյուղ այցելելու անհրաժեշտությունը։ Առանց գրանցման և սպասարկման վճարի՝ օգտատերերը կարող են․
+              </p>
+            )}
 
-            {/* Ցանկը (Bullet points) զանգվածից */}
             <ul className="mt-4 space-y-3 pl-2">
               {featuresList.map((item, index) => (
                 <li key={index} className="flex items-start gap-3 text-gray-700">
@@ -102,7 +94,6 @@ const EvocaTouch = () => {
               ))}
             </ul>
 
-            {/* Վերջին պարբերությունները զանգվածից */}
             <div className="mt-8 space-y-4 text-gray-700 leading-relaxed">
               {bottomParagraphs.map((text, index) => (
                 <p key={index}>{text}</p>
@@ -129,7 +120,6 @@ const EvocaTouch = () => {
 
       <OnlineBanking />
 
-      {/* Կարծիքների սլայդեր բաժին */}
       <div className="bg-[#fcfbfe] py-16 px-4 w-full overflow-hidden">
         {reviewsData.length > 0 && reviewsData[reviewIndex] && (
           <div className="w-full min-h-[220px] flex items-center justify-center">
