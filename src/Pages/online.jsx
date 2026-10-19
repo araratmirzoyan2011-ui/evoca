@@ -12,7 +12,7 @@ import { collection, getDocs, orderBy, query } from 'firebase/firestore';
 
 
 const Online = () => {
-
+const OnlineReports=[{title:"Համալիր բանկային ծառայությունների մատուցման պայմաններ 16.05.2025թ."},{title:"SWIFT Transfers (20.03.2026)"},{title:"SWIFT переводы в РФ (20.03.2026)"}]
   return (
     <>
       <Header />
@@ -46,16 +46,16 @@ const Online = () => {
               <h2 className="text-xl font-bold text-gray-900 mb-6">
                 Փաստաթղթեր
               </h2>
-              {/* <div className="space-y-5">
-                {nonResidentReports.map((r) => (
+              <div className="space-y-5">
+                {OnlineReports.map((r) => (
                   <DocumentCard key={r.docId} title={r.title} url={r.url} />
                 ))}
-              </div> */}
+              </div>
             </div>
           </div>
         </div>
       </section>
-      <OnlineBanking />
+      {/* <OnlineBanking /> */}
       <Footer />
     </>
   );
