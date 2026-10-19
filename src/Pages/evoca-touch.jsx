@@ -5,8 +5,9 @@ import Navbar from '../Components/Menuall.jsx';
 import { DocumentCard } from '../Components/DocumentCard.jsx';
 import SocialIcons from '../Components/SocialIcons.jsx';
 import { OnlineBanking } from '../Components/OnlineBanking.jsx';
+import { EvocaReviewCard } from '../Components/EvocaReviewCard.jsx';
 import { db } from '../firebase';
-import { collection, getDocs, orderBy, query } from 'firebase/firestore';
+import { collection, getDocs } from 'firebase/firestore';
 import InfoBanner from '../Components/infoBanner.jsx';
 
 const EvocaTouch = () => {
@@ -33,13 +34,37 @@ const EvocaTouch = () => {
     "Կատարել փոխանցումներ կոնտակտային տվյալներով,",
     "24/7 ուղղել հարցեր նամակի միջոցով:"
   ];
-const EvocaTouchReport=[{title:"Համալիր բանկային ծառայությունների մատուցման պայմաններ 16.05.2025թ."}]
+
+  const EvocaTouchReport = [
+    { title: "Համալիր բանկային ծառայությունների մատուցման պայմաններ 16.05.2025թ." }
+  ];
+
   // 3. Նկար 2-ի վերջնական պարբերությունների զանգվածը
   const bottomParagraphs = [
     "Հավելվածի հիմնական ուժեղ կողմերից մեկն անհատականացված բանկային ծառայության տրամադրումն է: Հաճախորդակենտրոն մոտեցման շնորհիվ Բանկը հնարավորություն է տալիս օգտատերերին հավելվածը հարմարեցնել իրենց նախասիրություններին և կարիքներին:",
     "Հավելվածից օգտվելու հարմարավետությունն ու անվտանգությունը բարձրացնելու համար օգտատերը կարող է ակտիվացնել կենսաչափական նույնականացումը` օգտագործելով մատնահետքի կամ դեմքի ճանաչման համակարգերը: Բացի այդ, նոր հավելվածն առաջարկում է արագ և հեշտ ինտեգրում այլ ֆինանսական գործիքների հետ, ինչը թույլ է տալիս օգտատերերին կառավարել իրենց ֆինանսները մեկ հավելվածի միջոցով:",
     "EvocaTOUCH-ի միջոցով օգտատերերը կարող են 24/7 հասանելիություն ունենալ իրենց ֆինանսներին, վերահսկել իրենց դրամական միջոցները, արագ ու անվտանգ գործարքներ կատարել աշխարհի ցանկացած կետից, ցանկացած ժամի:"
   ];
+
+  const [reviewsData, setReviewsData] = useState([]);
+  const [reviewIndex, setReviewIndex] = useState(0); 
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const reviewsSnapshot = await getDocs(collection(db, "reviewsCollection"));
+        const reviewsDocsData = reviewsSnapshot.docs.map((doc) => doc.data());
+        
+        if (reviewsDocsData.length > 0 && reviewsDocsData[0].reviews) {
+          setReviewsData(reviewsDocsData[0].reviews);
+        }
+      } catch (error) {
+        console.error("Տվյալները Firestore-ից բեռնելիս սխալ տեղի ունեցավ:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   return (
     <>
@@ -93,8 +118,8 @@ const EvocaTouchReport=[{title:"Համալիր բանկային ծառայութ
                 Փաստաթղթեր
               </h2>
               <div className="space-y-5">
-                {EvocaTouchReport.map((r) => (
-                  <DocumentCard key={r.docId || r.order} title={r.title} url={r.url} />
+                {EvocaTouchReport.map((r, index) => (
+                  <DocumentCard key={r.docId || r.order || index} title={r.title} url={r.url} />
                 ))}
               </div>
             </div>
@@ -103,6 +128,35 @@ const EvocaTouchReport=[{title:"Համալիր բանկային ծառայութ
       </section>
 
       <OnlineBanking />
+
+      {/* Կարծիքների սլայդեր բաժին */}
+      <div className="bg-[#fcfbfe] py-16 px-4 w-full overflow-hidden">
+        {reviewsData.length > 0 && reviewsData[reviewIndex] && (
+          <div className="w-full min-h-[220px] flex items-center justify-center">
+            <EvocaReviewCard 
+              quote={reviewsData[reviewIndex].quote}
+              author={reviewsData[reviewIndex].author}
+              title={reviewsData[reviewIndex].title}
+            />
+          </div>
+        )}
+
+        <div className="flex justify-center items-center space-x-3 mt-8">
+          {reviewsData.map((_, index) => (
+            <button
+              key={index}
+              onClick={() => setReviewIndex(index)}
+              className={`transition-all duration-300 rounded-full cursor-pointer ${
+                reviewIndex === index
+                  ? 'w-6 h-2.5 bg-purple-600'
+                  : 'w-2.5 h-2.5 bg-gray-300 hover:bg-gray-400'
+              }`}
+              aria-label={`Go to slide ${index + 1}`}
+            />
+          ))}
+        </div>
+      </div>
+
       <Footer />
     </>
   );

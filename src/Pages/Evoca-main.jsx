@@ -211,7 +211,6 @@ if (partnersDocsData.length > 0 && partnersDocsData[0].partners) {
   </div>
 )}
 
-        {/* Կետային նավարկություն (Dots) */}
         <div className="flex justify-center items-center space-x-3 mt-8">
           {reviewsData.map((_, index) => (
             <button
