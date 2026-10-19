@@ -4,162 +4,56 @@ import Footer from '../Components/Footer';
 import SocialIcons from '../Components/SocialIcons.jsx';
 import InfoCard from '../Components/AccountsCard.jsx';
 import { db } from '../firebase';
-import { collection, doc, writeBatch } from 'firebase/firestore';
+import { collection, getDocs, doc, getDoc } from 'firebase/firestore';
 import ResourceLogos from '../Components/ResourceLogos.jsx';
 
-const BASE = "https://www.evoca.am/file_manager/Dibrary";
-const logos = [
-  // Տող 1
-  { name: "EBSCO", src: `${BASE}/1_Ebso.jpg`, href: "https://search.ebscohost.com/" },
-  { name: "OpenStax", src: `${BASE}/Openstax.jpg`, href: null },
-  { name: "OAPEN", src: `${BASE}/5_Logo_OAPEN.png`, href: "https://www.oapen.org/home" },
-  { name: "Նորավանք", src: `${BASE}/N.jpg`, href: "http://www.noravank.am/arm/jurnals/index.php" },
-  { name: "Springer", src: `${BASE}/2_Sp%5B1%5D.jpg`, href: null },
-
-  // Տող 2
-  { name: "Polpred", src: `${BASE}/3_POlP.jpg`, href: "https://polpred.com/news" },
-  { name: "Search", src: `${BASE}/431ea875.jpg`, href: "https://cse.google.com/cse?cx=004286394939895931631:yqpm8pjcllz" },
-  { name: "The Royal Society", src: `${BASE}/RS.jpg`, href: "https://royalsociety.org/" },
-  { name: "eLibrary.ru", src: `${BASE}/Library.ru.jpg`, href: null },
-  { name: "Open Textbook Library", src: `${BASE}/4_71691ad9.jpg`, href: "https://open.umn.edu/opentextbooks/textbooks/web-literacy-for-student-fact-checkers" },
-
-  // Տող 3
-  { name: "DOAJ", src: `${BASE}/e6797964.jpg`, href: "https://doaj.org/" },
-  { name: "NLA", src: `${BASE}/NLA.jpg`, href: "http://etd.asj-oa.am/" },
-  { name: "DOAB", src: `${BASE}/4_Doab.jpg`, href: "https://www.doabooks.org/doab?uiLanguage=en" },
-  { name: "OER Commons", src: `${BASE}/1_c55c00d4.jpg`, href: "https://www.oercommons.org/advanced-search" },
-  { name: "OpenDOAR", src: `${BASE}/OpD.jpg`, href: "https://v2.sherpa.ac.uk/opendoar/" },
-
-  // Տող 4
-  { name: "Duke University Press", src: `${BASE}/Duke.jpg`, href: "https://read.dukeupress.edu/" },
-  { name: "JSTOR", src: `${BASE}/5_JS%5B1%5D.jpg`, href: null },
-  { name: "OpenBook Publishers", src: `${BASE}/2_OBP.jpg`, href: "https://openresearchlibrary.org/curation/3ea805a2-7b74-4396-beac-325fc0b1b726" },
-  { name: "SAGE Journals", src: `${BASE}/Sage.jpg`, href: "https://journals.sagepub.com/" },
-  { name: "Bookboon", src: `${BASE}/3e144dee.jpg`, href: "https://bookboon.com/" },
-
-  // Տող 5
-  { name: "Questia", src: `${BASE}/6_Quest.jpg`, href: "https://www.gale.com/databases/questia" },
-  { name: "Journals for Free", src: `${BASE}/Logo_Journals4free.png`, href: "http://www.journals4free.com/" },
-  { name: "ScienceDirect", src: `${BASE}/SD.jpg`, href: "https://www.sciencedirect.com/" },
-  { name: "Open Knowledge Maps", src: `${BASE}/OKM.jpg`, href: "https://openknowledgemaps.org/" },
-  { name: "B-OK", src: `${BASE}/dibrary-2.jpg`, href: null },
-
-  // Տող 6
-  { name: "Open Knowledge Repository", src: `${BASE}/4_Logo_OpenKnowledgeRepository.png`, href: "https://openknowledge.worldbank.org/" },
-  { name: "Elgar Online", src: `${BASE}/Elg.jpg`, href: "https://www.elgaronline.com/" },
-  { name: "Search", src: `${BASE}/Search.jpg`, href: "https://cse.google.com/cse?cx=004286394939895931631:gt4aweqr270" },
-  { name: "Bookboon Free E-textbooks", src: `${BASE}/Logo_BookBoon.png`, href: "https://bookboon.com/" },
-  { name: "IDEAS", src: `${BASE}/ideas.png`, href: "https://www.thesaurus.com/browse/ideas" },
-];
-
 const Dibrary = () => {
-  const [loading, setLoading] = useState(false);
+  const [logos, setLogos] = useState([]);
+  const [cardData, setCardData] = useState(null);
+  const [contentSections, setContentSections] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const cardData = {
-    title: "Dibrary - Digital Library",
-    description: "Evocabank-ի նոր և գերժամանակակից «Թումանյան» մասնաճյուղում` Թումանյան 15 հասցեով, բացի ստանդարտ բանկային ծառայություններից, կգործի նաև Dibrary – digital library:",
-    imageUrl: "https://www.evoca.am/images-cache/menu/1/16117479662777/780x585.jpg",
-    altText: "."
-  };
+  useEffect(() => {
+    const fetchDataFromFirebase = async () => {
+      try {
+        setLoading(true);
 
-  const contentSections = [
-    {
-      id: 1,
-      textParts: [
-        { type: 'hashtag', value: '#dibrary' },
-        { type: 'text', value: '-ում կարելի է անվճար օգտվել էլեկտրոնային բիզնես ռեսուրսներից՝ ' },
-        { 
-          type: 'link', 
-          value: 'e-Duke Journals Scholarly Collection, ASTM Compass, Edward Elgar Publishing Journals, Mathematical Sciences Publishers Journals, Royal Society Journals Collection, SAGE Premier', 
-          href: '#' 
-        },
-        { type: 'text', value: ' և այլն...' }
-      ]
-    },
-    {
-      id: 2,
-      textParts: [
-        { type: 'hashtag', value: '#dibrary' },
-        { type: 'text', value: '-ի գրքերը, հոդվածները և հրապարակումները շարունակաբար համալրվելու են՝ ներառելով նաև համաշխարհային լավագույն համալսարանների փակ վճարովի ռեսուրսները: Բացի էլեկտրոնային նյութերից, ' },
-        { type: 'hashtag', value: '#dibrary' },
-        { type: 'text', value: '-ում կարելի է գտնել նաև դասական գրքեր, ինչպես նաև ժամանակակից բիզնես գրականության բեսթսելերները, որոնք կարելի է կարդալ տեղում, իսկ ցանկության դեպքում՝ նաև տանել տուն:' }
-      ]
-    },
-    {
-      id: 3,
-      textParts: [
-        { type: 'hashtag', value: '#dibrary' },
-        { type: 'text', value: '-ի բացման գործում մեզ աջակցել են՝ ' },
-        { 
-          type: 'link', 
-          value: 'DLAA-ը՝ Հայաստանի թվային գրադարանների ասոցիացիան (Digital Library Association of Armenia)', 
-          href: '#' 
-        },
-        { type: 'text', value: ', ' },
-        { 
-          type: 'link', 
-          value: 'Ավետիք Իսահակյանի անվան գրադարանը', 
-          href: '#' 
-        },
-        { type: 'text', value: ' և ' },
-        { 
-          type: 'link', 
-          value: 'American Corner Yerevan-ը', 
-          href: '#' 
-        },
-        { type: 'text', value: ': Նրանց աջակցության շնորհիվ ' },
-        { type: 'hashtag', value: '#dibrary' },
-        { type: 'text', value: '-ում կարելի է անվճար օգտվել այնպիսի հրատարակիչների նյութերից, որոնց անդամակցությունը բավականին թանկ է և շատերի համար՝ անհասանելի:' }
-      ]
-    }
-  ];
+        const logosSnapshot = await getDocs(collection(db, "logos"));
+        const logosList = logosSnapshot.docs.map(doc => doc.data());
+        setLogos(logosList);
 
-  // Ֆունկցիա, որը կրճատում/գրում է տվյալները Firebase-ում
-  const handleUploadToFirebase = async () => {
-    try {
-      setLoading(true);
-      const batch = writeBatch(db);
+        const cardDocRef = doc(db, "cardData", "mainCard");
+        const cardDocSnap = await getDoc(cardDocRef);
+        if (cardDocSnap.exists()) {
+          setCardData(cardDocSnap.data());
+        }
 
-      // 1. Logos collection
-      logos.forEach((logo, index) => {
-        const docRef = doc(collection(db, "logos"), `logo_${index + 1}`);
-        batch.set(docRef, logo);
-      });
+        const sectionsSnapshot = await getDocs(collection(db, "contentSections"));
+        const sectionsList = sectionsSnapshot.docs.map(doc => doc.data());
+        sectionsList.sort((a, b) => a.id - b.id);
+        setContentSections(sectionsList);
 
-      // 2. CardData collection (կամ մեկ փաստաթուղթ)
-      const cardRef = doc(collection(db, "cardData"), "mainCard");
-      batch.set(cardRef, cardData);
+      } catch (error) {
+        console.error("Սխալ տվյալների բեռնման ժամանակ Firebase-ից:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-      // 3. ContentSections collection
-      contentSections.forEach((section) => {
-        const docRef = doc(collection(db, "contentSections"), `section_${section.id}`);
-        batch.set(docRef, section);
-      });
+    fetchDataFromFirebase();
+  }, []);
 
-      await batch.commit();
-      alert("Տվյալները հաջողությամբ ավելացվեցին Firebase-ում!");
-    } catch (error) {
-      console.error("Սխալ տվյալների ուղարկման ժամանակ:", error);
-      alert("Տեղի ունեցավ սխալ: Մանրամասները console-ում:");
-    } finally {
-      setLoading(false);
-    }
-  };
+  if (loading) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-gray-50 text-purple-700 font-semibold text-lg">
+        Բեռնվում է տվյալները Firebase-ից...
+      </div>
+    );
+  }
 
   return (
     <>
       <Header />
-
-      {/* Կոճակ՝ Firebase-ում սարքելու և լցնելու համար */}
-      <div className="bg-purple-100 py-4 px-4 text-center border-b border-purple-200">
-        <button
-          onClick={handleUploadToFirebase}
-          disabled={loading}
-          className="bg-purple-700 hover:bg-purple-800 text-white font-semibold px-6 py-2.5 rounded-lg shadow transition disabled:opacity-50"
-        >
-          {loading ? "Բեռնվում է..." : "🚀 Սարքել ու լցնել Firebase collection-ները"}
-        </button>
-      </div>
 
       <main className="w-full py-8 px-4 md:px-12 bg-gray-50">
         <div className="max-w-7xl mx-auto">
@@ -185,7 +79,7 @@ const Dibrary = () => {
           <div className="flex-1 text-gray-800 leading-relaxed space-y-6">
             {contentSections.map((section) => (
               <p key={section.id}>
-                {section.textParts.map((part, index) => {
+                {section.textParts && section.textParts.map((part, index) => {
                   if (part.type === 'hashtag') {
                     return (
                       <span key={index} className="text-purple-700 font-semibold">
