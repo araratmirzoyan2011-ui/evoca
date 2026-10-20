@@ -4,9 +4,10 @@ import Footer from "../Components/Footer";
 import { db } from "../firebase";
 import { collection, getDocs } from "firebase/firestore";
 import CardItem from "../Components/CardItem";
+
 const BASE = "https://www.evoca.am";
 
- const cardsData = [
+const cardsData = [
   {
     id: "travel-card",
     title: "Evoca Travel Card",
@@ -275,12 +276,14 @@ const BASE = "https://www.evoca.am";
   },
 ];
 
+const ITEMS_PER_PAGE = 20; // Յուրաքանչյուր էջում ցուցադրվող քարտերի քանակը
+
 const Cards = () => {
   const [menuItems, setMenuItems] = useState([]);
   const [activeCategory, setActiveCategory] = useState("all");
+  const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(true);
 
-  // Ստատիկ ֆիլտրեր՝ ճիշտ այնպես, ինչպես ձեր նկարում է
   const filterCategories = [
     { id: "all", label: "Բոլորը" },
     { id: "premium", label: "Պրեմիում" },
@@ -309,11 +312,30 @@ const Cards = () => {
     fetchMenuItems();
   }, []);
 
-  // Ֆիլտրման տրամաբանություն
+  // Կատեգորիան փոխելիս վերադառնում ենք 1-ին էջ
+  const handleCategoryChange = (catId) => {
+    setActiveCategory(catId);
+    setCurrentPage(1);
+  };
+
+  // 1. Ֆիլտրում ենք ըստ կատեգորիայի
   const filteredCards =
     activeCategory === "all"
       ? cardsData
       : cardsData.filter((card) => card.category === activeCategory);
+
+  // 2. Էջակալման (Pagination) հաշվարկ
+  const totalPages = Math.ceil(filteredCards.length / ITEMS_PER_PAGE);
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const currentCards = filteredCards.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+
+  // Էջը փոխելու ֆունկցիա
+  const goToPage = (pageNumber) => {
+    if (pageNumber >= 1 && pageNumber <= totalPages) {
+      setCurrentPage(pageNumber);
+      window.scrollTo({ top: 0, behavior: "smooth" }); // Էջը փոխելիս բարձրանում է վերև
+    }
+  };
 
   return (
     <div className="min-h-screen flex flex-col bg-white">
@@ -323,14 +345,14 @@ const Cards = () => {
         {/* Վերնագիր */}
         <h1 className="text-[36px] font-bold text-black mb-8">Քարտեր</h1>
 
-        {/* Ֆիլտրման կոճակներ (համաձայն նկարի) */}
+        {/* Ֆիլտրման կոճակներ */}
         <div className="flex flex-wrap items-center gap-3 mb-10">
           {filterCategories.map((cat) => {
             const isActive = activeCategory === cat.id;
             return (
               <button
                 key={cat.id}
-                onClick={() => setActiveCategory(cat.id)}
+                onClick={() => handleCategoryChange(cat.id)}
                 className={`px-6 py-3 rounded-full text-sm font-medium transition-all duration-200 ${
                   isActive
                     ? "bg-[#6a00d8] text-white shadow-md"
@@ -348,11 +370,81 @@ const Cards = () => {
           <div className="text-center py-20 text-[#6a00d8] font-medium">Բեռնվում է...</div>
         ) : (
           <div>
-            {filteredCards.length > 0 ? (
-              filteredCards.map((card) => <CardItem key={card.id} card={card} />)
+            {currentCards.length > 0 ? (
+              currentCards.map((card) => <CardItem key={card.id} card={card} />)
             ) : (
               <div className="text-center py-20 text-gray-500">
                 Այս կատեգորիայում քարտեր չեն գտնվել:
+              </div>
+            )}
+
+            {/* Էջակալում (Pagination Component) */}
+            {totalPages > 1 && (
+              <div className="flex items-center justify-center gap-4 mt-12 mb-8">
+                {/* Նախորդ էջ (Ձախ սլաք) */}
+                <button
+                  onClick={() => goToPage(currentPage - 1)}
+                  disabled={currentPage === 1}
+                  className={`p-2 rounded-full transition ${
+                    currentPage === 1
+                      ? "text-gray-300 cursor-not-allowed"
+                      : "text-gray-600 hover:text-[#6a00d8]"
+                  }`}
+                  aria-label="Previous Page"
+                >
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M19 12H5M12 19l-7-7 7-7" />
+                  </svg>
+                </button>
+
+                {/* Էջերի համարները */}
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                  <button
+                    key={page}
+                    onClick={() => goToPage(page)}
+                    className={`w-10 h-10 rounded-full text-base font-semibold flex items-center justify-center transition ${
+                      currentPage === page
+                        ? "bg-[#6a00d8] text-white shadow-md"
+                        : "text-gray-700 hover:bg-gray-100"
+                    }`}
+                  >
+                    {page}
+                  </button>
+                ))}
+
+                {/* Հաջորդ էջ (Աջ սլաք) */}
+                <button
+                  onClick={() => goToPage(currentPage + 1)}
+                  disabled={currentPage === totalPages}
+                  className={`p-2 rounded-full transition ${
+                    currentPage === totalPages
+                      ? "text-gray-300 cursor-not-allowed"
+                      : "text-[#6a00d8] hover:opacity-80"
+                  }`}
+                  aria-label="Next Page"
+                >
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
+                </button>
               </div>
             )}
           </div>
