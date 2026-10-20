@@ -8,6 +8,7 @@ import { EvocaNewsCard } from '../Components/EVocaCard1.jsx';
 import { Link } from 'react-router-dom';
 import Navbar from '../Components/Menuall.jsx';
 import InfoCard from '../Components/AccountsCard.jsx';
+
 const CDAServices = () => {
   const [loading, setLoading] = useState(true);
   const [securitiesmenu, setSecuritiesmenu] = useState([]);
@@ -46,12 +47,39 @@ const CDAServices = () => {
       </div>
     );
   }
-  const cardData={title:"Հայաստանի կենտրոնական դեպոզիտարիայի (ՀԿԴ)",description:"Evocabank-ը հնարավորություն է տալիս ձեռք բերել պարտատոմսեր և ստանալ բարձր եկամուտներ։ Մենք ցանկանում ենք դառնալ Ձեր բարեկեցիկ ապագայի մի մասնիկը։",imageUrl:"https://www.evoca.am/images-cache/menu/1/16783548543339/780x585.jpg",altText:""}
+
+  const cardData = {
+    title: "Հայաստանի կենտրոնական դեպոզիտարիայի (ՀԿԴ)",
+    description: "Evocabank-ը հնարավորություն է տալիս ձեռք բերել պարտատոմսեր և ստանալ բարձր եկամուտներ։ Մենք ցանկանում ենք դառնալ Ձեր բարեկեցիկ ապագայի մի մասնիկը։",
+    imageUrl: "https://www.evoca.am/images-cache/menu/1/16783548543339/780x585.jpg",
+    altText: ""
+  };
+
+  // Տեքստերի զանգված
+  const serviceTexts = [
+    "ՀՀ Կենտրոնական Դեպոզիտարիան հաճախորդների սպասարկումն իրականացնում է բացառապես Հաշվի Օպերատորների միջնորդությամբ:",
+    "Հաշվի Օպերատորը ՀՀ Կենտրոնական Դեպոզիտարիայի հետ կնքված պայմանագրի հիման վրա միջնորդավորում է ՀՀ Կենտրոնական Դեպոզիտարիայի կողմից մատուցվող ծառայությունները:",
+    "Evocabank-ը, որպես ՀՀ Կենտրոնական Դեպոզիտարիայի Հաշվի Օպերատոր և կարգավորվող շուկայի հաշվարկային համակարգի անդամ (ԿՇՀՀԱ), մատուցում է ռեեստրավարման և պահառության ծառայություններ՝ ապահովելով դրանց մատուցումը ինչպես Բանկի Գլխամասային գրասենյակում, այնպես էլ մասնաճյուղերում:"
+  ];
+
+  // Հղումների զանգված
+  const serviceLinks = [
+    {
+      to: "/tariffs",
+      text: "Հայաստանի կենտրոնական դեպոզիտարիայի կողմից մատուցվող ծառայությունների միջնորդավորման գործունեության սակագներ"
+    },
+    {
+      to: "/regulation",
+      text: "Հայաստանի կենտրոնական դեպոզիտարիայի կողմից մատուցվող ծառայությունների միջնորդավորման գործունեության կանոններ"
+    }
+  ];
+
   return (
     <>
       <Header />
       <Navbar items={securitiesmenu} />
-        <main className="w-full py-8 px-4 md:px-12 bg-gray-50">
+      
+      <main className="w-full py-8 px-4 md:px-12 bg-gray-50">
         <div className="max-w-7xl mx-auto space-y-6">
           {cardData && (
             <InfoCard
@@ -63,6 +91,7 @@ const CDAServices = () => {
           )}
         </div>
       </main>
+
       <section className="w-full bg-white py-10 px-4 md:px-12">
         <div className="max-w-7xl mx-auto flex gap-6 md:gap-24">
           
@@ -72,8 +101,26 @@ const CDAServices = () => {
             </div>
           </div>
 
-          <div className="flex-1 max-w-4xl text-gray-800 space-y-8">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+          <div className="flex-1 max-w-4xl text-gray-800 space-y-6 text-base leading-relaxed">
+            
+            {/* Տեքստերի ցուցադրում զանգվածից */}
+            {serviceTexts.map((paragraph, index) => (
+              <p key={index}>{paragraph}</p>
+            ))}
+
+            {/* Հղումների ցուցադրում զանգվածից */}
+            <div className="pt-4 space-y-3">
+              {serviceLinks.map((link, index) => (
+                <div key={index}>
+                  <Link to={link.to} className="text-purple-700 hover:underline font-medium">
+                    {link.text}
+                  </Link>
+                </div>
+              ))}
+            </div>
+
+            {/* Նորությունների բաժինը */}
+            <div className="pt-10">
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
                 <Link to="/news" className="hover:opacity-80 transition-opacity">
                   <h2 className="text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight cursor-pointer">
@@ -104,6 +151,7 @@ const CDAServices = () => {
                 ))}
               </div>
             </div>
+
           </div>
 
         </div>
