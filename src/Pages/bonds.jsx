@@ -240,14 +240,10 @@ const bondAccordions = [
 
 const bondReports = [
   {
-    order: 1,
     title: "Դոլարային պարտատոմսերիի գները 30.09.2024-29.11.2024 ժամանակահատվածի համար",
-    url: "https://www.evoca.am/files/global_files/1/bonds-prices-usd-30-09-2024.pdf",
   },
   {
-    order: 2,
     title: "Դրամային պարտատոմսերիի գները 30.09.2024-29.11.2024 ժամանակահատվածի համար",
-    url: "https://www.evoca.am/files/global_files/1/bonds-prices-amd-30-09-2024.pdf",
   },
 ];
 
@@ -351,7 +347,7 @@ const bondReports = [
                 Փաստաթղթեր
               </h2>
               <div className="space-y-5">
-                {BondReport.map((r) => (
+                {bondReports.map((r) => (
                   <DocumentCard key={r.docId || r.order} title={r.title} url={r.url} />
                 ))}
               </div>
