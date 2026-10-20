@@ -13,10 +13,6 @@ const Repo = () => {
   const [loading, setLoading] = useState(true);
   
   const [securitiesmenu, setSecuritiesmenu] = useState([]);
-  const [cardData, setCardData] = useState(null);
-  const [serviceTexts, setServiceTexts] = useState([]);
-  const [serviceLinks, setServiceLinks] = useState([]);
-  const [salaryitems, setSalaryitems] = useState([]);
 
   useEffect(() => {
     const fetchDataFromFirebase = async () => {
@@ -67,7 +63,7 @@ const Repo = () => {
       </div>
     );
   }
-
+  const cardData={title:"Ռեպո/Հակադարձ Ռեպո գործարքներ",description:"Կարճաժամկետ դրամական միջոցներ ներգրավելու և տեղաբաշխելու նպատակով Evocabank-ն իրականացնում է Ռեպո/Հակադարձ Ռեպո գործարքներ։ Ռեպո/Հակադարձ Ռեպո գործարքների շնորհիվ՝ Բանկը կատարում է կարճաժամկետ իրացվելիության կառավարում։",imageUrl:"https://www.evoca.am/images-cache/menu/1/16783548886405/780x585.jpg",altText:""}
   return (
     <>
       <Header />
