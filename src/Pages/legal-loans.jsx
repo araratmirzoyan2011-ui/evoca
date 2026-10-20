@@ -16,15 +16,12 @@ function LegalLoans() {
       try {
         setLoading(true);
 
-        // Բեռնում ենք menuItems-ը
-        const menuSnapshot = await getDocs(collection(db, "menuItems"));
+        const menuSnapshot = await getDocs(collection(db, "Tarrifmenu"));
         const menuList = menuSnapshot.docs.map(doc => ({
           id: doc.id,
           ...doc.data()
         }));
         setMenuItems(menuList);
-
-        // Բեռնում ենք tariffsCategories-ը Firebase-ից
         const tariffsSnapshot = await getDocs(collection(db, "tariffsCategories"));
         const tariffsList = tariffsSnapshot.docs.map(doc => ({
           id: doc.id,

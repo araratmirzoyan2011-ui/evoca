@@ -16,7 +16,7 @@ function Tariif() {
       try {
         setLoading(true);
 
-        const menuSnapshot = await getDocs(collection(db, "menuItems"));
+        const menuSnapshot = await getDocs(collection(db, "Tarrifmenu"));
         const menuList = menuSnapshot.docs.map(doc => ({
           id: doc.id,
           ...doc.data()

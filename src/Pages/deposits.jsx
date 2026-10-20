@@ -12,21 +12,18 @@ function Deposits() {
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(0);
 
-  // Տվյալների բեռնումը Firebase-ից (մենյու և ավանդներ)
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
 
-        // 1. Մենյուի բեռնում
-        const menuSnapshot = await getDocs(collection(db, "menuItems"));
+        const menuSnapshot = await getDocs(collection(db, "Tarrifmenu"));
         const menuList = menuSnapshot.docs.map(doc => ({
           id: doc.id,
           ...doc.data()
         }));
         setMenuItems(menuList);
 
-        // 2. Ավանդների բեռնում Firebase-ի համապատասխան փաստաթղթերից
         const classicDoc = await getDoc(doc(db, "classicDeposit", "data"));
         const evocaDoc = await getDoc(doc(db, "evocaOnlineDeposit", "data"));
         const childDoc = await getDoc(doc(db, "childDeposit", "data"));

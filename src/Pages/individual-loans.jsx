@@ -16,15 +16,13 @@ function IndividualLoans() {
       try {
         setLoading(true);
 
-        // Բեռնում ենք menuItems-ը
-        const menuSnapshot = await getDocs(collection(db, "menuItems"));
+        const menuSnapshot = await getDocs(collection(db, "Tarrifmenu"));
         const menuList = menuSnapshot.docs.map(doc => ({
           id: doc.id,
           ...doc.data()
         }));
         setMenuItems(menuList);
 
-        // Բեռնում ենք individualLoans-ը Firebase-ից
         const loansSnapshot = await getDocs(collection(db, "individualLoans"));
         const loansList = loansSnapshot.docs.map(doc => ({
           id: doc.id,
