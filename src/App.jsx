@@ -68,6 +68,7 @@ import EvocaInvest from "./Pages/stocks-evocainvest";
 import CPAS from "./Pages/cards-provision-and-service";
 import PensionCard from "./Pages/pension-cards";
 import EvocaBenefits from "./Pages/evoca-benefits";
+import Map from "./Pages/map";
 function App() {
   return (
     <BrowserRouter>
@@ -79,6 +80,7 @@ function App() {
           <Route path="/evoca-benefits" element={<EvocaBenefits />} />
           <Route path="/pension-cards" element={<PensionCard />} />
           <Route path="/cards-provision-and-service" element={<CPAS />} />
+          <Route path="/map" element={<Map />} />
           <Route path="/cards" element={<Cards />} />
           <Route path="/stocks-evocainvest" element={<EvocaInvest />} />
           <Route path="/faq" element={<Faq />} />
