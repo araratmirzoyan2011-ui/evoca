@@ -3,7 +3,7 @@ import { Header } from '../Components/Header';
 import Footer from '../Components/Footer';
 import SocialIcons from '../Components/SocialIcons.jsx';
 import { db } from '../firebase';
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, getDocs, doc, getDoc } from 'firebase/firestore';
 import { EvocaNewsCard } from '../Components/EVocaCard1.jsx';
 import { Link } from 'react-router-dom';
 import Navbar from '../Components/Menuall.jsx';
@@ -11,7 +11,11 @@ import InfoCard from '../Components/AccountsCard.jsx';
 
 const CDAServices = () => {
   const [loading, setLoading] = useState(true);
+  
   const [securitiesmenu, setSecuritiesmenu] = useState([]);
+  const [cardData, setCardData] = useState(null);
+  const [serviceTexts, setServiceTexts] = useState([]);
+  const [serviceLinks, setServiceLinks] = useState([]);
   const [salaryitems, setSalaryitems] = useState([]);
 
   useEffect(() => {
@@ -22,6 +26,22 @@ const CDAServices = () => {
         const menuSnapshot = await getDocs(collection(db, "securitiesmenu"));
         if (!menuSnapshot.empty) {
           setSecuritiesmenu(menuSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+        }
+
+        const cardDocRef = doc(db, "cardDataCollection", "main");
+        const cardDocSnap = await getDoc(cardDocRef);
+        if (cardDocSnap.exists()) {
+          setCardData(cardDocSnap.data());
+        }
+
+        const textsSnapshot = await getDocs(collection(db, "serviceTextsCollection"));
+        if (!textsSnapshot.empty) {
+          setServiceTexts(textsSnapshot.docs.map(doc => doc.data().text));
+        }
+
+        const linksSnapshot = await getDocs(collection(db, "serviceLinksCollection"));
+        if (!linksSnapshot.empty) {
+          setServiceLinks(linksSnapshot.docs.map(doc => doc.data()));
         }
 
         const newsSnapshot = await getDocs(collection(db, "salaryNewsCollection"));
@@ -48,37 +68,11 @@ const CDAServices = () => {
     );
   }
 
-  const cardData = {
-    title: "Հայաստանի կենտրոնական դեպոզիտարիայի (ՀԿԴ)",
-    description: "Evocabank-ը հնարավորություն է տալիս ձեռք բերել պարտատոմսեր և ստանալ բարձր եկամուտներ։ Մենք ցանկանում ենք դառնալ Ձեր բարեկեցիկ ապագայի մի մասնիկը։",
-    imageUrl: "https://www.evoca.am/images-cache/menu/1/16783548543339/780x585.jpg",
-    altText: ""
-  };
-
-  // Տեքստերի զանգված
-  const serviceTexts = [
-    "ՀՀ Կենտրոնական Դեպոզիտարիան հաճախորդների սպասարկումն իրականացնում է բացառապես Հաշվի Օպերատորների միջնորդությամբ:",
-    "Հաշվի Օպերատորը ՀՀ Կենտրոնական Դեպոզիտարիայի հետ կնքված պայմանագրի հիման վրա միջնորդավորում է ՀՀ Կենտրոնական Դեպոզիտարիայի կողմից մատուցվող ծառայությունները:",
-    "Evocabank-ը, որպես ՀՀ Կենտրոնական Դեպոզիտարիայի Հաշվի Օպերատոր և կարգավորվող շուկայի հաշվարկային համակարգի անդամ (ԿՇՀՀԱ), մատուցում է ռեեստրավարման և պահառության ծառայություններ՝ ապահովելով դրանց մատուցումը ինչպես Բանկի Գլխամասային գրասենյակում, այնպես էլ մասնաճյուղերում:"
-  ];
-
-  // Հղումների զանգված
-  const serviceLinks = [
-    {
-      to: "/tariffs",
-      text: "Հայաստանի կենտրոնական դեպոզիտարիայի կողմից մատուցվող ծառայությունների միջնորդավորման գործունեության սակագներ"
-    },
-    {
-      to: "/regulation",
-      text: "Հայաստանի կենտրոնական դեպոզիտարիայի կողմից մատուցվող ծառայությունների միջնորդավորման գործունեության կանոններ"
-    }
-  ];
-
   return (
     <>
       <Header />
       <Navbar items={securitiesmenu} />
-      
+
       <main className="w-full py-8 px-4 md:px-12 bg-gray-50">
         <div className="max-w-7xl mx-auto space-y-6">
           {cardData && (
@@ -103,16 +97,16 @@ const CDAServices = () => {
 
           <div className="flex-1 max-w-4xl text-gray-800 space-y-6 text-base leading-relaxed">
             
-            {/* Տեքստերի ցուցադրում զանգվածից */}
+            {/* Տեքստերի ցուցադրում Firebase-ից ստացված state-ից */}
             {serviceTexts.map((paragraph, index) => (
               <p key={index}>{paragraph}</p>
             ))}
 
-            {/* Հղումների ցուցադրում զանգվածից */}
+            {/* Հղումների ցուցադրում Firebase-ից ստացված state-ից */}
             <div className="pt-4 space-y-3">
               {serviceLinks.map((link, index) => (
                 <div key={index}>
-                  <Link to={link.to} className="text-purple-700 hover:underline font-medium">
+                  <Link to={link.to || '#'} className="text-purple-700 hover:underline font-medium">
                     {link.text}
                   </Link>
                 </div>
@@ -147,7 +141,7 @@ const CDAServices = () => {
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {salaryitems.map((item) => (
-                  <EvocaNewsCard key={item.id} item={item} />
+                  <EvocaNewsCard key={item.id || item.title} item={item} />
                 ))}
               </div>
             </div>
