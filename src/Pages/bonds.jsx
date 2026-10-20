@@ -49,7 +49,7 @@ const Bond = () => {
     );
   }
 
-  const cardData = {title:"",description:"",imageUrl:"",altText:""};
+  const cardData = {title:"Պարտատոմսեր",description:"Evocabank-ը հնարավորություն է տալիս ձեռք բերել պարտատոմսեր և ստանալ բարձր եկամուտներ։ Մենք ցանկանում ենք դառնալ Ձեր բարեկեցիկ ապագայի մի մասնիկը։",imageUrl:"https://www.evoca.am/images-cache/menu/1/16783548543339/780x585.jpg",altText:""};
   const Bonditems = [];
   const BondReport = [];
 
