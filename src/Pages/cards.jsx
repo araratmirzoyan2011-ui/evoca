@@ -61,7 +61,7 @@ const cardsData = [
       "Սիրելի մարդկանց համար նվեր ընտրելը պատասխանատու ու հաճելի գործ է, բայց նաև ժամանակատար ու նյարդայնացնող, հատկապես երբ չգիտես՝ կհավանի՞, թե՞ ոչ։ Մենք առաջարկում ենք իդեալական նվերի տարբերակ։",
     image: `${BASE}/images-cache/cards/1/17282986912132/415x261.png`,
     link: `${BASE}/hy/cards/gift-cards/digital-gift-card`,
-    category: "gift-cards",
+    category: ["gift-cards", "digital"], // 👈 Ավելացվել է digital կատեգորիա
     stats: [],
   },
   {
@@ -95,7 +95,7 @@ const cardsData = [
       "Mastercard World Digital քարտն արդեն հասանելի է EvocaTOUCH հավելվածում։ Պատվիրիր թվային քարտը հիմա և այն հասանելի կլինի քո հավելվածում հաշված րոպեների ընթացքում։",
     image: `${BASE}/images-cache/cards/1/17639683196125/415x261.png`,
     link: `${BASE}/hy/cards/master/mastercard-world-digital`,
-    category: "master",
+    category: ["master", "digital"], // 👈 Ավելացվել է digital կատեգորիա
     stats: [
       { label: "", value: "2%", text: "Կանխիկացում բանկի բանկոմատներից" },
       { label: "", value: "2.5%", text: "Կանխիկացում ԱրՔա համակարգի անդամ հանդիսացող ՀՀ բանկերի բանկոմատներից և POS տերմինալների միջոցով" },
@@ -108,7 +108,7 @@ const cardsData = [
     description: "Այս պրեմիում դասի քարտը կդառնա Ձեր գործընկերը հաջողության ճանապարհին:",
     image: `${BASE}/images-cache/cards/1/17249401821904/415x261.png`,
     link: `${BASE}/hy/cards/premium/unionpay-platinum`,
-    category: "premium",
+    category: ["premium", "unionpay"], // 👈 Ավելացվել է unionpay կատեգորիա
     stats: [
       { label: "", value: "0.5%", text: "Կանխիկացում" },
       { label: "", value: "5 տարի", text: "Քարտի ժամկետ" },
@@ -131,7 +131,7 @@ const cardsData = [
     description: "Ամբողջ աշխարհում քո արագ և հարմար վճարումների ուղեկիցը:",
     image: `${BASE}/images-cache/cards/1/17262129422977/415x261.png`,
     link: `${BASE}/hy/cards/premium/unionpay-gold`,
-    category: "premium",
+    category: ["premium", "unionpay"], // 👈 Ավելացվել է unionpay կատեգորիա
     stats: [
       { label: "", value: "0.5%", text: "Կանխիկացում" },
       { label: "", value: "5 տարի", text: "Քարտի ժամկետ" },
@@ -184,7 +184,7 @@ const cardsData = [
       "Պատվիրիր Evoca Digital քարտը հիմա EvocaTOUCH հավելվածով, և քարտը կակտիվանա րոպեների ընթացքում:",
     image: `${BASE}/images-cache/cards/1/17485025148319/415x261.png`,
     link: `${BASE}/hy/cards/visa/visa-digital-card`,
-    category: "visa",
+    category: ["visa", "digital"], // 👈 Ավելացվել է digital կատեգորիա
     stats: [
       { label: "", value: "2%", text: "Կանխիկացում բանկի բանկոմատներից" },
       { label: "Մինչև", value: "4%", text: "Քարտային հաշվի դրական մնացորդի նկատմամբ հաշվարկվող տարեկան տոկոսադրույք" },
@@ -228,7 +228,7 @@ const cardsData = [
       "Մեկ քարտ, բազմաթիվ հնարավորություններ. Arca՝ ամենօրյա գնումների և UnionPay՝ ճամփորդությունների և միջազգային գնումների համար։",
     image: `${BASE}/images-cache/cards/1/17881574661708/415x261.png`,
     link: `${BASE}/hy/cards/arca/arca-union-pay`,
-    category: "arca",
+    category: ["arca", "unionpay"],
     stats: [
       { label: "Սակագին", value: "2,500֏", text: "տարեկան (ամսական՝ 250֏)" },
       { label: "Cashback", value: "2%", text: "տեղական գործարքներից" },
@@ -276,7 +276,7 @@ const cardsData = [
   },
 ];
 
-const ITEMS_PER_PAGE = 20; // Յուրաքանչյուր էջում ցուցադրվող քարտերի քանակը
+const ITEMS_PER_PAGE = 20;
 
 const Cards = () => {
   const [menuItems, setMenuItems] = useState([]);
@@ -288,9 +288,11 @@ const Cards = () => {
     { id: "all", label: "Բոլորը" },
     { id: "premium", label: "Պրեմիում" },
     { id: "gift-cards", label: "Նվեր քարտեր" },
+    { id: "digital", label: "Թվային քարտեր" },
     { id: "arca", label: "arca" },
     { id: "visa", label: "VISA" },
     { id: "master", label: "mastercard" },
+    { id: "unionpay", label: "UnionPay" },
   ];
 
   useEffect(() => {
@@ -312,28 +314,30 @@ const Cards = () => {
     fetchMenuItems();
   }, []);
 
-  // Կատեգորիան փոխելիս վերադառնում ենք 1-ին էջ
   const handleCategoryChange = (catId) => {
     setActiveCategory(catId);
     setCurrentPage(1);
   };
 
-  // 1. Ֆիլտրում ենք ըստ կատեգորիայի
+  // Ֆիլտրում՝ աջակցելով թե՛ տեքստային, թե՛ զանգվածային (array) կատեգորիաներին
   const filteredCards =
     activeCategory === "all"
       ? cardsData
-      : cardsData.filter((card) => card.category === activeCategory);
+      : cardsData.filter((card) => {
+          if (Array.isArray(card.category)) {
+            return card.category.includes(activeCategory);
+          }
+          return card.category === activeCategory;
+        });
 
-  // 2. Էջակալման (Pagination) հաշվարկ
   const totalPages = Math.ceil(filteredCards.length / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const currentCards = filteredCards.slice(startIndex, startIndex + ITEMS_PER_PAGE);
 
-  // Էջը փոխելու ֆունկցիա
   const goToPage = (pageNumber) => {
     if (pageNumber >= 1 && pageNumber <= totalPages) {
       setCurrentPage(pageNumber);
-      window.scrollTo({ top: 0, behavior: "smooth" }); // Էջը փոխելիս բարձրանում է վերև
+      window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
 
@@ -342,7 +346,6 @@ const Cards = () => {
       <Header />
 
       <main className="flex-1 max-w-[1310px] w-full mx-auto px-4 py-8">
-        {/* Վերնագիր */}
         <h1 className="text-[36px] font-bold text-black mb-8">Քարտեր</h1>
 
         {/* Ֆիլտրման կոճակներ */}
@@ -378,10 +381,9 @@ const Cards = () => {
               </div>
             )}
 
-            {/* Էջակալում (Pagination Component) */}
+            {/* Pagination */}
             {totalPages > 1 && (
               <div className="flex items-center justify-center gap-4 mt-12 mb-8">
-                {/* Նախորդ էջ (Ձախ սլաք) */}
                 <button
                   onClick={() => goToPage(currentPage - 1)}
                   disabled={currentPage === 1}
@@ -406,7 +408,6 @@ const Cards = () => {
                   </svg>
                 </button>
 
-                {/* Էջերի համարները */}
                 {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
                   <button
                     key={page}
@@ -421,7 +422,6 @@ const Cards = () => {
                   </button>
                 ))}
 
-                {/* Հաջորդ էջ (Աջ սլաք) */}
                 <button
                   onClick={() => goToPage(currentPage + 1)}
                   disabled={currentPage === totalPages}
