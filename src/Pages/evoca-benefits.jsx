@@ -1,47 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Header } from '../Components/Header';
 import Footer from '../Components/Footer';
 import { BenefitsHeader } from '../Components/BenefitsHeader';
 import Card from '../Components/Benefits-Card';
 
-// Իրական Evoca Benefits գործընկերների հիմնական բազան՝ համապատասխան ֆիլտրման դաշտերով
-const realEvocaPartners = [
-  { title: "CEMI Café by Apicius Armenia", discount: "10%", badgeText: "Զեղչ", category: "Սրճարաններ", location: "Հայաստան", benefit: "Զեղչ", platform: "Օֆլայն", cardTypes: ["Visa Infinite", "Evoca Visa Platinum", "Visa Vision"] },
-  { title: "ppls Dilijan", discount: "10%", badgeText: "Զեղչ", category: "Հանգիստ", location: "Հայաստան", benefit: "Զեղչ", platform: "Օֆլայն", cardTypes: ["Evoca Travel Card", "Mastercard Gold", "Visa Gold"] },
-  { title: "Villa3 Community Hub", discount: "10%", badgeText: "Զեղչ", category: "Հանգիստ", location: "Հայաստան", benefit: "Զեղչ", platform: "Օֆլայն", cardTypes: ["Visa Infinite", "Mastercard Standard", "Visa Classic"] },
-  { title: "Chronograph", discount: "15%", badgeText: "Զեղչ", category: "Աքսեսուարներ", location: "Հայաստան", benefit: "Զեղչ", platform: "Օֆլայն", cardTypes: ["Visa Infinite"] },
-  { title: "Paul Armenia", discount: "10%", badgeText: "Զեղչ", category: "Սրճարաններ", location: "Հայաստան", benefit: "Զեղչ", platform: "Օֆլայն", cardTypes: ["Visa Infinite", "Evoca Visa Platinum", "Visa Digital"] },
-  { title: "Henderson", discount: "15%", badgeText: "Զեղչ", category: "Նորաձևություն", location: "Հայաստան", benefit: "Զեղչ", platform: "Օֆլայն", cardTypes: ["Visa Infinite", "Evoca Travel Card", "Visa Business"] },
-  { title: "Pullman", discount: "5%", badgeText: "Զեղչ", category: "Ինտերիեր", location: "Արտերկիր", benefit: "Զեղչ", platform: "Օֆլայն", cardTypes: ["Visa Infinite"] },
-  { title: "Burmunk", discount: "10%", badgeText: "Զեղչ", category: "Աքսեսուարներ", location: "Հայաստան", benefit: "Զեղչ", platform: "Օֆլայն", cardTypes: ["Visa Infinite", "Mastercard Gold", "Arca Classic"] },
-  { title: "Seven Visions Resort & Places, The Dvin", discount: "20%", badgeText: "Զեղչ", category: "Սրճարաններ", location: "Հայաստան", benefit: "Զեղչ", platform: "Օֆլայն", cardTypes: ["Visa Infinite"] },
-  { title: "Body & Soul Fitness Center", discount: "20%", badgeText: "Զեղչ", category: "Սպորտ", location: "Հայաստան", benefit: "Զեղչ", platform: "Օֆլայն", cardTypes: ["Visa Infinite"] },
-  { title: "TIME", discount: "15%", badgeText: "Զեղչ", category: "Աքսեսուարներ", location: "Հայաստան", benefit: "Զեղչ", platform: "Օֆլայն", cardTypes: ["Visa Infinite", "Evoca Travel Card", "Visa Business"] },
-  { title: "Mayrig", discount: "16%", badgeText: "Cashback", category: "Սրճարաններ", location: "Հայաստան", benefit: "Cashback", platform: "Օֆլայն", cardTypes: ["Visa Infinite", "Evoca Visa Platinum"] },
-  { title: "4u.am", discount: "20%", badgeText: "Cashback", category: "Նվերներ", location: "Հայաստան", benefit: "Cashback", platform: "Օնլայն", cardTypes: ["Visa Infinite", "Mastercard Gold", "Visa Digital"] },
-  { title: "Ashley home", discount: "3.5%", badgeText: "Cashback", category: "Ինտերիեր", location: "Հայաստան", benefit: "Cashback", platform: "Օֆլայն", cardTypes: ["Visa Infinite", "Visa Classic", "Arca Classic"] },
-  { title: "Cofix", discount: "15%", badgeText: "Զեղչ", category: "Սրճարաններ", location: "Հայաստան", benefit: "Զեղչ", platform: "Օֆլայն", cardTypes: ["Visa Infinite", "Evoca Visa Platinum", "Visa Vision"] }
-];
-
-// Գեներացնում ենք ճիշտ 63 քարտ
-const evocaBenefitsCards = Array.from({ length: 63 }, (_, index) => {
-  const partner = realEvocaPartners[index % realEvocaPartners.length];
-  return {
-    id: index + 1,
-    title: index < realEvocaPartners.length ? partner.title : `${partner.title} (${Math.floor(index / realEvocaPartners.length) + 1})`,
-    discount: partner.discount,
-    badgeText: partner.badgeText,
-    category: partner.category,
-    location: partner.location,
-    benefit: partner.benefit,
-    platform: partner.platform,
-    cardTypes: partner.cardTypes,
-    imageSrc: `https://via.placeholder.com/400x200?text=${encodeURIComponent(partner.title)}`,
-    socials: { instagram: true, website: index % 2 === 0 }
-  };
-});
+// Firebase Firestore import-ներ
+import { collection, getDocs } from 'firebase/firestore';
+import { db } from '../firebase'; // Ճշգրտեք ճանապարհը ըստ ձեր նախագծի
 
 const EvocaBenefits = () => {
+  const [cards, setCards] = useState([]);
+  const [loading, setLoading] = useState(true);
+
   const [searchTerm, setSearchTerm] = useState('');
   const [activeCategory, setActiveCategory] = useState(null);
   const [visibleCount, setVisibleCount] = useState(21);
@@ -64,6 +34,28 @@ const EvocaBenefits = () => {
   const [selectedSectors, setSelectedSectors] = useState([]);
   const [selectedPlatforms, setSelectedPlatforms] = useState([]);
 
+  // 1. Firebase Firestore-ից տվյալների ներբեռնում
+  useEffect(() => {
+    const fetchBenefits = async () => {
+      try {
+        setLoading(true);
+        const querySnapshot = await getDocs(collection(db, 'evoca_benefits'));
+        const benefitsData = querySnapshot.docs.map((doc, index) => ({
+          id: doc.id,
+          ...doc.data(),
+          socials: { instagram: true, website: index % 2 === 0 }
+        }));
+        setCards(benefitsData);
+      } catch (error) {
+        console.error('Սխալ Firebase-ից տվյալները ստանալիս:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBenefits();
+  }, []);
+
   const toggleSection = (section) => {
     setOpenSections((prev) => ({ ...prev, [section]: !prev[section] }));
   };
@@ -75,13 +67,13 @@ const EvocaBenefits = () => {
     setVisibleCount(21);
   };
 
-  // Ֆիլտրման տրամաբանություն
-  const filteredCards = evocaBenefitsCards.filter((card) => {
-    const matchesSearch = card.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                          card.category.toLowerCase().includes(searchTerm.toLowerCase());
+  // 2. Ֆիլտրման տրամաբանություն
+  const filteredCards = cards.filter((card) => {
+    const matchesSearch = card.title?.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                          card.category?.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesHeaderCategory = activeCategory ? card.category === activeCategory : true;
     
-    const matchesCardType = selectedCardTypes.length > 0 ? card.cardTypes.some(ct => selectedCardTypes.includes(ct)) : true;
+    const matchesCardType = selectedCardTypes.length > 0 ? card.cardTypes?.some(ct => selectedCardTypes.includes(ct)) : true;
     const matchesLocation = selectedLocations.length > 0 ? selectedLocations.includes(card.location) : true;
     const matchesBenefit = selectedBenefits.length > 0 ? selectedBenefits.includes(card.badgeText) : true;
     const matchesSector = selectedSectors.length > 0 ? selectedSectors.includes(card.category) : true;
@@ -90,7 +82,7 @@ const EvocaBenefits = () => {
     return matchesSearch && matchesHeaderCategory && matchesCardType && matchesLocation && matchesBenefit && matchesSector && matchesPlatform;
   });
 
-  // Դասավորման (Sorting) տրամաբանություն
+  // 3. Դասավորման (Sorting) տրամաբանություն
   const sortedCards = [...filteredCards].sort((a, b) => {
     if (selectedSort === 'high-to-low') {
       return parseFloat(b.discount) - parseFloat(a.discount);
@@ -121,7 +113,6 @@ const EvocaBenefits = () => {
           
           {/* Ձախ սյունյակ՝ Ֆիլտրներ */}
           <aside className="w-full lg:w-72 flex-shrink-0 flex flex-col gap-4">
-            <h2 className="text-xl font-bold text-gray-900 mb-2">Ֆիլտրներ</h2>
 
             {/* 1. Դասավորել */}
             <div className="border border-gray-200 rounded-2xl p-4 bg-white shadow-sm">
@@ -230,7 +221,7 @@ const EvocaBenefits = () => {
               </button>
               {openSections.sector && (
                 <div className="flex flex-col gap-3 mt-4 text-sm text-gray-700">
-                  {['Սրճարաններ', 'Հանգիստ', 'Աքսեսուարներ', 'Նորաձևություն', 'Ինտերիեր', 'Սպորտ', 'Նվերներ'].map((sector, idx) => (
+                  {['Սրճարաններ', 'Հանգիստ', 'Աքսեսուարներ', 'Նորաձևություն', 'Ինտերիեր', 'Սպորտ', 'Նվերներ', 'Առողջություն', 'Գեղեցկություն', 'Տեխնիկա', 'Կենսակերպ'].map((sector, idx) => (
                     <label key={idx} className="flex items-center justify-between cursor-pointer">
                       <div className="flex items-center gap-3">
                         <input 
@@ -276,7 +267,11 @@ const EvocaBenefits = () => {
 
           {/* Աջ հատված՝ Քարտերի ցանց (Grid) */}
           <section className="flex-1 flex flex-col items-center">
-            {sortedCards.length > 0 ? (
+            {loading ? (
+              <div className="py-20 text-center text-gray-500 font-medium text-lg">
+                Բեռնվում են տվյալները Firebase-ից...
+              </div>
+            ) : sortedCards.length > 0 ? (
               <>
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 w-full">
                   {sortedCards.slice(0, visibleCount).map((card) => (
