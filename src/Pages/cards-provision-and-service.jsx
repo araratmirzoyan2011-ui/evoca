@@ -484,7 +484,30 @@ export const cardsProvisionAccordions = [
     ],
   },
 ];
-
+const CPASReport = [
+  { order: 1, title: "Կենսաթոշակային քարտեր" },
+  { order: 2, title: "Evoca Gift քարտեր (Տեղեկատվական ամփոփագիր)" },
+  { order: 3, title: "Տեղեկատվական ամփոփագիր (Բանկային հաշիվներ) 08.06.26" },
+  { order: 4, title: "Visa Digital քարտեր (Տեղեկատվական ամփոփագիր)" },
+  { order: 5, title: "«ԷՎՈԿԱԲԱՆԿ» ՓԲԸ վճարային քարտերի կիրառմամբ EvocaTouch բջջային հավելվածով թվայնացված ք..." },
+  { order: 6, title: "Visa Infinite քարտեր (Տեղեկատվական ամփոփագիր)" },
+  { order: 7, title: "UnionPay Business Platinum քարտեր (Տեղեկատվական ամփոփագիր)" },
+  { order: 8, title: "UnionPay UPI Gold քարտեր (Տեղեկատվական ամփոփագիր)" },
+  { order: 9, title: "Visa Vision քարտեր (Տեղեկատվական ամփոփագիր)" },
+  { order: 10, title: "Mastercard World Digital (Տեղեկատվական ամփոփագիր)" },
+  { order: 11, title: "Dalma Gift քարտեր (Տեղեկատվական ամփոփագիր)" },
+  { order: 12, title: "Garage Masters' Mall Gift քարտեր" },
+  { order: 13, title: "Digital Gift քարտեր (Տեղեկատվական ամփոփագիր)" },
+  { order: 14, title: "Rio Gift քարտեր (Տեղեկատվական ամփոփագիր)" },
+  { order: 15, title: "MBG Gift քարտեր (Տեղեկատվական ամփոփագիր)" },
+  { order: 16, title: "Վճարային քարտերի տրամադրման և սպասարկման պայմաններ 01.02.2026թ" },
+  { order: 17, title: "Համալիր բանկային ծառայությունների մատուցման պայմաններ 16.05.2025թ." },
+  { order: 18, title: "Դեբետային և կրեդիտային քարտեր (Տեղեկատվական ամփոփագիր) 17.03.2026" },
+  { order: 19, title: "Evoca Travel (Տեղեկատվական ամփոփագիր) 17.03.2026" },
+  { order: 20, title: "Visa Platinum քարտեր (Տեղեկատվական ամփոփագիր)" },
+  { order: 21, title: "Տեղեկատվական ամփոփագիր (arca UPI cobadge)" },
+  { order: 22, title: "USSD և 3D Secure ծառայություն" }
+];
 const fetchCollection = async (name) => {
   const snap = await getDocs(collection(db, name));
   return snap.docs.map((d) => ({ docId: d.id, ...d.data() }));
@@ -545,8 +568,6 @@ const CPAS = () => {
                 <SocialIcons />
               </div>
             </div>
-
-            {/* Աջ կողմի հիմնական բովանդակություն */}
             <div className="flex-1 max-w-4xl">
               <h2 className="text-2xl font-extrabold text-gray-900 uppercase mb-6">
                 ԱՆՀՐԱԺԵՇՏ ՏԵՂԵԿԱՏՎՈՒԹՅՈՒՆ
@@ -567,7 +588,7 @@ const CPAS = () => {
                   Փաստաթղթեր
                 </h2>
                 <div className="space-y-5">
-                  {accountsReport.map((r) => (
+                  {CPASReport.map((r) => (
                     <DocumentCard key={r.docId || r.order} title={r.title} url={r.url} />
                   ))}
                 </div>
