@@ -4,19 +4,19 @@ import Footer from '../Components/Footer';
 import { BenefitsHeader } from '../Components/BenefitsHeader';
 import Card from '../Components/Benefits-Card';
 import InfoAccordion from '../Components/InfoAccordion';
-// Firebase Firestore import-ներ
 import { collection, getDocs } from 'firebase/firestore';
-import { db } from '../firebase'; // Ճշգրտեք ճանապարհը ըստ ձեր նախագծի
+import { db } from '../firebase';
 
 const EvocaBenefits = () => {
   const [cards, setCards] = useState([]);
+  const [faqs, setFaqs] = useState([]); 
   const [loading, setLoading] = useState(true);
+  const [faqsLoading, setFaqsLoading] = useState(true); 
 
   const [searchTerm, setSearchTerm] = useState('');
   const [activeCategory, setActiveCategory] = useState(null);
   const [visibleCount, setVisibleCount] = useState(21);
 
-  // Ֆիլտրերի բացված/փակված վիճակները (Բոլորը սկզբում բաց են՝ true)
   const [openSections, setOpenSections] = useState({
     sorting: true,
     cardType: true,
@@ -26,7 +26,6 @@ const EvocaBenefits = () => {
     platform: true
   });
 
-  // Առանձին ֆիլտրերի արժեքներ
   const [selectedSort, setSelectedSort] = useState('all');
   const [selectedCardTypes, setSelectedCardTypes] = useState([]);
   const [selectedLocations, setSelectedLocations] = useState([]);
@@ -34,62 +33,36 @@ const EvocaBenefits = () => {
   const [selectedSectors, setSelectedSectors] = useState([]);
   const [selectedPlatforms, setSelectedPlatforms] = useState([]);
 
-  // Հաճախ տրվող հարցերի տվյալներ
-  const faqData = [
-    {
-      title: "Ի՞նչ է Evoca Benefits-ը։",
-      blocks: ["Evoca Benefits-ը հարթակ է, որը հնարավորություն է տալիս Evocabank-ի քարտապաններին ստանալ բացառիկ զեղչեր և քեշբեքեր բանկի գործընկեր ձեռնարկություններում։"]
-    },
-    {
-      title: "Ի՞նչ բենեֆիթներից կարող են օգտվել Բանկի քարտապանները։",
-      blocks: ["Քարտապանները կարող են օգտվել տարբեր տեսակի զեղչերից և քեշբեքերից (Cashback) հանրապետության լավագույն սրճարաններում, խանութներում, ժամանցի վայրերում և այլ ոլորտներում։"]
-    },
-    {
-      title: "Ինչպե՞ս օգտվել բենեֆիթներից։",
-      blocks: ["Պարզապես այցելեք գործընկեր վայր, վճարեք Evocabank-ի համապատասխան քարտով և ստացեք ձեր զեղչը կամ քեշբեքը։"]
-    },
-    {
-      title: "Քանի՞ անգամ է հնարավոր օգտվել Evoca բենեֆիթներից։",
-      blocks: ["Դուք կարող եք օգտվել Evoca բենեֆիթներից անսահմանափակ անգամ գործընկերոջ յուրաքանչյուր այցելության կամ գնման ժամանակ։"]
-    },
-    {
-      title: "Եթե տվյալ գործընկերոջ մոտ արդեն գործում են զեղչեր, Evoca բենեֆիթները կգործե՞ն։",
-      blocks: ["Այս մասով մանրամասները կարող եք ճշգրտել տվյալ գործընկերոջ հետ, սակայն սովորաբար առաջարկները չեն գումարվում այլ ակցիաների հետ, եթե այլ բան նախատեսված չէ։"]
-    },
-    {
-      title: "Evocabank-ի ո՞ր քարտերն ունեն բենեֆիթներ։",
-      blocks: ["Բենեֆիթները տարածվում են Evocabank-ի տարբեր քարտատեսակների վրա՝ ներառյալ Visa Infinite, Evoca Visa Platinum, Evoca Travel Card, Mastercard Gold, Visa Gold, Visa Classic և այլն։"]
-    },
-    {
-      title: "Ինչպե՞ս պատվիրել Evoca քարտ։",
-      blocks: ["Դուք կարող եք պատվիրել Evoca քարտ՝ այցելելով բանկի մասնաճյուղ, օգտվելով EvocaTouch հավելվածից կամ լրացնելով հայտ կայքում։"]
-    },
-    {
-      title: "Ինչպե՞ս կարող է իմ բիզնեսը միանալ Evoca Benefits ծրագրին։",
-      blocks: ["Ձեր բիզնեսը ծրագրին միացնելու համար կարող եք կապ հաստատել մեզ հետ բանկի պաշտոնական կայքի կամ հեռախոսազանգի միջոցով։"]
-    }
-  ];
-
-  // 1. Firebase Firestore-ից տվյալների ներբեռնում
   useEffect(() => {
-    const fetchBenefits = async () => {
+    const fetchData = async () => {
       try {
         setLoading(true);
-        const querySnapshot = await getDocs(collection(db, 'evoca_benefits'));
-        const benefitsData = querySnapshot.docs.map((doc, index) => ({
+        setFaqsLoading(true);
+
+        const benefitsSnapshot = await getDocs(collection(db, 'evoca_benefits'));
+        const benefitsData = benefitsSnapshot.docs.map((doc, index) => ({
           id: doc.id,
           ...doc.data(),
           socials: { instagram: true, website: index % 2 === 0 }
         }));
         setCards(benefitsData);
+
+        const faqsSnapshot = await getDocs(collection(db, 'evoca_faqs'));
+        const faqsData = faqsSnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data()
+        }));
+        setFaqs(faqsData);
+
       } catch (error) {
         console.error('Սխալ Firebase-ից տվյալները ստանալիս:', error);
       } finally {
         setLoading(false);
+        setFaqsLoading(false);
       }
     };
 
-    fetchBenefits();
+    fetchData();
   }, []);
 
   const toggleSection = (section) => {
@@ -103,7 +76,6 @@ const EvocaBenefits = () => {
     setVisibleCount(21);
   };
 
-  // 2. Ֆիլտրման տրամաբանություն
   const filteredCards = cards.filter((card) => {
     const matchesSearch = card.title?.toLowerCase().includes(searchTerm.toLowerCase()) || 
                           card.category?.toLowerCase().includes(searchTerm.toLowerCase());
@@ -118,7 +90,6 @@ const EvocaBenefits = () => {
     return matchesSearch && matchesHeaderCategory && matchesCardType && matchesLocation && matchesBenefit && matchesSector && matchesPlatform;
   });
 
-  // 3. Դասավորման (Sorting) տրամաբանություն
   const sortedCards = [...filteredCards].sort((a, b) => {
     if (selectedSort === 'high-to-low') {
       return parseFloat(b.discount) - parseFloat(a.discount);
@@ -147,10 +118,8 @@ const EvocaBenefits = () => {
 
         <div className="flex flex-col lg:flex-row gap-8 mt-8">
           
-          {/* Ձախ սյունյակ՝ Ֆիլտրներ */}
           <aside className="w-full lg:w-72 flex-shrink-0 flex flex-col gap-4">
 
-            {/* 1. Դասավորել */}
             <div className="border border-gray-200 rounded-2xl p-4 bg-white shadow-sm">
               <button onClick={() => toggleSection('sorting')} className="w-full flex items-center justify-between font-bold text-gray-900">
                 <span>Դասավորել</span>
@@ -174,7 +143,6 @@ const EvocaBenefits = () => {
               )}
             </div>
 
-            {/* 2. Քարտատեսակ */}
             <div className="border border-gray-200 rounded-2xl p-4 bg-white shadow-sm">
               <button onClick={() => toggleSection('cardType')} className="w-full flex items-center justify-between font-bold text-gray-900">
                 <span>Քարտատեսակ</span>
@@ -199,7 +167,6 @@ const EvocaBenefits = () => {
               )}
             </div>
 
-            {/* 3. Վայր */}
             <div className="border border-gray-200 rounded-2xl p-4 bg-white shadow-sm">
               <button onClick={() => toggleSection('location')} className="w-full flex items-center justify-between font-bold text-gray-900">
                 <span>Վայր</span>
@@ -224,7 +191,6 @@ const EvocaBenefits = () => {
               )}
             </div>
 
-            {/* 4. Բենեֆիթ */}
             <div className="border border-gray-200 rounded-2xl p-4 bg-white shadow-sm">
               <button onClick={() => toggleSection('benefit')} className="w-full flex items-center justify-between font-bold text-gray-900">
                 <span>Բենեֆիթ</span>
@@ -249,7 +215,6 @@ const EvocaBenefits = () => {
               )}
             </div>
 
-            {/* 5. Ոլորտ */}
             <div className="border border-gray-200 rounded-2xl p-4 bg-white shadow-sm">
               <button onClick={() => toggleSection('sector')} className="w-full flex items-center justify-between font-bold text-gray-900">
                 <span>Ոլորտ</span>
@@ -274,7 +239,6 @@ const EvocaBenefits = () => {
               )}
             </div>
 
-            {/* 6. Հարթակ */}
             <div className="border border-gray-200 rounded-2xl p-4 bg-white shadow-sm">
               <button onClick={() => toggleSection('platform')} className="w-full flex items-center justify-between font-bold text-gray-900">
                 <span>Հարթակ</span>
@@ -301,7 +265,6 @@ const EvocaBenefits = () => {
 
           </aside>
 
-          {/* Աջ հատված՝ Քարտերի ցանց (Grid) */}
           <section className="flex-1 flex flex-col items-center">
             {loading ? (
               <div className="py-20 text-center text-gray-500 font-medium text-lg">
@@ -342,20 +305,30 @@ const EvocaBenefits = () => {
 
         </div>
 
-        {/* Հաճախ տրվող հարցեր (FAQ) բաժին՝ օգտագործելով InfoAccordion */}
-        <section className="mt-16 bg-white border border-gray-100 rounded-3xl p-6 md:p-10 shadow-sm">
+        <section className="mt-16 bg-white border border-gray-100 rounded-3xl p-6 md:p-10 shadow-sm w-[60%] ml-[20%]">
           <h2 className="text-2xl md:text-3xl font-extrabold text-gray-900 mb-8">
             Հաճախ տրվող հարցեր
           </h2>
-          <div className="space-y-4">
-            {faqData.map((faq, index) => (
-              <InfoAccordion
-                key={index}
-                title={faq.title}
-                blocks={faq.blocks}
-              />
-            ))}
-          </div>
+
+          {faqsLoading ? (
+            <div className="py-8 text-center text-gray-500">
+              Բեռնվում են հարցերը Firebase-ից...
+            </div>
+          ) : faqs.length > 0 ? (
+            <div className="space-y-4">
+              {faqs.map((faq) => (
+                <InfoAccordion
+                  key={faq.id}
+                  title={faq.title}
+                  blocks={faq.blocks}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-8 text-gray-500">
+              Հարցեր չեն գտնվել:
+            </div>
+          )}
         </section>
 
       </main>
