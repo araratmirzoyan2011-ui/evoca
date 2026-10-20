@@ -62,6 +62,8 @@ import EvocaSalary from "./Pages/evoca-salary";
 import Securities from "./Pages/securities";
 import Bond from "./Pages/bonds";
 import Repo from "./Pages/stocks-repo-transactions";
+
+import EvocaInvest from "./Pages/stocks-evocainvest";
 function App() {
   return (
     <BrowserRouter>
@@ -70,6 +72,7 @@ function App() {
           <Route path="/" element={<Main />} />
           <Route path="/business-loans" element={<Busines />} />
           <Route path="/stocks-repo-transactions" element={<Repo />} />
+          <Route path="/stocks-evocainvest" element={<EvocaInvest />} />
           <Route path="/bonds" element={<Bond />} />
           <Route path="/securities" element={<Securities />} />
           <Route path="/stocks-cda-services" element={<CDAServices />} />
