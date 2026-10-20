@@ -3,7 +3,7 @@ import { Header } from '../Components/Header';
 import Footer from '../Components/Footer';
 import { BenefitsHeader } from '../Components/BenefitsHeader';
 import Card from '../Components/Benefits-Card';
-
+import InfoAccordion from '../Components/InfoAccordion';
 // Firebase Firestore import-ներ
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../firebase'; // Ճշգրտեք ճանապարհը ըստ ձեր նախագծի
@@ -33,6 +33,42 @@ const EvocaBenefits = () => {
   const [selectedBenefits, setSelectedBenefits] = useState([]);
   const [selectedSectors, setSelectedSectors] = useState([]);
   const [selectedPlatforms, setSelectedPlatforms] = useState([]);
+
+  // Հաճախ տրվող հարցերի տվյալներ
+  const faqData = [
+    {
+      title: "Ի՞նչ է Evoca Benefits-ը։",
+      blocks: ["Evoca Benefits-ը հարթակ է, որը հնարավորություն է տալիս Evocabank-ի քարտապաններին ստանալ բացառիկ զեղչեր և քեշբեքեր բանկի գործընկեր ձեռնարկություններում։"]
+    },
+    {
+      title: "Ի՞նչ բենեֆիթներից կարող են օգտվել Բանկի քարտապանները։",
+      blocks: ["Քարտապանները կարող են օգտվել տարբեր տեսակի զեղչերից և քեշբեքերից (Cashback) հանրապետության լավագույն սրճարաններում, խանութներում, ժամանցի վայրերում և այլ ոլորտներում։"]
+    },
+    {
+      title: "Ինչպե՞ս օգտվել բենեֆիթներից։",
+      blocks: ["Պարզապես այցելեք գործընկեր վայր, վճարեք Evocabank-ի համապատասխան քարտով և ստացեք ձեր զեղչը կամ քեշբեքը։"]
+    },
+    {
+      title: "Քանի՞ անգամ է հնարավոր օգտվել Evoca բենեֆիթներից։",
+      blocks: ["Դուք կարող եք օգտվել Evoca բենեֆիթներից անսահմանափակ անգամ գործընկերոջ յուրաքանչյուր այցելության կամ գնման ժամանակ։"]
+    },
+    {
+      title: "Եթե տվյալ գործընկերոջ մոտ արդեն գործում են զեղչեր, Evoca բենեֆիթները կգործե՞ն։",
+      blocks: ["Այս մասով մանրամասները կարող եք ճշգրտել տվյալ գործընկերոջ հետ, սակայն սովորաբար առաջարկները չեն գումարվում այլ ակցիաների հետ, եթե այլ բան նախատեսված չէ։"]
+    },
+    {
+      title: "Evocabank-ի ո՞ր քարտերն ունեն բենեֆիթներ։",
+      blocks: ["Բենեֆիթները տարածվում են Evocabank-ի տարբեր քարտատեսակների վրա՝ ներառյալ Visa Infinite, Evoca Visa Platinum, Evoca Travel Card, Mastercard Gold, Visa Gold, Visa Classic և այլն։"]
+    },
+    {
+      title: "Ինչպե՞ս պատվիրել Evoca քարտ։",
+      blocks: ["Դուք կարող եք պատվիրել Evoca քարտ՝ այցելելով բանկի մասնաճյուղ, օգտվելով EvocaTouch հավելվածից կամ լրացնելով հայտ կայքում։"]
+    },
+    {
+      title: "Ինչպե՞ս կարող է իմ բիզնեսը միանալ Evoca Benefits ծրագրին։",
+      blocks: ["Ձեր բիզնեսը ծրագրին միացնելու համար կարող եք կապ հաստատել մեզ հետ բանկի պաշտոնական կայքի կամ հեռախոսազանգի միջոցով։"]
+    }
+  ];
 
   // 1. Firebase Firestore-ից տվյալների ներբեռնում
   useEffect(() => {
@@ -305,6 +341,23 @@ const EvocaBenefits = () => {
           </section>
 
         </div>
+
+        {/* Հաճախ տրվող հարցեր (FAQ) բաժին՝ օգտագործելով InfoAccordion */}
+        <section className="mt-16 bg-white border border-gray-100 rounded-3xl p-6 md:p-10 shadow-sm">
+          <h2 className="text-2xl md:text-3xl font-extrabold text-gray-900 mb-8">
+            Հաճախ տրվող հարցեր
+          </h2>
+          <div className="space-y-4">
+            {faqData.map((faq, index) => (
+              <InfoAccordion
+                key={index}
+                title={faq.title}
+                blocks={faq.blocks}
+              />
+            ))}
+          </div>
+        </section>
+
       </main>
 
       <Footer />
