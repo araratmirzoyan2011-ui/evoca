@@ -57,6 +57,7 @@ import Contact from "./Pages/contact";
 import Dibrary from "./Pages/dibrary";
 import EvocaTouch from "./Pages/evoca-touch";
 import Bulletins from "./Pages/bulletins";
+import CDAServices from "./Pages/stocks-cda-services";
 import EvocaSalary from "./Pages/evoca-salary";
 import Securities from "./Pages/securities";
 import Bond from "./Pages/bonds";
@@ -69,6 +70,7 @@ function App() {
           <Route path="/business-loans" element={<Busines />} />
           <Route path="/bonds" element={<Bond />} />
           <Route path="/securities" element={<Securities />} />
+          <Route path="/stocks-cda-services" element={<CDAServices />} />
           <Route path="/evoca-salary" element={<EvocaSalary />} />
           <Route path="/bulletins" element={<Bulletins />} />
           <Route path="/evoca-touch" element={<EvocaTouch />} />
