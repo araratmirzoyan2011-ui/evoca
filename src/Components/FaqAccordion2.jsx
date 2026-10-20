@@ -15,8 +15,35 @@ const Chevron = ({ open }) => (
     <path d="M4 7l6 6 6-6" />
   </svg>
 );
+const Paragraph = ({ p }) => {
+  if (typeof p === "string") return <p>{p}</p>;
 
-const FaqItem = ({ question, answer }) => {
+  if (p.list) {
+    return (
+      <ul className="list-disc space-y-1 pl-5">
+        {p.list.map((li, i) => (
+          <li key={i}>{li}</li>
+        ))}
+      </ul>
+    );
+  }
+
+  return (
+    <p>
+      {p.text}{" "}
+      <a
+        href={p.link.href}
+        target="_blank"
+        rel="noreferrer"
+        className="text-[#5b0fd6] underline"
+      >
+        {p.link.label}
+      </a>
+      ։
+    </p>
+  );
+};
+const FaqItem = ({ question, answer = [] }) => {
   const [open, setOpen] = useState(false);
 
   return (
@@ -38,16 +65,18 @@ const FaqItem = ({ question, answer }) => {
         }`}
       >
         <div className="overflow-hidden">
-          <p className="px-5 pb-5 pl-14 text-[15px] leading-6 text-[#444]">
-            {answer}
-          </p>
+          <div className="flex flex-col gap-3 px-5 pb-5 pl-14 text-[15px] leading-6 text-[#444]">
+            {answer.map((p, i) => (
+              <Paragraph key={i} p={p} />
+            ))}
+          </div>
         </div>
       </div>
     </div>
   );
 };
 
-const FaqAccordion = ({ categories = [] }) => {
+const FaqAccordion2 = ({ categories = [] }) => {
   const [active, setActive] = useState(0);
   const current = categories[active];
 
@@ -55,7 +84,6 @@ const FaqAccordion = ({ categories = [] }) => {
 
   return (
     <div className="flex flex-col gap-10 md:flex-row md:gap-24">
-      {/* Sidebar */}
       <aside className="h-fit w-full shrink-0 rounded-2xl bg-white py-3 shadow-[0_4px_24px_rgba(91,15,214,0.10)] md:w-[310px]">
         {categories.map((cat, i) => (
           <button
@@ -73,7 +101,6 @@ const FaqAccordion = ({ categories = [] }) => {
         ))}
       </aside>
 
-      {/* Content */}
       <div className="flex-1">
         <h2 className="mb-8 text-3xl font-bold text-[#1a1a1a]">
           {current.title}
@@ -81,9 +108,9 @@ const FaqAccordion = ({ categories = [] }) => {
 
         <div className="flex flex-col gap-4">
           {current.items?.length > 0 ? (
-            current.items.map((item) => (
+            current.items.map((item, i) => (
               <FaqItem
-                key={item.question}
+                key={`${active}-${i}`}
                 question={item.question}
                 answer={item.answer}
               />
@@ -97,4 +124,4 @@ const FaqAccordion = ({ categories = [] }) => {
   );
 };
 
-export default FaqAccordion;
+export default FaqAccordion2;
