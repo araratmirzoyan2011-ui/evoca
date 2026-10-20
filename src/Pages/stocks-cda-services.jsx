@@ -7,7 +7,7 @@ import { collection, getDocs } from 'firebase/firestore';
 import { EvocaNewsCard } from '../Components/EVocaCard1.jsx';
 import { Link } from 'react-router-dom';
 import Navbar from '../Components/Menuall.jsx';
-
+import InfoCard from '../Components/AccountsCard.jsx';
 const CDAServices = () => {
   const [loading, setLoading] = useState(true);
   const [securitiesmenu, setSecuritiesmenu] = useState([]);
@@ -46,12 +46,23 @@ const CDAServices = () => {
       </div>
     );
   }
-
+  const cardData={title:"Հայաստանի կենտրոնական դեպոզիտարիայի (ՀԿԴ)",description:"Evocabank-ը հնարավորություն է տալիս ձեռք բերել պարտատոմսեր և ստանալ բարձր եկամուտներ։ Մենք ցանկանում ենք դառնալ Ձեր բարեկեցիկ ապագայի մի մասնիկը։",imageUrl:"https://www.evoca.am/images-cache/menu/1/16783548543339/780x585.jpg",altText:""}
   return (
     <>
       <Header />
       <Navbar items={securitiesmenu} />
-
+        <main className="w-full py-8 px-4 md:px-12 bg-gray-50">
+        <div className="max-w-7xl mx-auto space-y-6">
+          {cardData && (
+            <InfoCard
+              title={cardData.title}
+              description={cardData.description}
+              imageUrl={cardData.imageUrl}
+              altText={cardData.altText}
+            />
+          )}
+        </div>
+      </main>
       <section className="w-full bg-white py-10 px-4 md:px-12">
         <div className="max-w-7xl mx-auto flex gap-6 md:gap-24">
           
