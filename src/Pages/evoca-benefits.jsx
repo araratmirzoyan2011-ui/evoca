@@ -16,14 +16,14 @@ const EvocaBenefits = () => {
   const [activeCategory, setActiveCategory] = useState(null);
   const [visibleCount, setVisibleCount] = useState(21);
 
-  // Ֆիլտրերի բացված/փակված վիճակները
+  // Ֆիլտրերի բացված/փակված վիճակները (Բոլորը սկզբում բաց են՝ true)
   const [openSections, setOpenSections] = useState({
     sorting: true,
-    cardType: false,
-    location: false,
-    benefit: false,
+    cardType: true,
+    location: true,
+    benefit: true,
     sector: true,
-    platform: false
+    platform: true
   });
 
   // Առանձին ֆիլտրերի արժեքներ
