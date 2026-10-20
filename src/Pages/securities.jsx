@@ -3,7 +3,7 @@ import { Header } from '../Components/Header';
 import Footer from '../Components/Footer';
 import SocialIcons from '../Components/SocialIcons.jsx';
 import { db } from '../firebase';
-import { collection, getDocs, doc, getDoc, setDoc } from 'firebase/firestore';
+import { collection, getDocs, doc, getDoc } from 'firebase/firestore';
 import { EvocaNewsCard } from '../Components/EVocaCard1.jsx';
 import InfoCard from '../Components/AccountsCard.jsx';
 import InfoAccordion from '../Components/InfoAccordion.jsx';
@@ -12,30 +12,9 @@ import Navbar from '../Components/Menuall.jsx';
 
 const Securities = () => {
   const [loading, setLoading] = useState(true);
-
-  const securitiesmenu = [
-    {
-      label: "Ներդրումային ծառայություններ",
-      path: "/securities",
-    },
-    {
-      label: "Պարտատոմսեր",
-      path: "/securities-bonds",
-    },
-    {
-      label: "ՀԿԴ ծառայություններ",
-      path: "/securities-cda-services",
-    },
-    {
-      label: "Ռեպո/Հակադարձ Ռեպո գործարքներ",
-      path: "/securities-repo-transactions",
-    },
-    {
-      label: "EvocaINVEST",
-      path: "/securities-evoca-invest",
-    },
-  ];
-
+  
+  // securitiesmenu-ն այժմ state է, որը լցվում է Firebase-ից
+  const [securitiesmenu, setSecuritiesmenu] = useState([]);
   const [securitiesitems, setSecuritiesitems] = useState([]);
   const [introTexts, setIntroTexts] = useState([]);
   const [clientSteps, setClientSteps] = useState([]);
@@ -45,27 +24,15 @@ const Securities = () => {
   const [salaryitems, setSalaryitems] = useState([]);
 
   useEffect(() => {
-    const initFirebaseData = async () => {
+    const fetchDataFromFirebase = async () => {
       try {
         setLoading(true);
 
-        // 1. ԱՎՏՈՄԱՏ ՆԵՐՄՈՒԾՈՒՄ/ՍՏԵՂԾՈՒՄ FIREBASE-ՈՒՄ
-        for (const item of securitiesmenu) {
-          const collectionName = item.path.replace('/', '') || 'securities-home';
-          const docRef = doc(db, collectionName, "info");
-          
-          // Ստուգում ենք՝ արդյոք արդեն կա, եթե չկա՝ ավելացնում ենք
-          const docSnap = await getDoc(docRef);
-          if (!docSnap.exists()) {
-            await setDoc(docRef, {
-              label: item.label,
-              path: item.path,
-              createdAt: new Date().toISOString()
-            });
-          }
+        const menuSnapshot = await getDocs(collection(db, "securitiesmenu"));
+        if (!menuSnapshot.empty) {
+          setSecuritiesmenu(menuSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
         }
-
-        // 2. ՄՅՈՒՍ ՏՎՅԱԼՆԵՐԻ ԲԵՌՆՈՒՄ
+        
         const securitiesSnapshot = await getDocs(collection(db, "securitiesitems"));
         if (!securitiesSnapshot.empty) {
           setSecuritiesitems(securitiesSnapshot.docs.map(doc => ({ docId: doc.id, ...doc.data() })));
@@ -105,13 +72,13 @@ const Securities = () => {
         }
 
       } catch (error) {
-        console.error("Firestore-ի հետ աշխատանքի սխալ:", error);
+        console.error("Firestore-ից տվյալների բեռնման սխալ:", error);
       } finally {
         setLoading(false);
       }
     };
 
-    initFirebaseData();
+    fetchDataFromFirebase();
   }, []);
 
   if (loading) {
