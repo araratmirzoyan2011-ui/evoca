@@ -6,14 +6,26 @@ import { db } from '../firebase';
 import { collection, getDocs } from 'firebase/firestore';
 import Navbar from '../Components/Menuall.jsx';
 import InfoCard from '../Components/AccountsCard.jsx';
-
+import VideoAccordion from '../Components/video-accordion.jsx';
 const cardData = {
   title: "Կատարիր ներդրումեր և ստացիր եկամուտ EvocaINVEST հավելվածով",
   description: "EvocaINVEST հավելվածի միջոցով կարող ես կատարել ներդրումներ մի շարք միջազգային ֆինանսական շուկաներում:",
   imageUrl: "https://www.evoca.am/images-cache/menu/1/17812682689927/780x585.png",
   altText: "",
 };
-
+const usefulMaterials = {
+  heading: "ԱՆՀՐԱԺԵՇՏ ՏԵՂԵԿԱՏՎՈՒԹՅՈՒՆ",
+  accordionTitle: "EvocaINVEST օգտակար նյութեր",
+  videos: [
+    { id: "5kUF-3KueZ8" },
+    { id: "wax5BjEOAGQ" },
+    { id: "oxxOZXf2kPA" },
+    { id: "XCz2N5eicHs" },
+    { id: "8_C9YpvlZAE" },
+    { id: "3mPDelJ-KcM" },
+    { id: "OIfnnN40_DA" },
+  ],
+};
 const introTexts = [
   "Apple, Tesla, Google, Amazon, թե՞ Nike։",
   "**EvocaINVEST**-ի միջոցով դու կարող ես ներդրումներ կատարել միջազգային և տեղական կապիտալի շուկաներում։ Իսկ բրոքերային հաշիվ կարող ես բացել ընդամենը մի քանի րոպեում՝ անմիջապես **EvocaTOUCH** հավելվածից։",
@@ -280,6 +292,17 @@ const EvocaInvest = () => {
               className="w-full h-[600px] border-0 bg-gray-100"
             />
           </div>
+          
+        </div>
+        <div className=' w-[60%] h-auto ml-[20%] mt-[40px]'>
+             
+            <h2 className="text-2xl font-bold uppercase pt-6 mb-[40px]">
+              {usefulMaterials.heading}
+            </h2>
+            <VideoAccordion
+              title={usefulMaterials.accordionTitle}
+              videos={usefulMaterials.videos}
+            />
         </div>
       </section>
 
