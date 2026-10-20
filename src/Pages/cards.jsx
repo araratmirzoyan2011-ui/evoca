@@ -3,12 +3,10 @@ import { Header } from "../Components/Header";
 import Footer from "../Components/Footer";
 import { db } from "../firebase";
 import { collection, getDocs } from "firebase/firestore";
-import Navbar from "../Components/Menuall";
 import CardItem from "../Components/CardItem";
-
 const BASE = "https://www.evoca.am";
 
-export const cardsData = [
+ const cardsData = [
   {
     id: "travel-card",
     title: "Evoca Travel Card",
@@ -282,6 +280,16 @@ const Cards = () => {
   const [activeCategory, setActiveCategory] = useState("all");
   const [loading, setLoading] = useState(true);
 
+  // Ստատիկ ֆիլտրեր՝ ճիշտ այնպես, ինչպես ձեր նկարում է
+  const filterCategories = [
+    { id: "all", label: "Բոլորը" },
+    { id: "premium", label: "Պրեմիում" },
+    { id: "gift-cards", label: "Նվեր քարտեր" },
+    { id: "arca", label: "arca" },
+    { id: "visa", label: "VISA" },
+    { id: "master", label: "mastercard" },
+  ];
+
   useEffect(() => {
     const fetchMenuItems = async () => {
       try {
@@ -290,7 +298,6 @@ const Cards = () => {
           id: doc.id,
           ...doc.data(),
         }));
-        
         setMenuItems(items);
       } catch (error) {
         console.error("Սխալ տվյալների բեռնման ժամանակ:", error);
@@ -302,36 +309,49 @@ const Cards = () => {
     fetchMenuItems();
   }, []);
 
-  // Ֆիլտրում ենք քարտերը ըստ ընտրված կատեգորիայի
-  const filteredCards = activeCategory === "all"
-    ? cardsData
-    : cardsData.filter((card) => card.category === activeCategory);
+  // Ֆիլտրման տրամաբանություն
+  const filteredCards =
+    activeCategory === "all"
+      ? cardsData
+      : cardsData.filter((card) => card.category === activeCategory);
 
   return (
     <div className="min-h-screen flex flex-col bg-white">
       <Header />
-      
-      {/* Տեղադրում ենք Մենյուն/Նավիգացիան */}
-      <Navbar 
-        items={menuItems} 
-        activeCategory={activeCategory} 
-        setActiveCategory={setActiveCategory} 
-      />
 
-      {/* Քարտերի ցուցադրման հատված */}
-      <main className="flex-1">
+      <main className="flex-1 max-w-[1310px] w-full mx-auto px-4 py-8">
+        {/* Վերնագիր */}
+        <h1 className="text-[36px] font-bold text-black mb-8">Քարտեր</h1>
+
+        {/* Ֆիլտրման կոճակներ (համաձայն նկարի) */}
+        <div className="flex flex-wrap items-center gap-3 mb-10">
+          {filterCategories.map((cat) => {
+            const isActive = activeCategory === cat.id;
+            return (
+              <button
+                key={cat.id}
+                onClick={() => setActiveCategory(cat.id)}
+                className={`px-6 py-3 rounded-full text-sm font-medium transition-all duration-200 ${
+                  isActive
+                    ? "bg-[#6a00d8] text-white shadow-md"
+                    : "bg-[#f3f3f5] text-gray-800 hover:bg-gray-200"
+                }`}
+              >
+                {cat.label}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Քարտերի ցուցադրում */}
         {loading ? (
-          <div className="flex justify-center items-center py-20 text-[#6a00d8] font-semibold">
-            Բեռնվում է...
-          </div>
+          <div className="text-center py-20 text-[#6a00d8] font-medium">Բեռնվում է...</div>
         ) : (
-          <div className="py-6">
+          <div>
             {filteredCards.length > 0 ? (
-              filteredCards.map((card) => (
-                <CardItem key={card.id} card={card} />
-              ))
+              filteredCards.map((card) => <CardItem key={card.id} card={card} />)
             ) : (
-              <div className="text-center py-16 text-gray-500">
+              <div className="text-center py-20 text-gray-500">
                 Այս կատեգորիայում քարտեր չեն գտնվել:
               </div>
             )}
