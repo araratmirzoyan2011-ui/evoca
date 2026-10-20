@@ -7,6 +7,7 @@ import { collection, getDocs } from 'firebase/firestore';
 import Navbar from '../Components/Menuall.jsx';
 import InfoCard from '../Components/AccountsCard.jsx';
 import VideoAccordion from '../Components/video-accordion.jsx';
+import InfoAccordion from '../Components/InfoAccordion.jsx';
 const cardData = {
   title: "Կատարիր ներդրումեր և ստացիր եկամուտ EvocaINVEST հավելվածով",
   description: "EvocaINVEST հավելվածի միջոցով կարող ես կատարել ներդրումներ մի շարք միջազգային ֆինանսական շուկաներում:",
@@ -304,6 +305,18 @@ const EvocaInvest = () => {
               videos={usefulMaterials.videos}
             />
         </div>
+        <h2 className="text-2xl font-extrabold text-gray-900 uppercase mb-6">
+                  ԱՆՀՐԱԺԵՇՏ ՏԵՂԵԿԱՏՎՈՒԹՅՈՒՆ
+                </h2>
+                <div className="max-w-4xl space-y-4">
+                  {EvocaInvestAccordionsData.map((item) => (
+                    <InfoAccordion
+                      key={item.docId}
+                      title={item.title}
+                      blocks={item.blocks}
+                    />
+                  ))}
+                </div>
       </section>
 
       <Footer />
