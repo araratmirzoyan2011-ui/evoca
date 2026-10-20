@@ -7,13 +7,7 @@ import InfoAccordion from '../Components/InfoAccordion.jsx';
 import { DocumentCard } from '../Components/DocumentCard.jsx';
 import { db } from '../firebase';
 import { collection, getDocs } from 'firebase/firestore';
-// evoca.am/hy/cards-provision-and-service — accordion-ների տվյալները
-// Ձևաչափը ճշգրտորեն համապատասխանում է InfoAccordion-ի աջակցած կառուցվածքին․
-//   blocks-ի տարրը՝  "տող"  |  { parts: [...] }  |  { items: [...] }
-//   items-ի տարրը՝   "տող"  |  { parts: [...], sub: [...] }
-//   parts-ի տարրը՝   "տող"  |  { bold: "թավ տեքստ" }  |  { text: "...", href: "..." }
-// Օգտագործում․  <InfoAccordion key={a.id} title={a.title} blocks={a.blocks} />
-
+import { OnlineBanking } from '../Components/OnlineBanking.jsx';
 const FATCA_ENTITY =
   "https://www.evoca.am/file_manager/PDFs/US%20person%20identification%20entity.pdf";
 const FATCA_PERSON =
@@ -597,6 +591,8 @@ const CPAS = () => {
           </div>
         )}
       </section>
+      
+            <OnlineBanking />
       <Footer />
     </>
   );
