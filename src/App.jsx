@@ -65,6 +65,7 @@ import Repo from "./Pages/stocks-repo-transactions";
 import Faq from "./Pages/faq";
 import Cards from "./Pages/cards";
 import EvocaInvest from "./Pages/stocks-evocainvest";
+import CPAS from "./Pages/cards-provision-and-service";
 function App() {
   return (
     <BrowserRouter>
@@ -73,6 +74,8 @@ function App() {
           <Route path="/" element={<Main />} />
           <Route path="/business-loans" element={<Busines />} />
           <Route path="/stocks-repo-transactions" element={<Repo />} />
+          
+          <Route path="/cards-provision-and-service" element={<CPAS />} />
           <Route path="/cards" element={<Cards />} />
           <Route path="/stocks-evocainvest" element={<EvocaInvest />} />
           <Route path="/faq" element={<Faq />} />
