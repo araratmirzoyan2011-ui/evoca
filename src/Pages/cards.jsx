@@ -4,11 +4,13 @@ import Footer from "../Components/Footer";
 import { db } from "../firebase";
 import { collection, getDocs } from "firebase/firestore";
 import CardItem from "../Components/CardItem";
+import Navbar from "../Components/Menuall";
 
 const ITEMS_PER_PAGE = 20;
 
 const Cards = () => {
   const [menuItems, setMenuItems] = useState([]);
+  const [navbarItems, setNavbarItems] = useState([]);
   const [activeCategory, setActiveCategory] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(true);
@@ -25,14 +27,22 @@ const Cards = () => {
   ];
 
   useEffect(() => {
-    const fetchMenuItems = async () => {
+    const fetchData = async () => {
       try {
-        const querySnapshot = await getDocs(collection(db, "CardmenuItems"));
-        const items = querySnapshot.docs.map((doc) => ({
+        const cardsSnapshot = await getDocs(collection(db, "CardmenuItems"));
+        const items = cardsSnapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),
         }));
         setMenuItems(items);
+
+        const navbarSnapshot = await getDocs(collection(db, "Cardmenu"));
+        const navItems = navbarSnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        setNavbarItems(navItems);
+
       } catch (error) {
         console.error("Սխալ տվյալների բեռնման ժամանակ:", error);
       } finally {
@@ -40,7 +50,7 @@ const Cards = () => {
       }
     };
 
-    fetchMenuItems();
+    fetchData();
   }, []);
 
   const handleCategoryChange = (catId) => {
@@ -72,6 +82,7 @@ const Cards = () => {
   return (
     <div className="min-h-screen flex flex-col bg-white">
       <Header />
+      <Navbar items={navbarItems} />
 
       <main className="flex-1 max-w-[1310px] w-full mx-auto px-4 py-8">
         <h1 className="text-[36px] font-bold text-black mb-8">Քարտեր</h1>
