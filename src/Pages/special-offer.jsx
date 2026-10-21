@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Header } from "../Components/Header";
+import BusinessHeader from '../Components/Busines-Header.jsx';
 import Footer from "../Components/Footer";
 import Navbar from "../Components/Menuall.jsx";
 import SocialIcons from "../Components/SocialIcons.jsx";
@@ -53,7 +53,7 @@ const SpecialOffer = () => {
 
   return (
     <>
-      <Header />
+          <BusinessHeader />
       <Navbar items={menuItems} />
 
       <section className="w-full bg-white py-10 px-4 md:px-12">
