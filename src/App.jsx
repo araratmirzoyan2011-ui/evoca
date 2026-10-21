@@ -76,6 +76,7 @@ import BUMA from "./Pages/business-unallocated-metal-accounts";
 import ClasicalDeposit from "./Pages/business-classical-deposit";
 import Guarantee from "./Pages/guarantee";
 import Bonds2 from "./Pages/busines-bonds";
+import CDAServices2 from "./Pages/busines-stocks-cda-services";
 function App() {
   return (
     <BrowserRouter>
@@ -85,6 +86,7 @@ function App() {
           <Route path="/business-loans" element={<Busines />} />
           <Route path="/guarantee" element={<Guarantee />} />
           <Route path="/stocks-repo-transactions" element={<Repo />} />
+          <Route path="/busines-stocks-cda-services" element={<CDAServices2 />} />
           <Route path="/busines-bonds" element={<Bonds2 />} />
           <Route path="/special-offer" element={<SpecialOffer />} />
           <Route path="/business-unallocated-metal-accounts" element={<BUMA />} />
