@@ -72,6 +72,7 @@ import Leasing from "./Pages/leasing";
 import SpecialOffer from "./Pages/special-offer";
 import Map from "./Pages/map";
 import BAOAS from "./Pages/business-account-opening-and-services";
+import BUMA from "./Pages/business-unallocated-metal-accounts";
 function App() {
   return (
     <BrowserRouter>
@@ -81,6 +82,7 @@ function App() {
           <Route path="/business-loans" element={<Busines />} />
           <Route path="/stocks-repo-transactions" element={<Repo />} />
           <Route path="/special-offer" element={<SpecialOffer />} />
+          <Route path="/business-unallocated-metal-accounts" element={<BUMA />} />
           <Route path="/business-account-opening-and-services" element={<BAOAS />} />
           <Route path="/leasing" element={<Leasing />} />
           <Route path="/evoca-benefits" element={<EvocaBenefits />} />
