@@ -3,15 +3,17 @@ import { Link } from "react-router-dom";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../firebase";
 import BusinessHeader from "../Components/Busines-Header.jsx";
+import { DocumentCard } from "../Components/DocumentCard.jsx";
 import Footer from "../Components/Footer.jsx";
 import SocialIcons from "../Components/SocialIcons.jsx";
 import Navbar from "../Components/Menuall.jsx";
-import { DocumentCard } from "../Components/DocumentCard.jsx";
 import { EvocaNewsCard } from "../Components/EVocaCard1.jsx";
-
+const FinanceReport=[{title:"Տեղեկատվական ամփոփագիր (Վարկային պրոդուկտներ) 07.04.2026"}]
 const Finance = () => {
   const [loading, setLoading] = useState(true);
   const [menuItems, setMenuItems] = useState([]);
+  const [introTexts, setIntroTexts] = useState([]);
+  const [factoringTable, setFactoringTable] = useState([]);
   const [salaryitems, setSalaryitems] = useState([]);
 
   useEffect(() => {
@@ -19,6 +21,7 @@ const Finance = () => {
       try {
         setLoading(true);
 
+        // 1. Մենյուի բեռնում
         const menuSnap = await getDocs(collection(db, "garantMenu"));
         if (!menuSnap.empty) {
           const menuData = menuSnap.docs.map((doc) => doc.data());
@@ -26,6 +29,22 @@ const Finance = () => {
           setMenuItems(menuData);
         }
 
+        // 2. Ներածական տեքստերի բեռնում Firebase-ից
+        const introSnap = await getDocs(collection(db, "factoringIntroTexts"));
+        if (!introSnap.empty) {
+          const introDocs = introSnap.docs.map((doc) => doc.data().text);
+          setIntroTexts(introDocs);
+        }
+
+        // 3. Աղյուսակի տվյալների բեռնում Firebase-ից
+        const tableSnap = await getDocs(collection(db, "factoringTableData"));
+        if (!tableSnap.empty) {
+          const tableData = tableSnap.docs.map((doc) => doc.data());
+          tableData.sort((a, b) => (a.id || 0) - (b.id || 0));
+          setFactoringTable(tableData);
+        }
+
+        // 4. Նորությունների բեռնում
         const newsSnapshot = await getDocs(collection(db, "salaryNewsCollection"));
         const newsDocs = newsSnapshot.docs.map((doc) => doc.data());
         if (newsDocs.length > 0 && newsDocs[0].items) {
@@ -68,9 +87,76 @@ const Finance = () => {
             
             <h1 className="text-3xl font-bold text-gray-900">Ֆակտորինգային ֆինանսավորում</h1>
 
-            
-            
+            {/* Ներածական տեքստեր Firebase-ից */}
+            {introTexts.length > 0 && (
+              <div className="space-y-4 text-gray-700">
+                {introTexts.map((text, index) => (
+                  <p key={index}>
+                    {text.includes("Evocabank") ? (
+                      text.split("Evocabank").map((part, i, arr) => (
+                        <React.Fragment key={i}>
+                          {part}
+                          {i < arr.length - 1 && (
+                            <span className="text-purple-700 font-semibold">Evocabank</span>
+                          )}
+                        </React.Fragment>
+                      ))
+                    ) : (
+                      text
+                    )}
+                  </p>
+                ))}
+              </div>
+            )}
 
+            {/* Աղյուսակի հատված Firebase-ից */}
+            {factoringTable.length > 0 && (
+              <div className="pt-6">
+                <h2 className="text-2xl font-bold text-gray-900 mb-6">
+                  Պայմաններ և սակագներ`
+                </h2>
+
+                <div className="overflow-x-auto border border-purple-100 rounded-xl shadow-sm">
+                  <table className="w-full text-left border-collapse">
+                    <tbody>
+                      {factoringTable.map((row) => (
+                        <tr key={row.id || row.label} className="border-b border-purple-100 last:border-none hover:bg-gray-50/50 transition-colors">
+                          <td className="w-12 p-4 text-center text-gray-500 font-medium align-top border-r border-purple-100">
+                            {row.id}.
+                          </td>
+                          <td className="w-1/3 p-4 font-semibold text-gray-800 align-top border-r border-purple-100">
+                            {row.label}
+                          </td>
+                          <td className="p-4 text-gray-700 align-top">
+                            {Array.isArray(row.value) ? (
+                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                {row.value.map((item, idx) => (
+                                  <div key={idx} className="flex justify-between p-2 bg-purple-50/50 rounded-lg border border-purple-100">
+                                    <span className="font-medium text-purple-900">{item.currency}</span>
+                                    <span className="text-gray-700">{item.rate}</span>
+                                  </div>
+                                ))}
+                              </div>
+                            ) : (
+                              <span className="whitespace-pre-line">{row.value}</span>
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+            <h2 className="text-xl font-bold text-gray-900 mb-6">
+                                Փաստաթղթեր
+                              </h2>
+                              <div className="space-y-5">
+                                {FinanceReport.map((r) => (
+                                  <DocumentCard key={r.docId || r.order} title={r.title} url={r.url} />
+                                ))}
+                              </div>
+            {/* Նորությունների բլոկ */}
             {salaryitems.length > 0 && (
               <div className="pt-10">
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
