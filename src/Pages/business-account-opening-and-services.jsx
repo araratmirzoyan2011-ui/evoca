@@ -148,12 +148,14 @@ const menuItems = [
   { label: "Հաշիվների բացում և սպասարկում", path: "/business-account-opening-and-services" },
   { label: "Առարկայազուրկ մետաղական հաշիվներ", path: "/business-unallocated-metal-accounts" },
 ];
-const cardData={
-    title: "Հաշիվների բացում և սպասարկում",
+
+const cardData = {
+  title: "Հաշիվների բացում և սպասարկում",
   description: "Հայաստանի ռեզիդենտ և ոչ ռեզիդենտ իրավաբանական անձանց ու անհատ ձեռնարկատերերին առաջարկում ենք մեզ մոտ բացել դրամային և արտարժութային բանկային ընթացիկ հաշիվներ:",
   imageUrl: "https://www.evoca.am/images-cache/menu/1/16116367969264/780x585.jpg",
   altText: "Հաշիվների բացում և սպասարկում"
-}
+};
+
 const BAOAS = () => {
   const [accordions, setAccordions] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -196,7 +198,7 @@ const BAOAS = () => {
     <>
       <BusinessHeader />
       <Navbar items={menuItems} />
-       <main className="w-full py-8 px-4 md:px-12 bg-gray-50">
+      <main className="w-full py-8 px-4 md:px-12 bg-gray-50">
         <div className="max-w-7xl mx-auto">
           <InfoCard
             title={cardData.title}
@@ -216,9 +218,28 @@ const BAOAS = () => {
             </div>
 
             <div className="flex-1 max-w-4xl">
-              <h1 className="text-2xl font-bold text-gray-800 mb-8">
-                Հաշիվների բացում և սպասարկում
-              </h1>
+              <p className="text-gray-700 text-base mb-4 leading-relaxed">
+                Հաշիվների սպասարկումն իրականացնում ենք մեր{" "}
+                <a
+                  href="/current-account-tariffs"
+                  className="text-purple-700 underline hover:text-purple-900 font-medium"
+                >
+                  Ընթացիկ հաշիվների սպասարկման սակագներին համապատասխան
+                </a>
+                : Հաշիվներ բացելու համար կարող եք դիմել մեր Գլխամասային գրասենյակ և ցանկացած մասնաճյուղ:
+              </p>
+
+              <p className="text-gray-700 text-base mb-8 leading-relaxed">
+                <span className="text-purple-700 font-semibold">Ուշադրություն.</span>{" "}
+                <a
+                  href="/business-unallocated-metal-accounts"
+                  className="text-purple-700 underline hover:text-purple-900 font-medium"
+                >
+                  Առարկայազուրկ մետաղական հաշիվների
+                </a>
+                , Ավանդային և Քարտային հաշիվների սպասարկման պայմաններին կարող եք ծանոթանալ Առարկայազուրկ մետաղական հաշիվներ, Վճարային քարտեր ենթաբաժիններում և իրավաբանական անձանց բանկային ծառայությունների Ավանդներ բաժնում:
+              </p>
+
 
               <h2 className="text-2xl font-extrabold text-gray-900 uppercase mb-6">
                 ԱՆՀՐԱԺԵՇՏ ՏԵՂԵԿԱՏՎՈՒԹՅՈՒՆ
