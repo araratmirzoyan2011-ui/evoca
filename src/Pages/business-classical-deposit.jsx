@@ -5,14 +5,33 @@ import SocialIcons from "../Components/SocialIcons.jsx";
 import InfoCard from "../Components/AccountsCard.jsx";
 import { db } from "../firebase";
 import { collection, doc, getDoc, getDocs, orderBy, query } from "firebase/firestore";
-
+import InfoAccordion from "../Components/InfoAccordion.jsx";
 const cardData = {
   title: "Դասական ավանդ",
   description: "Դասական ավանդը կայուն բարձր եկամտաբերությամբ կավելացնի ձեր խնայողությունները: Դասական ժամկետային ավանդն ընդունում ենք ֆիզիկական և իրավաբանական անձանցից: Ավանդ ներդնելիս ձեզ տրամադրում ենք անվճար միջազգային քարտ:",
   imageUrl: "https://www.evoca.am/images-cache/menu/1/1615568375393/780x585.jpg",
   altText: ""
 };
-
+const ClasicdepositAccordionData = [
+  {
+    order: 1,
+    title: "Անհրաժեշտ տեղեկատվություն",
+    blocks: [
+      "Հարգելի Հաճախորդ,",
+      {
+        items: [
+          {
+            parts: [
+              "«ԷՎՈԿԱԲԱՆԿ» ԲԲԸ-ն Հայաստանի Հանրապետության և Ամերիկայի Միացյալ Նահանգների միջև «Օտարերկրյա հաշիվների հարկային համապատասխանության ակտի» կիրարկմանն օժանդակելու համագործակցության մասին համաձայնագրի պահանջներից ելնելով իրավասու է հաճախորդներից պահանջել լրացուցիչ տեղեկատվություն, մասնավորապես հաճախորդներից պահանջվում է լրացնել վերջիններիս ԱՄՆ անձ կարգավիճակի նույնականացման համար պահանջվող հետևյալ ձևաթղթերը՝ Իրավաբանական անձ հաճախորդների ինքնահայտարարագրման ձև` Մոդել 2-ի համաձայն (FATCA) կամ Ֆիզիկական անձ (ներառյալ անհատ ձեռնարկատեր) հաճախորդների ինքնահայտարարագրման ձև FATCA նպատակների համար՝",
+            ],
+          },]
+      },
+      {
+        
+      }
+    ]
+  },
+];
 const generalInfo = [
   {
     text: "Ժամկետային ավանդներն ընդունում ենք ֆիզիկական (այդ թվում՝ անհատ ձեռնարկատեր) և իրավաբանական անձ հաճախորդներից (ռեզիդենտ, ոչ ռեզիդենտ)",
@@ -299,7 +318,18 @@ const ClasicalDeposit = () => {
                   </li>
                 </ol>
               </div>
-
+              <h2 className="text-2xl font-extrabold text-gray-900 uppercase mb-6">
+                ԱՆՀՐԱԺԵՇՏ ՏԵՂԵԿԱՏՎՈՒԹՅՈՒՆ
+              </h2>
+            <div className="space-y-4">
+                  {ClasicdepositAccordionData.map((item) => (
+                    <InfoAccordion
+                      key={item.docId}
+                      title={item.title}
+                      blocks={item.blocks}
+                    />
+                  ))}
+                </div>
             </div>
           </div>
         </div>
