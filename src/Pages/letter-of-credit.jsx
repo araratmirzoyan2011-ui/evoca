@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { collection, getDocs, doc, getDoc } from "firebase/firestore";
 import { db } from "../firebase";
 import BusinessHeader from "../Components/Busines-Header.jsx";
+import { DocumentCard } from "../Components/DocumentCard.jsx";
 import Footer from "../Components/Footer.jsx";
 import SocialIcons from "../Components/SocialIcons.jsx";
 import Navbar from "../Components/Menuall.jsx";
@@ -74,29 +75,32 @@ const Credit = () => {
             
             <h1 className="text-3xl font-bold text-gray-900">Ակրեդիտիվ</h1>
 
-            {creditData?.description && (
-              <div className="space-y-4 text-gray-700">
-                {creditData.description.map((p, idx) => (
-                  <p key={idx}>{p}</p>
-                ))}
-              </div>
-            )}
+            <div className="space-y-4 text-gray-700">
+              <p>
+                Փաստաթղթային ակրեդիտիվը (Letter of Credit կամ L/C) մեր գրավոր պարտավորությունն է (որը թողարկվում է գնորդի հանձնարարությամբ հօգուտ վաճառողի) վճարելու որոշակի գումար ապրանք վաճառողին՝ վերջինիս կողմից ակրեդիտիվի պայմաններին համապատասխան փաստաթղթեր ներկայացնելու դեպքում:
+              </p>
+              <p>
+                Ակրեդիտիվները թողարկվում են Առևտրի միջազգային պալատի մշակած միասնական կանոնների համաձայն (կախված առևտրային գործարքի պայմաններից և առանձնահատկություններից):
+              </p>
+            </div>
 
-            {creditData?.conditions && (
-              <div className="space-y-4">
-                {creditData.conditionsTitle && (
-                  <h2 className="text-xl font-bold text-gray-900">{creditData.conditionsTitle}</h2>
-                )}
-                <ul className="list-disc pl-5 space-y-2 text-gray-700">
-                  {creditData.conditions.map((cond, idx) => (
-                    <li key={idx}>{cond}</li>
-                  ))}
-                </ul>
-                {creditData.contactInfo && (
-                  <p className="text-gray-700 pt-2">{creditData.contactInfo}</p>
-                )}
-              </div>
-            )}
+            <div className="space-y-4">
+              <h2 className="text-xl font-bold text-gray-900">Ակրեդիտիվի թողարկման հիմնական պայմանները՝</h2>
+              <ul className="list-disc pl-5 space-y-2 text-gray-700">
+                <li>
+                  Անհրաժեշտ է Ձեր հաշվին բացվելիք ակրեդիտիվի ծածկույթ, որն ամրագրվում է Ձեր հատուկ ծածկույթի հաշվին:
+                </li>
+                <li>
+                  Ձեր հատուկ ծածկույթի հաշվի ռեժիմը, հաշվի մնացորդի նկատմամբ հաշվարկվող տոկոսադրույքը և մյուս պայմանները սահմանվում են պայմանագրային կարգով:
+                </li>
+                <li>
+                  Ձեր հաշվին սեփական միջոցների մասնակի առկայության կամ բացակայության դեպքում դիտարկում ենք Ձեզ վարկային գիծ տրամադրելու հնարավորությունը:
+                </li>
+              </ul>
+              <p className="text-gray-700 pt-2">
+                Փաստաթղթային ակրեդիտիվների թողարկման վերաբերյալ լրացուցիչ տեղեկություններ և խորհրդատվություն ստանալու համար կարող եք դիմել մեր Գլխամասային գրասենյակ՝ «Միջազգային և արտարժութային գործառնություններ» բաժին:
+              </p>
+            </div>
 
             {creditData?.items && creditData.items.length > 0 && (
               <div className="space-y-4 pt-4">
@@ -174,3 +178,6 @@ const Credit = () => {
 };
 
 export default Credit;
+
+
+
