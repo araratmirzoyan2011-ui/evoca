@@ -77,6 +77,7 @@ import ClasicalDeposit from "./Pages/business-classical-deposit";
 import Guarantee from "./Pages/guarantee";
 import Bonds2 from "./Pages/busines-bonds";
 import CDAServices2 from "./Pages/busines-stocks-cda-services";
+import Repo2 from "./Pages/busines-stocks-repo-transactions";
 function App() {
   return (
     <BrowserRouter>
@@ -86,6 +87,8 @@ function App() {
           <Route path="/business-loans" element={<Busines />} />
           <Route path="/guarantee" element={<Guarantee />} />
           <Route path="/stocks-repo-transactions" element={<Repo />} />
+          
+          <Route path="/busines-stocks-repo-transactions" element={<Repo2 />} />
           <Route path="/busines-stocks-cda-services" element={<CDAServices2 />} />
           <Route path="/busines-bonds" element={<Bonds2 />} />
           <Route path="/special-offer" element={<SpecialOffer />} />
