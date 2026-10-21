@@ -8,16 +8,9 @@ import Navbar from "../Components/Menuall.jsx";
 import InfoAccordion from "../Components/InfoAccordion.jsx";
 
 const Guarantee = () => {
-  const menuItems = [
-    { label: "Ներդրումային ծառայություններ", path: "/guarantee", order: 1 },
-    { label: "Պարտատոմսեր", path: "/busines-bonds", order: 2 },
-    { label: "ՀԿԴ ծառայություններ", path: "/busines-stocks-cda-services", order: 3 },
-    { label: "Ռեպո/Հակադարձ ռեպո գործարքներ", path: "/busines-stocks-repo-transactions", order: 4 },
-    { label: "EvocaINVEST", path: "/stocks-evocainvest", order: 5 },
-  ];
-
   const [loading, setLoading] = useState(true);
   
+  const [menuItems, setMenuItems] = useState([]);
   const [securitiesitems, setSecuritiesitems] = useState([]);
   const [introTexts, setIntroTexts] = useState([]);
   const [clientSteps, setClientSteps] = useState([]);
@@ -28,6 +21,14 @@ const Guarantee = () => {
     const fetchDataFromFirebase = async () => {
       try {
         setLoading(true);
+
+        // Ներմուծում ենք մենյուն 'gurantmenu' կոլեկցիայից և սորտավորում ըստ order-ի
+        const menuSnapshot = await getDocs(collection(db, "gurantmenu"));
+        if (!menuSnapshot.empty) {
+          const menuData = menuSnapshot.docs.map(doc => doc.data());
+          menuData.sort((a, b) => (a.order || 0) - (b.order || 0));
+          setMenuItems(menuData);
+        }
 
         const securitiesSnapshot = await getDocs(collection(db, "securitiesitems"));
         if (!securitiesSnapshot.empty) {
