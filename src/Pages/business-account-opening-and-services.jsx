@@ -7,7 +7,7 @@ import InfoAccordion from "../Components/InfoAccordion.jsx";
 import InfoCard from "../Components/AccountsCard.jsx";
 import { db } from "../firebase";
 import { collection, doc, getDocs, orderBy, query, setDoc } from "firebase/firestore";
-
+import { OnlineBanking } from "../Components/OnlineBanking.jsx";
 const baosAccordionData = [
   {
     order: 1,
@@ -270,7 +270,7 @@ const BAOAS = () => {
           </div>
         </div>
       </section>
-
+       <OnlineBanking />
       <Footer />
     </>
   );
