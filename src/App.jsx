@@ -74,6 +74,7 @@ import Map from "./Pages/map";
 import BAOAS from "./Pages/business-account-opening-and-services";
 import BUMA from "./Pages/business-unallocated-metal-accounts";
 import ClasicalDeposit from "./Pages/business-classical-deposit";
+import Guarantee from "./Pages/guarantee";
 function App() {
   return (
     <BrowserRouter>
@@ -81,6 +82,7 @@ function App() {
         <Routes>=
           <Route path="/" element={<Main />} />
           <Route path="/business-loans" element={<Busines />} />
+          <Route path="/guarantee" element={<Guarantee />} />
           <Route path="/stocks-repo-transactions" element={<Repo />} />
           <Route path="/special-offer" element={<SpecialOffer />} />
           <Route path="/business-unallocated-metal-accounts" element={<BUMA />} />
