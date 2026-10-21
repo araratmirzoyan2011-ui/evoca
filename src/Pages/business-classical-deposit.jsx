@@ -4,6 +4,7 @@ import Footer from "../Components/Footer";
 import SocialIcons from "../Components/SocialIcons.jsx";
 import InfoCard from "../Components/AccountsCard.jsx";
 import { db } from "../firebase";
+import { OnlineBanking } from "../Components/OnlineBanking.jsx";
 import { collection, doc, getDoc, getDocs, orderBy, query } from "firebase/firestore";
 import InfoAccordion from "../Components/InfoAccordion.jsx";
 const cardData = {
@@ -334,6 +335,7 @@ const ClasicalDeposit = () => {
           </div>
         </div>
       </section>
+            <OnlineBanking />
 
       <Footer />
     </>
