@@ -5,64 +5,23 @@ import Navbar from "../Components/Menuall.jsx";
 import SocialIcons from "../Components/SocialIcons.jsx";
 import LeasingAccordion from "../Components/LeasingAccordion.jsx";
 import { db } from "../firebase";
-import { collection, getDocs } from "firebase/firestore";
-
-export const SpecialOfferAccordionsData = [
-  {
-    order: 1,
-    title: "Լոջիք Գրուպ ՍՊԸ",
-    blocks: [
-      {
-        type: "text",
-        text: "Արտադրողականության խթանման նպատակային ծրագրից չօգտվող հաճախորդների համար Evocabank-ը ներկայացնում է նոր առաջարկ, ըստ որի կտրամադրվեն լիզինգներ հետևյալ պայմաններով՝",
-      },
-      {
-        type: "table",
-        headers: ["AMD", "USD", "EUR", "ժամկետ ամիս"],
-        cells: [
-          ["5.0%", "0.0%", "0.0%", "12"],
-          ["8.5%", "5.0%", "4.0%", "24"],
-          ["10.0%", "6.0%", "5.0%", "36"],
-          ["10.75%", "7.00%", "6.0%", "48"],
-          ["11.50%", "7.50%", "7.0%", "60"],
-        ],
-      },
-    ],
-  },
-  {
-    order: 2,
-    title: "Ավտո Գելլրի ՓԲԸ",
-    blocks: [
-      {
-        type: "text",
-        text: "Արտադրողականության խթանման նպատակային ծրագրի շրջանակում՝ Evocabank-ը և իր գործընկեր «Ավտո Գելլրի» ՓԲԸ-ն համատեղ ներկայացնում են նոր առաջարկ, ըստ որի կտրամադրվեն լիզինգներ՝",
-      },
-      {
-        type: "list",
-        items: [
-          "0.1% տարեկան տոկոսադրույքով",
-          "մինչև 36 ամիս մարման ժամկետով",
-          "5% կանխավճարով",
-        ],
-      },
-      { type: "text", text: "Առաջարկը գործում է միայն բեռնատար ավտոմեքենաների համար։" },
-      {
-        type: "text",
-        text: "Շտապիր օգտվել այս բացառիկ առաջարկից և ձեռք բերել ամենահարմար ու մատչելի պայմաններով լիզինգը հենց այսօր։",
-      },
-    ],
-  },
-];
-
+import { collection, doc, getDocs, orderBy, query, setDoc } from "firebase/firestore";
 const SpecialOffer = () => {
   const [menuItems, setMenuItems] = useState([]);
+  const [accordions, setAccordions] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [seeding, setSeeding] = useState(false);
 
   const fetchData = async () => {
     setLoading(true);
     try {
       const snapMenu = await getDocs(collection(db, "Leazingmenu"));
       setMenuItems(snapMenu.docs.map((d) => d.data()));
+
+      const snapAcc = await getDocs(
+        query(collection(db, "specialOfferAccordions"), orderBy("order"))
+      );
+      setAccordions(snapAcc.docs.map((d) => ({ docId: d.id, ...d.data() })));
     } catch (err) {
       console.error("Fetch error:", err);
     } finally {
@@ -73,6 +32,24 @@ const SpecialOffer = () => {
   useEffect(() => {
     fetchData();
   }, []);
+
+  const seedSpecialOffers = async () => {
+    setSeeding(true);
+    try {
+      await Promise.all(
+        SpecialOfferAccordionsData.map((item) =>
+          setDoc(doc(db, "specialOfferAccordions", `special-${item.order}`), item)
+        )
+      );
+      alert("specialOfferAccordions հավաքածուն հաջողությամբ ստեղծվեց և լցվեց տվյալներով։");
+      await fetchData();
+    } catch (err) {
+      console.error("Special offers seed error:", err);
+      alert("Սխալ տեղի ունեցավ տվյալները պահպանելիս։");
+    } finally {
+      setSeeding(false);
+    }
+  };
 
   return (
     <>
@@ -91,6 +68,7 @@ const SpecialOffer = () => {
             <div className="flex-1 max-w-4xl">
               <h1 className="text-2xl font-bold text-gray-800 mb-8">Հատուկ առաջարկ</h1>
 
+
               <h2 className="text-2xl font-extrabold text-gray-900 uppercase mb-6">
                 ԱՆՀՐԱԺԵՇՏ ՏԵՂԵԿԱՏՎՈՒԹՅՈՒՆ
               </h2>
@@ -99,9 +77,9 @@ const SpecialOffer = () => {
                 <p className="text-gray-500">Բեռնվում է...</p>
               ) : (
                 <div className="space-y-4">
-                  {SpecialOfferAccordionsData.map((item, index) => (
+                  {accordions.map((item) => (
                     <LeasingAccordion
-                      key={item.order || index}
+                      key={item.docId}
                       title={item.title}
                       blocks={item.blocks}
                     />

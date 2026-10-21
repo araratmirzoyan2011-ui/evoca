@@ -68,7 +68,8 @@ function Block({ block }) {
     case "heading":
       return <h3 className="mb-4 text-lg font-bold">{block.text}</h3>;
     case "table":
-      // Multi-column table: { headers: string[], cells: string[][] }
+      // Multi-column table: { headers: string[], cells: [{ values: string[] }] }
+      // (Firestore does not allow arrays directly inside arrays, hence the objects)
       if (block.headers) {
         return (
           <div className="mb-6 overflow-x-auto rounded-xl shadow-[0_2px_12px_rgba(106,13,222,0.08)]">
@@ -88,7 +89,7 @@ function Block({ block }) {
               <tbody>
                 {block.cells.map((row, i) => (
                   <tr key={i} className="border-b border-[#e6d9fb] last:border-b-0">
-                    {row.map((cell, j) => (
+                    {row.values.map((cell, j) => (
                       <td
                         key={j}
                         className="border-r border-[#e6d9fb] px-4 py-3 last:border-r-0"
