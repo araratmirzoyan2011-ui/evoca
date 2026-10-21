@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import { collection, getDocs, doc, getDoc } from "firebase/firestore";
 import { db } from "../firebase";
 import BusinessHeader from "../Components/Busines-Header.jsx";
-import { DocumentCard } from "../Components/DocumentCard.jsx";
 import Footer from "../Components/Footer.jsx";
 import SocialIcons from "../Components/SocialIcons.jsx";
 import Navbar from "../Components/Menuall.jsx";
