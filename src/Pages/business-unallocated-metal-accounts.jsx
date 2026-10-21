@@ -4,8 +4,9 @@ import Footer from "../Components/Footer";
 import Navbar from "../Components/Menuall.jsx";
 import SocialIcons from "../Components/SocialIcons.jsx";
 import InfoCard from "../Components/AccountsCard.jsx";
+import { EvocaReviewCard } from "../Components/EvocaReviewCard.jsx"; // named import, ինչպես Main-ում
 import { db } from "../firebase";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, doc, getDoc, getDocs } from "firebase/firestore";
 
 const cardData = {
   title: "Առարկայազուրկ մետաղական հաշիվներ",
@@ -51,7 +52,9 @@ const individualEntrepreneurDocuments = [
 
 const BUMA = () => {
   const [menuItems, setMenuItems] = useState([]);
+  const [reviewsData, setReviewsData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [reviewIndex, setReviewIndex] = useState(0);
 
   const fetchMenuItemsFromFirebase = async () => {
     setLoading(true);
@@ -67,8 +70,21 @@ const BUMA = () => {
     }
   };
 
+  // Review-ները նույն տեղից, ինչ Main-ում՝ reviewsCollection/main
+  const fetchReviewsFromFirebase = async () => {
+    try {
+      const snap = await getDoc(doc(db, "reviewsCollection", "main"));
+      if (snap.exists()) {
+        setReviewsData(snap.data().reviews || []);
+      }
+    } catch (err) {
+      console.error("Reviews fetch error:", err);
+    }
+  };
+
   useEffect(() => {
     fetchMenuItemsFromFirebase();
+    fetchReviewsFromFirebase();
   }, []);
 
   return (
@@ -85,6 +101,7 @@ const BUMA = () => {
           />
         </div>
       </main>
+
       <section className="w-full bg-white py-10 px-4 md:px-12">
         <div className="max-w-7xl mx-auto">
           <div className="flex gap-6 md:gap-24">
@@ -132,7 +149,7 @@ const BUMA = () => {
                 Անհատ ձեռնարկատերերի դեպքում՝
               </h3>
 
-              <ul className="list-disc pl-5 space-y-4">
+              <ul className="list-disc pl-5 space-y-4 mb-8">
                 {individualEntrepreneurDocuments.map((docItem, index) => (
                   <li key={index}>{docItem}</li>
                 ))}
@@ -141,6 +158,35 @@ const BUMA = () => {
           </div>
         </div>
       </section>
+
+      {/* Review բլոկ՝ նույն ֆոնով ու կառուցվածքով, ինչ Main-ում */}
+      {reviewsData.length > 0 && (
+        <div className="bg-[#fcfbfe] py-16 px-4 w-full overflow-hidden">
+          <div className="w-full min-h-[220px] flex items-center justify-center">
+            <EvocaReviewCard
+              quote={reviewsData[reviewIndex].quote}
+              author={reviewsData[reviewIndex].author}
+              title={reviewsData[reviewIndex].title}
+            />
+          </div>
+
+          <div className="flex justify-center items-center space-x-3 mt-8">
+            {reviewsData.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => setReviewIndex(index)}
+                className={`transition-all duration-300 rounded-full cursor-pointer ${
+                  reviewIndex === index
+                    ? "w-6 h-2.5 bg-purple-600"
+                    : "w-2.5 h-2.5 bg-gray-300 hover:bg-gray-400"
+                }`}
+                aria-label={`Go to slide ${index + 1}`}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+
       <Footer />
     </>
   );
