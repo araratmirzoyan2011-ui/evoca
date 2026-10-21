@@ -8,12 +8,13 @@ import Footer from "../Components/Footer.jsx";
 import SocialIcons from "../Components/SocialIcons.jsx";
 import Navbar from "../Components/Menuall.jsx";
 import { EvocaNewsCard } from "../Components/EVocaCard1.jsx";
-const FinanceReport=[{title:"Տեղեկատվական ամփոփագիր (Վարկային պրոդուկտներ) 07.04.2026"}]
+
 const Finance = () => {
   const [loading, setLoading] = useState(true);
   const [menuItems, setMenuItems] = useState([]);
   const [introTexts, setIntroTexts] = useState([]);
   const [factoringTable, setFactoringTable] = useState([]);
+  const [financeReport, setFinanceReport] = useState([]);
   const [salaryitems, setSalaryitems] = useState([]);
 
   useEffect(() => {
@@ -21,7 +22,6 @@ const Finance = () => {
       try {
         setLoading(true);
 
-        // 1. Մենյուի բեռնում
         const menuSnap = await getDocs(collection(db, "garantMenu"));
         if (!menuSnap.empty) {
           const menuData = menuSnap.docs.map((doc) => doc.data());
@@ -29,14 +29,12 @@ const Finance = () => {
           setMenuItems(menuData);
         }
 
-        // 2. Ներածական տեքստերի բեռնում Firebase-ից
         const introSnap = await getDocs(collection(db, "factoringIntroTexts"));
         if (!introSnap.empty) {
           const introDocs = introSnap.docs.map((doc) => doc.data().text);
           setIntroTexts(introDocs);
         }
 
-        // 3. Աղյուսակի տվյալների բեռնում Firebase-ից
         const tableSnap = await getDocs(collection(db, "factoringTableData"));
         if (!tableSnap.empty) {
           const tableData = tableSnap.docs.map((doc) => doc.data());
@@ -44,7 +42,13 @@ const Finance = () => {
           setFactoringTable(tableData);
         }
 
-        // 4. Նորությունների բեռնում
+        const reportSnap = await getDocs(collection(db, "factoringReports"));
+        if (!reportSnap.empty) {
+          const reportData = reportSnap.docs.map((doc) => doc.data());
+          reportData.sort((a, b) => (a.id || 0) - (b.id || 0));
+          setFinanceReport(reportData);
+        }
+
         const newsSnapshot = await getDocs(collection(db, "salaryNewsCollection"));
         const newsDocs = newsSnapshot.docs.map((doc) => doc.data());
         if (newsDocs.length > 0 && newsDocs[0].items) {
@@ -87,7 +91,6 @@ const Finance = () => {
             
             <h1 className="text-3xl font-bold text-gray-900">Ֆակտորինգային ֆինանսավորում</h1>
 
-            {/* Ներածական տեքստեր Firebase-ից */}
             {introTexts.length > 0 && (
               <div className="space-y-4 text-gray-700">
                 {introTexts.map((text, index) => (
@@ -109,7 +112,6 @@ const Finance = () => {
               </div>
             )}
 
-            {/* Աղյուսակի հատված Firebase-ից */}
             {factoringTable.length > 0 && (
               <div className="pt-6">
                 <h2 className="text-2xl font-bold text-gray-900 mb-6">
@@ -148,15 +150,20 @@ const Finance = () => {
                 </div>
               </div>
             )}
-            <h2 className="text-xl font-bold text-gray-900 mb-6">
-                                Փաստաթղթեր
-                              </h2>
-                              <div className="space-y-5">
-                                {FinanceReport.map((r) => (
-                                  <DocumentCard key={r.docId || r.order} title={r.title} url={r.url} />
-                                ))}
-                              </div>
-            {/* Նորությունների բլոկ */}
+
+            {financeReport.length > 0 && (
+              <div className="pt-6">
+                <h2 className="text-xl font-bold text-gray-900 mb-6">
+                  Փաստաթղթեր
+                </h2>
+                <div className="space-y-5">
+                  {financeReport.map((r, index) => (
+                    <DocumentCard key={r.docId || r.id || index} title={r.title} url={r.url} />
+                  ))}
+                </div>
+              </div>
+            )}
+
             {salaryitems.length > 0 && (
               <div className="pt-10">
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
