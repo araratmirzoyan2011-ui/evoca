@@ -20,7 +20,6 @@ const Bonds2 = () => {
       try {
         setLoading(true);
 
-        // 1. Մենյուի բեռնում
         const menuSnapshot = await getDocs(collection(db, "gurantmenu"));
         if (!menuSnapshot.empty) {
           const menuData = menuSnapshot.docs.map(doc => doc.data());
@@ -28,7 +27,6 @@ const Bonds2 = () => {
           setMenuItems(menuData);
         }
 
-        // 2. Bond Description Blocks
         const blocksSnapshot = await getDocs(collection(db, "bondDescriptionBlocks"));
         if (!blocksSnapshot.empty) {
           const blocks = blocksSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -36,13 +34,11 @@ const Bonds2 = () => {
           setBondDescriptionBlocks(blocks);
         }
 
-        // 3. Bond Accordions
         const accordionsSnapshot = await getDocs(collection(db, "bondAccordions"));
         if (!accordionsSnapshot.empty) {
           setBondAccordions(accordionsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
         }
 
-        // 4. Bond Reports
         const reportsSnapshot = await getDocs(collection(db, "bondReports"));
         if (!reportsSnapshot.empty) {
           setBondReports(reportsSnapshot.docs.map(doc => ({ docId: doc.id, ...doc.data() })));
@@ -74,7 +70,6 @@ const Bonds2 = () => {
       <section className="w-full bg-white py-10 px-4 md:px-12">
         <div className="max-w-7xl mx-auto flex gap-6 md:gap-24">
 
-          {/* Սոցիալական կոճակներ */}
           <div className="hidden md:block">
             <div className="sticky top-24">
               <SocialIcons />
@@ -111,7 +106,6 @@ const Bonds2 = () => {
               </div>
             )}
 
-            {/* Ակորդեոններ (Firestore-ից) */}
             {bondAccordions.length > 0 && (
               <div className="pt-4">
                 <h2 className="text-2xl font-extrabold text-gray-900 uppercase mb-6">
@@ -129,7 +123,6 @@ const Bonds2 = () => {
               </div>
             )}
 
-            {/* Փաստաթղթեր (Firestore-ից) */}
             {bondReports.length > 0 && (
               <div className="mt-10 max-w-4xl">
                 <h2 className="text-xl font-bold text-gray-900 mb-6">
