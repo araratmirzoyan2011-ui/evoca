@@ -89,16 +89,6 @@ const Leasing = () => {
             <div className="flex-1 max-w-4xl">
               <h1 className="text-2xl font-bold text-gray-800 mb-8">Evoca Leasing</h1>
               
-              {/* Կոճակ Leazingmenu-ն ստեղծելու համար */}
-              <div className="mb-6">
-                <button
-                  onClick={seedLeazingMenu}
-                  disabled={menuSeeding}
-                  className="rounded-lg bg-green-600 px-5 py-2 text-white disabled:opacity-60 font-medium"
-                >
-                  {menuSeeding ? "Ստեղծվում է Leazingmenu..." : "Seed Leazingmenu"}
-                </button>
-              </div>
 
               <h2 className="text-2xl font-extrabold text-gray-900 uppercase mb-6">
                 ԱՆՀՐԱԺԵՇՏ ՏԵՂԵԿԱՏՎՈՒԹՅՈՒՆ
