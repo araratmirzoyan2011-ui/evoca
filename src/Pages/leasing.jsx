@@ -6,7 +6,8 @@ import SocialIcons from "../Components/SocialIcons.jsx";
 import LeasingAccordion from "../Components/LeasingAccordion.jsx";
 import { db } from "../firebase";
 import { collection, doc, getDocs, orderBy, query, setDoc } from "firebase/firestore";
- const leasingAccordionsData = [
+
+const leasingAccordionsData = [
   {
     order: 1,
     title: "Evoca Leasing",
@@ -91,11 +92,9 @@ import { collection, doc, getDocs, orderBy, query, setDoc } from "firebase/fires
       },
     ],
   },
-
   {
     order: 2,
-    title:
-      "ՀՀ Կառավարության Տնտեսության Արդիականացման նպատակային ծրագրի ներքո արտադրողականության խթանման ուղղված լիզինգ (գործելու է մինչև 31.12.2026թ.)",
+    title: "ՀՀ Կառավարության Տնտեսության Արդիականացման նպատակային ծրագրի ներքո արտադրողականության խթանման ուղղված լիզինգ (գործելու է մինչև 31.12.2026թ.)",
     blocks: [
       {
         type: "table",
@@ -172,7 +171,7 @@ import { collection, doc, getDocs, orderBy, query, setDoc } from "firebase/fires
             label: "Լրացուցիչ արտոնություն",
             value: [
               "Փոխկապակցված կազմակերպությունների խմբի մեջ ներառված տնտեսավարողի կողմից օժանդակության համար դիմելուն նախորդող 12 ամսվա ընթացքում կանոնադրական կապիտալում 200 մլն ՀՀ դրամ և ավել ներդրում կատարելու դեպքում փոխկապակցված կազմակերպությունների խմբի մեջ ներառված տնտեսավարողների համար լիզինգի սուբսիդավորվող մասի առավելագույն գումարը յուրաքանչյուր տնտեսավարողի համար յուրաքանչյուր լիզինգի համար սահմանվում է կանոնադրական կապիտալում կատարված յուրաքանչյուր ներդրման հնգապատիկի չափով, բայց ոչ ավել, քան 10 մլրդ դրամ, իսկ արտարժույթով վարկավորման դեպքում՝ 5 մլրդ դրամին համարժեք՝ փոխկապակցված կազմակերպությունների խմբի մեջ ներառված տնտեսավարողների՝ նպատակային ծրագրի շրջանակներում տրամադրված լիզինգի սուբսիդավորվող մասի հանրագումարով։",
-              "Նշված արտոնությունը չի տարածվում էլեկտրականության, գազի, գոլորշու և լավորակ օդի մատակարարման, շինարարության ոլորտներում գործունեություն իրականացնող տնտեսվարողի վրա։",
+              "Նշված արտոնությունը չի տարածվում էլեկտրականության, գազի, գոլորշու և լավորակ օդի մատակարարման, շինարարության ոլորտներում գործունեություն իրականացնող տնտեսավարողի վրա։",
             ],
           },
           {
@@ -186,7 +185,6 @@ import { collection, doc, getDocs, orderBy, query, setDoc } from "firebase/fires
       },
     ],
   },
-
   {
     order: 3,
     title: "Լիզինգ՝ գյուղատնտեսական տեխնիկայի ձեռքբերման նպատակով",
@@ -271,7 +269,6 @@ import { collection, doc, getDocs, orderBy, query, setDoc } from "firebase/fires
       },
     ],
   },
-
   {
     order: 4,
     title: "Տրանսպորտային միջոցի լիզինգ",
@@ -291,6 +288,7 @@ import { collection, doc, getDocs, orderBy, query, setDoc } from "firebase/fires
     ],
   },
 ];
+
 const menuItems = [
   { label: "Evoca Leasing", path: "/leasing" },
   { label: "Հատուկ առաջարկ", path: "/special-offer" },
@@ -340,44 +338,46 @@ const Leasing = () => {
       <Navbar items={menuItems} />
 
       <section className="w-full bg-white py-10 px-4 md:px-12">
-        <div className="max-w-7xl mx-auto flex gap-6 md:gap-24">
-          <div className="hidden md:block">
-            <div className="sticky top-24">
-              <SocialIcons />
+        <div className="max-w-7xl mx-auto">
+          <div className="flex gap-6 md:gap-24">
+            <div className="hidden md:block shrink-0">
+              <div className="sticky top-24">
+                <SocialIcons />
+              </div>
+            </div>
+
+            <div className="flex-1 max-w-4xl">
+              <h1 className="text-2xl font-bold text-gray-800 mb-8">Evoca Leasing</h1>
+              <h2 className="text-2xl font-extrabold text-gray-900 uppercase mb-6">
+                ԱՆՀՐԱԺԵՇՏ ՏԵՂԵԿԱՏՎՈՒԹՅՈՒՆ
+              </h2>
+
+              {loading ? (
+                <p className="text-gray-500">Բեռնվում է...</p>
+              ) : LeasingAccordionsData.length === 0 ? (
+                <button
+                  onClick={seedData}
+                  disabled={seeding}
+                  className="rounded-lg bg-[#6a0dde] px-5 py-2 text-white disabled:opacity-60"
+                >
+                  {seeding ? "Ավելացվում է..." : "Seed Firestore"}
+                </button>
+              ) : (
+                <div className="space-y-4">
+                  {LeasingAccordionsData.map((item) => (
+                    <LeasingAccordion
+                      key={item.docId}
+                      title={item.title}
+                      blocks={item.blocks}
+                    />
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         </div>
-
-        <div className="max-w-7xl mx-auto mt-10">
-          <div className="md:pl-[calc(3rem+6rem)] max-w-4xl md:max-w-none">
-            <h2 className="text-2xl font-extrabold text-gray-900 uppercase mb-6">
-              ԱՆՀՐԱԺԵՇՏ ՏԵՂԵԿԱՏՎՈՒԹՅՈՒՆ
-            </h2>
-
-            {loading ? (
-              <p className="text-gray-500">Բեռնվում է...</p>
-            ) : LeasingAccordionsData.length === 0 ? (
-              <button
-                onClick={seedData}
-                disabled={seeding}
-                className="rounded-lg bg-[#6a0dde] px-5 py-2 text-white disabled:opacity-60"
-              >
-                {seeding ? "Ավելացվում է..." : "Seed Firestore"}
-              </button>
-            ) : (
-              <div className="max-w-4xl space-y-4">
-                {LeasingAccordionsData.map((item) => (
-                  <LeasingAccordion
-                    key={item.docId}
-                    title={item.title}
-                    blocks={item.blocks}
-                  />
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
       </section>
+
       <Footer />
     </>
   );
