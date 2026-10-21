@@ -5,13 +5,58 @@ import Navbar from "../Components/Menuall.jsx";
 import SocialIcons from "../Components/SocialIcons.jsx";
 import LeasingAccordion from "../Components/LeasingAccordion.jsx";
 import { db } from "../firebase";
-import { collection, doc, getDocs, orderBy, query, setDoc } from "firebase/firestore";
-const SpecialOfferAccordionsData=[]
-const Leasing = () => {
+import { collection, getDocs } from "firebase/firestore";
+
+export const SpecialOfferAccordionsData = [
+  {
+    order: 1,
+    title: "Լոջիք Գրուպ ՍՊԸ",
+    blocks: [
+      {
+        type: "text",
+        text: "Արտադրողականության խթանման նպատակային ծրագրից չօգտվող հաճախորդների համար Evocabank-ը ներկայացնում է նոր առաջարկ, ըստ որի կտրամադրվեն լիզինգներ հետևյալ պայմաններով՝",
+      },
+      {
+        type: "table",
+        headers: ["AMD", "USD", "EUR", "ժամկետ ամիս"],
+        cells: [
+          ["5.0%", "0.0%", "0.0%", "12"],
+          ["8.5%", "5.0%", "4.0%", "24"],
+          ["10.0%", "6.0%", "5.0%", "36"],
+          ["10.75%", "7.00%", "6.0%", "48"],
+          ["11.50%", "7.50%", "7.0%", "60"],
+        ],
+      },
+    ],
+  },
+  {
+    order: 2,
+    title: "Ավտո Գելլրի ՓԲԸ",
+    blocks: [
+      {
+        type: "text",
+        text: "Արտադրողականության խթանման նպատակային ծրագրի շրջանակում՝ Evocabank-ը և իր գործընկեր «Ավտո Գելլրի» ՓԲԸ-ն համատեղ ներկայացնում են նոր առաջարկ, ըստ որի կտրամադրվեն լիզինգներ՝",
+      },
+      {
+        type: "list",
+        items: [
+          "0.1% տարեկան տոկոսադրույքով",
+          "մինչև 36 ամիս մարման ժամկետով",
+          "5% կանխավճարով",
+        ],
+      },
+      { type: "text", text: "Առաջարկը գործում է միայն բեռնատար ավտոմեքենաների համար։" },
+      {
+        type: "text",
+        text: "Շտապիր օգտվել այս բացառիկ առաջարկից և ձեռք բերել ամենահարմար ու մատչելի պայմաններով լիզինգը հենց այսօր։",
+      },
+    ],
+  },
+];
+
+const SpecialOffer = () => {
   const [menuItems, setMenuItems] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [seeding, setSeeding] = useState(false);
-  const [menuSeeding, setMenuSeeding] = useState(false);
 
   const fetchData = async () => {
     setLoading(true);
@@ -29,30 +74,6 @@ const Leasing = () => {
     fetchData();
   }, []);
 
- 
-
-  const seedLeazingMenu = async () => {
-    setMenuSeeding(true);
-    const initialMenuItems = [
-      { label: "Evoca Leasing", path: "/leasing" },
-      { label: "Հատուկ առաջարկ", path: "/special-offer" },
-    ];
-    try {
-      await Promise.all(
-        initialMenuItems.map((item, index) =>
-          setDoc(doc(db, "Leazingmenu", `menu-item-${index + 1}`), item)
-        )
-      );
-      await fetchData();
-      alert("Leazingmenu հավաքածուն հաջողությամբ ստեղծվեց և բեռնվեց։");
-    } catch (err) {
-      console.error("Leazingmenu seed error:", err);
-      alert("Սխալ տեղի ունեցավ մենյուն ավելացնելիս։");
-    } finally {
-      setMenuSeeding(false);
-    }
-  };
-
   return (
     <>
       <Header />
@@ -68,8 +89,7 @@ const Leasing = () => {
             </div>
 
             <div className="flex-1 max-w-4xl">
-              <h1 className="text-2xl font-bold text-gray-800 mb-8"> Հատուկ առաջարկ</h1>
-              
+              <h1 className="text-2xl font-bold text-gray-800 mb-8">Հատուկ առաջարկ</h1>
 
               <h2 className="text-2xl font-extrabold text-gray-900 uppercase mb-6">
                 ԱՆՀՐԱԺԵՇՏ ՏԵՂԵԿԱՏՎՈՒԹՅՈՒՆ
@@ -77,19 +97,11 @@ const Leasing = () => {
 
               {loading ? (
                 <p className="text-gray-500">Բեռնվում է...</p>
-              ) : LeasingAccordionsData.length === 0 ? (
-                <button
-                  onClick={seedData}
-                  disabled={seeding}
-                  className="rounded-lg bg-[#6a0dde] px-5 py-2 text-white disabled:opacity-60"
-                >
-                  {seeding ? "Ավելացվում է..." : "Seed Firestore"}
-                </button>
               ) : (
                 <div className="space-y-4">
-                  {SpecialOfferAccordionsData.map((item) => (
+                  {SpecialOfferAccordionsData.map((item, index) => (
                     <LeasingAccordion
-                      key={item.docId}
+                      key={item.order || index}
                       title={item.title}
                       blocks={item.blocks}
                     />
@@ -106,4 +118,4 @@ const Leasing = () => {
   );
 };
 
-export default Leasing;
+export default SpecialOffer;

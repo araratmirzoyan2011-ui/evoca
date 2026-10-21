@@ -68,6 +68,41 @@ function Block({ block }) {
     case "heading":
       return <h3 className="mb-4 text-lg font-bold">{block.text}</h3>;
     case "table":
+      // Multi-column table: { headers: string[], cells: string[][] }
+      if (block.headers) {
+        return (
+          <div className="mb-6 overflow-x-auto rounded-xl shadow-[0_2px_12px_rgba(106,13,222,0.08)]">
+            <table className="w-full min-w-[420px] border-collapse text-sm">
+              <thead>
+                <tr className="border-b border-[#e6d9fb]">
+                  {block.headers.map((h, i) => (
+                    <th
+                      key={i}
+                      className="border-r border-[#e6d9fb] px-4 py-3 text-left font-bold last:border-r-0"
+                    >
+                      {h}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {block.cells.map((row, i) => (
+                  <tr key={i} className="border-b border-[#e6d9fb] last:border-b-0">
+                    {row.map((cell, j) => (
+                      <td
+                        key={j}
+                        className="border-r border-[#e6d9fb] px-4 py-3 last:border-r-0"
+                      >
+                        {cell}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        );
+      }
       return (
         <div className="mb-6 overflow-x-auto rounded-xl shadow-[0_2px_12px_rgba(106,13,222,0.08)]">
           <table className="w-full min-w-[560px] border-collapse text-sm">
