@@ -80,6 +80,7 @@ import CDAServices2 from "./Pages/busines-stocks-cda-services";
 import Repo2 from "./Pages/busines-stocks-repo-transactions";
 import Finance from "./Pages/factoring-finance";
 import Garant from "./Pages/business-investment-services";
+import Documentary from "./Pages/documentary-collection";
 import Credit from "./Pages/letter-of-credit";
 function App() {
   return (
@@ -93,6 +94,7 @@ function App() {
           <Route path="/stocks-repo-transactions" element={<Repo />} />
           <Route path="/factoring-finance" element={<Finance />} />
           <Route path="/letter-of-credit" element={<Credit />} />
+          <Route path="/documentary-collection" element={<Documentary />} />
           
           <Route path="/busines-stocks-repo-transactions" element={<Repo2 />} />
           <Route path="/busines-stocks-cda-services" element={<CDAServices2 />} />

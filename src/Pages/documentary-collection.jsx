@@ -13,6 +13,47 @@ const Documentary = () => {
   const [menuItems, setMenuItems] = useState([]);
   const [salaryitems, setSalaryitems] = useState([]);
 
+  // Ինկասո էջի տվյալների զանգվածը
+  const contentData = [
+    {
+      id: 1,
+      type: "paragraph",
+      text: "Ինկասոն վճարումների ստացման և պարտքերի մարման արագ, պարզ ու արդյունավետ գործիք է:",
+    },
+    {
+      id: 2,
+      type: "paragraph",
+      text: "Այն վաճառողի հանձնարարությունն է մեզ՝ մատակարարված ապրանքների փաստաթղթերը, վճարի դիմաց, փոխանցելու գնորդին: Ընդ որում, մենք վճարման որևէ պարտավորություն չենք ստանձնում, այլ կատարում ենք փաստաթղթերը փոխանցողի (միջնորդի) դեր:",
+    },
+    {
+      id: 3,
+      type: "heading",
+      text: "Ինկասոյի վճարման հիմնական ձևերն են՝",
+    },
+    {
+      id: 4,
+      type: "list",
+      items: [
+        <>
+          <strong>Փաստաթղթեր՝ վճարման դիմաց</strong> (Documents Against Payment or D/P). փաստաթղթերը տրամադրում ենք գնորդին՝ միայն նրա կողմից ապրանքների դիմաց վճարելուց հետո:
+        </>,
+        <>
+          <strong>Փաստաթղթեր՝ ակցեպտի դիմաց</strong> (Documents Against Acceptance or D/A). փաստաթղթերը տրամադրում ենք գնորդին՝ ապրանքների դիմաց հետագայում վճարելու պայմանով (վճարումների հետաձգման պարտավորագրի (մուրհակ) ակցեպտի դեպքում): Ինկասոյի այս ձևը կիրառվում է, երբ գնորդն ու վաճառողը պայմանավորվածություն ունեն վճարման հետաձգման վերաբերյալ:
+        </>,
+      ],
+    },
+    {
+      id: 5,
+      type: "heading",
+      text: "Սակագներ",
+    },
+    {
+      id: 6,
+      type: "paragraph",
+      text: "Ինկասոյի գործառնությունների վերաբերյալ լրացուցիչ տեղեկություններ և խորհրդատվություն ստանալու համար կարող եք դիմել մեր Գլխամասային գրասենյակ՝ «Միջազգային և արտարժույթային գործառնությունների» բաժին:",
+    },
+  ];
+
   useEffect(() => {
     const fetchDataFromFirebase = async () => {
       try {
@@ -30,8 +71,6 @@ const Documentary = () => {
         if (newsDocs.length > 0 && newsDocs[0].items) {
           setSalaryitems(newsDocs[0].items);
         }
-
-
       } catch (error) {
         console.error("Firestore-ից տվյալների բեռնման սխալ:", error);
       } finally {
@@ -64,10 +103,43 @@ const Documentary = () => {
             </div>
           </div>
 
-          <div className="flex-1 max-w-4xl text-gray-800 space-y-8 text-base leading-relaxed">
+          <div className="flex-1 max-w-4xl text-gray-800 space-y-6 text-base leading-relaxed">
             
-            <h1 className="text-3xl font-bold text-gray-900">Ակրեդիտիվ</h1>
+            <h1 className="text-3xl font-bold text-gray-900 mb-6">Ինկասո</h1>
 
+            {/* Զանգվածի տվյալների արտապատկերում (Render contentData) */}
+            {contentData.map((block) => {
+              if (block.type === "paragraph") {
+                return (
+                  <p key={block.id} className="text-gray-700 font-medium">
+                    {block.text}
+                  </p>
+                );
+              }
+
+              if (block.type === "heading") {
+                return (
+                  <h3 key={block.id} className="text-xl font-bold text-gray-900 pt-2">
+                    {block.text}
+                  </h3>
+                );
+              }
+
+              if (block.type === "list") {
+                return (
+                  <ul key={block.id} className="space-y-4 my-4 pl-2">
+                    {block.items.map((item, index) => (
+                      <li key={index} className="flex items-start gap-3 text-gray-700">
+                        <span className="w-2.5 h-2.5 bg-purple-600 rounded-full mt-2 shrink-0"></span>
+                        <div>{item}</div>
+                      </li>
+                    ))}
+                  </ul>
+                );
+              }
+
+              return null;
+            })}
 
             {salaryitems.length > 0 && (
               <div className="pt-10">
