@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { collection, getDocs, doc, getDoc } from "firebase/firestore";
+import { collection, getDocs } from "firebase/firestore";
 import { db } from "../firebase";
 import BusinessHeader from "../Components/Busines-Header.jsx";
 import Footer from "../Components/Footer.jsx";
@@ -12,47 +12,7 @@ const Documentary = () => {
   const [loading, setLoading] = useState(true);
   const [menuItems, setMenuItems] = useState([]);
   const [salaryitems, setSalaryitems] = useState([]);
-
-  // Ինկասո էջի տվյալների զանգվածը
-  const contentData = [
-    {
-      id: 1,
-      type: "paragraph",
-      text: "Ինկասոն վճարումների ստացման և պարտքերի մարման արագ, պարզ ու արդյունավետ գործիք է:",
-    },
-    {
-      id: 2,
-      type: "paragraph",
-      text: "Այն վաճառողի հանձնարարությունն է մեզ՝ մատակարարված ապրանքների փաստաթղթերը, վճարի դիմաց, փոխանցելու գնորդին: Ընդ որում, մենք վճարման որևէ պարտավորություն չենք ստանձնում, այլ կատարում ենք փաստաթղթերը փոխանցողի (միջնորդի) դեր:",
-    },
-    {
-      id: 3,
-      type: "heading",
-      text: "Ինկասոյի վճարման հիմնական ձևերն են՝",
-    },
-    {
-      id: 4,
-      type: "list",
-      items: [
-        <>
-          <strong>Փաստաթղթեր՝ վճարման դիմաց</strong> (Documents Against Payment or D/P). փաստաթղթերը տրամադրում ենք գնորդին՝ միայն նրա կողմից ապրանքների դիմաց վճարելուց հետո:
-        </>,
-        <>
-          <strong>Փաստաթղթեր՝ ակցեպտի դիմաց</strong> (Documents Against Acceptance or D/A). փաստաթղթերը տրամադրում ենք գնորդին՝ ապրանքների դիմաց հետագայում վճարելու պայմանով (վճարումների հետաձգման պարտավորագրի (մուրհակ) ակցեպտի դեպքում): Ինկասոյի այս ձևը կիրառվում է, երբ գնորդն ու վաճառողը պայմանավորվածություն ունեն վճարման հետաձգման վերաբերյալ:
-        </>,
-      ],
-    },
-    {
-      id: 5,
-      type: "heading",
-      text: "Սակագներ",
-    },
-    {
-      id: 6,
-      type: "paragraph",
-      text: "Ինկասոյի գործառնությունների վերաբերյալ լրացուցիչ տեղեկություններ և խորհրդատվություն ստանալու համար կարող եք դիմել մեր Գլխամասային գրասենյակ՝ «Միջազգային և արտարժույթային գործառնությունների» բաժին:",
-    },
-  ];
+  const [contentData, setContentData] = useState([]);
 
   useEffect(() => {
     const fetchDataFromFirebase = async () => {
@@ -64,6 +24,14 @@ const Documentary = () => {
           const menuData = menuSnap.docs.map((doc) => doc.data());
           menuData.sort((a, b) => (a.order || 0) - (b.order || 0));
           setMenuItems(menuData);
+        }
+
+        const contentSnap = await getDocs(collection(db, "documentaryContent"));
+        if (!contentSnap.empty) {
+          const loadedContent = contentSnap.docs.map((doc) => doc.data());
+          // Սորտավորում ենք ըստ order դաշտի
+          loadedContent.sort((a, b) => (a.order || 0) - (b.order || 0));
+          setContentData(loadedContent);
         }
 
         const newsSnapshot = await getDocs(collection(db, "salaryNewsCollection"));
@@ -107,39 +75,45 @@ const Documentary = () => {
             
             <h1 className="text-3xl font-bold text-gray-900 mb-6">Ինկասո</h1>
 
-            {/* Զանգվածի տվյալների արտապատկերում (Render contentData) */}
-            {contentData.map((block) => {
-              if (block.type === "paragraph") {
-                return (
-                  <p key={block.id} className="text-gray-700 font-medium">
-                    {block.text}
-                  </p>
-                );
-              }
+            {contentData.length === 0 ? (
+              <div className="text-gray-500 py-4">
+                Տվյալները բացակայում են Firebase-ի «documentaryContent» collection-ում:
+              </div>
+            ) : (
+              contentData.map((block, idx) => {
+                if (block.type === "paragraph") {
+                  return (
+                    <p key={block.id || idx} className="text-gray-700 font-medium">
+                      {block.text}
+                    </p>
+                  );
+                }
 
-              if (block.type === "heading") {
-                return (
-                  <h3 key={block.id} className="text-xl font-bold text-gray-900 pt-2">
-                    {block.text}
-                  </h3>
-                );
-              }
+                if (block.type === "heading") {
+                  return (
+                    <h3 key={block.id || idx} className="text-xl font-bold text-gray-900 pt-2">
+                      {block.text}
+                    </h3>
+                  );
+                }
 
-              if (block.type === "list") {
-                return (
-                  <ul key={block.id} className="space-y-4 my-4 pl-2">
-                    {block.items.map((item, index) => (
-                      <li key={index} className="flex items-start gap-3 text-gray-700">
-                        <span className="w-2.5 h-2.5 bg-purple-600 rounded-full mt-2 shrink-0"></span>
-                        <div>{item}</div>
-                      </li>
-                    ))}
-                  </ul>
-                );
-              }
+                if (block.type === "list") {
+                  return (
+                    <ul key={block.id || idx} className="space-y-4 my-4 pl-2">
+                      {block.items &&
+                        block.items.map((item, index) => (
+                          <li key={index} className="flex items-start gap-3 text-gray-700">
+                            <span className="w-2.5 h-2.5 bg-purple-600 rounded-full mt-2 shrink-0"></span>
+                            <div>{item}</div>
+                          </li>
+                        ))}
+                    </ul>
+                  );
+                }
 
-              return null;
-            })}
+                return null;
+              })
+            )}
 
             {salaryitems.length > 0 && (
               <div className="pt-10">
