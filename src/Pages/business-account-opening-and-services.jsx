@@ -4,13 +4,10 @@ import Footer from "../Components/Footer";
 import Navbar from "../Components/Menuall.jsx";
 import SocialIcons from "../Components/SocialIcons.jsx";
 import InfoAccordion from "../Components/InfoAccordion.jsx";
+import InfoCard from "../Components/AccountsCard.jsx";
 import { db } from "../firebase";
 import { collection, doc, getDocs, orderBy, query, setDoc } from "firebase/firestore";
 
-// InfoAccordion block formats:
-//   "text"                              -> paragraph
-//   { items: [ "text" | { text|parts, sub: [...] } ] } -> bullet list
-//   { parts: ["text", { bold }, { text, href }] }      -> rich paragraph
 const baosAccordionData = [
   {
     order: 1,
@@ -151,7 +148,12 @@ const menuItems = [
   { label: "Հաշիվների բացում և սպասարկում", path: "/business-account-opening-and-services" },
   { label: "Առարկայազուրկ մետաղական հաշիվներ", path: "/business-unallocated-metal-accounts" },
 ];
-
+const cardData={
+    title: "Հաշիվների բացում և սպասարկում",
+  description: "Հայաստանի ռեզիդենտ և ոչ ռեզիդենտ իրավաբանական անձանց ու անհատ ձեռնարկատերերին առաջարկում ենք մեզ մոտ բացել դրամային և արտարժութային բանկային ընթացիկ հաշիվներ:",
+  imageUrl: "https://www.evoca.am/images-cache/menu/1/16116367969264/780x585.jpg",
+  altText: "Հաշիվների բացում և սպասարկում"
+}
 const BAOAS = () => {
   const [accordions, setAccordions] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -194,7 +196,16 @@ const BAOAS = () => {
     <>
       <BusinessHeader />
       <Navbar items={menuItems} />
-
+       <main className="w-full py-8 px-4 md:px-12 bg-gray-50">
+        <div className="max-w-7xl mx-auto">
+          <InfoCard
+            title={cardData.title}
+            description={cardData.description}
+            imageUrl={cardData.imageUrl}
+            altText={cardData.altText}
+          />
+        </div>
+      </main>
       <section className="w-full bg-white py-10 px-4 md:px-12">
         <div className="max-w-7xl mx-auto">
           <div className="flex gap-6 md:gap-24">
