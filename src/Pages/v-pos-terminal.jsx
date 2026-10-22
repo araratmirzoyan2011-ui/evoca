@@ -8,8 +8,13 @@ import SocialIcons from "../Components/SocialIcons.jsx";
 import Navbar from "../Components/Menuall.jsx";
 import { EvocaNewsCard } from "../Components/EVocaCard1.jsx";
 
-const VPos = () => {
-const menuItems=[{}]
+const VPos = () => {const menuItems = [
+  { label: "V-POS Տերմինալ", path: "/v-pos-terminal", order: 1 },
+  { label: "POS Տերմինալ", path: "/pos-terminal", order: 2 },
+  { label: "Սակագներ", path: "/terminals-tariffs", order: 3 },
+  { label: "Տերմինալի տեղադրման հայտ", path: "/terminal-installation-application", order: 4 },
+  { label: "Evoca Mobile POS' mPOS", path: "/evoca-mobile-pos-mpos", order: 5 }
+];
   return (
     <>
       <BusinessHeader />
