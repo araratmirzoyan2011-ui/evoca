@@ -38,8 +38,8 @@ const MobilePos = () => {
       </div>
     );
   }
-// const MobPosCardData={title:"Evoca Mobile POS՝ mPOS",description:"Evocabank-ի նոր mobile POS՝ mPOS գործիքի շնորհիվ Ձեր բիզնեսը կարող է ստանալ անկանխիկ վճարումներ` ավելի հեշտ ու արագ:",imageUrl:"https://www.evoca.am/images-cache/menu/1/16697156723793/780x585.png",altText:""}
-const MobPosCardData={} 
+const MobPosCardData={title:"Evoca Mobile POS՝ mPOS",description:"Evocabank-ի նոր mobile POS՝ mPOS գործիքի շնորհիվ Ձեր բիզնեսը կարող է ստանալ անկանխիկ վճարումներ` ավելի հեշտ ու արագ:",imageUrl:"https://www.evoca.am/images-cache/menu/1/16697156723793/780x585.png",altText:""}
+
 return (
     <>
       <BusinessHeader />
