@@ -5,7 +5,7 @@ import Footer from "../Components/Footer.jsx";
 import SocialIcons from "../Components/SocialIcons.jsx";
 import Navbar from "../Components/Menuall.jsx";
 import InfoCard from "../Components/AccountsCard.jsx";
-
+import { OnlineBanking } from "../Components/OnlineBanking.jsx";
 const VPos = () => {
   // 1. Մենյուի տվյալներ
   const menuItems = [
@@ -319,7 +319,7 @@ const VPos = () => {
 
         </div>
       </section>
-
+        <OnlineBanking />
       <Footer />
     </>
   );
