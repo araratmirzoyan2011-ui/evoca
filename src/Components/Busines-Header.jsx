@@ -112,7 +112,7 @@ export default function BusinessHeader() {
                         <Link to="/guarantee" className="hover:text-purple-700 whitespace-nowrap">Արժեթղթերի շուկա</Link>
                         <Link to="/business-investment-services" className="hover:text-purple-700 whitespace-nowrap">Առևտրի ֆինանսավորում</Link>
                         <Link to="/v-pos-terminal" className="hover:text-purple-700 whitespace-nowrap">Դիջիթայլ</Link>
-                        <Link to="/individual-safe-deposit-boxes" className="hover:text-purple-700 whitespace-nowrap">Այլ</Link>
+                        <Link to="/boxes" className="hover:text-purple-700 whitespace-nowrap">Այլ</Link>
                     </nav>
 
                     <div className="flex items-center space-x-2 sm:space-x-3 flex-shrink-0">

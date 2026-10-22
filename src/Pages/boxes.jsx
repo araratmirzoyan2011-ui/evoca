@@ -7,20 +7,23 @@ import { OnlineBanking } from '../Components/OnlineBanking.jsx';
 import InfoCard from '../Components/AccountsCard.jsx';
 import { db } from '../firebase';
 import { collection, getDocs } from 'firebase/firestore';
-
+import Navbar from '../Components/Menuall.jsx';
 const Boxes = () => {
   const [boxesParagraphs, setBoxesParagraphs] = useState([]);
+    const [menuItems, setMenuItems] = useState([]);
   const [boxSizes, setBoxSizes] = useState([]);
   const [tariffTables, setTariffTables] = useState([]);
   const [boxesReports, setBoxesReports] = useState([]);
   const [cardData, setCardData] = useState(null);
   const [loading, setLoading] = useState(true);
-
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
-
+        const menuSnapshot = await getDocs(collection(db, "Anothermenu"));
+                const menuList = menuSnapshot.docs.map(doc => doc.data());
+                menuList.sort((a, b) => a.order - b.order);
+                setMenuItems(menuList);
         const paragraphsSnap = await getDocs(collection(db, "boxesParagraphs"));
         const paragraphsData = paragraphsSnap.docs.map((d) => d.data().text);
         setBoxesParagraphs(paragraphsData);
@@ -72,7 +75,7 @@ const Boxes = () => {
   return (
     <>
       <Header />
-
+      <Navbar items={menuItems} />
       <main className="w-full py-8 px-4 md:px-12 bg-gray-50">
         <div className="max-w-7xl mx-auto">
           {cardData && (
