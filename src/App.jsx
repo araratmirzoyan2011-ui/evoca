@@ -86,6 +86,7 @@ import VPos from "./Pages/v-pos-terminal";
 import Pos from "./Pages/pos-terminal";
 import TerminalTariff from "./Pages/terminal-tariffs";
 import InstalAplication from "./Pages/terminal-installation-application";
+import MobilePos from "./Pages/evoca-mobile-pos-mpos";
 function App() {
   return (
     <BrowserRouter>
@@ -95,7 +96,7 @@ function App() {
           <Route path="/business-loans" element={<Busines />} />
           <Route path="/guarantee" element={<Guarantee />} />
           <Route path="/business-investment-services" element={<Garant />} />
-          
+          <Route path="/evoca-mobile-pos-mpos" element={<MobilePos />} />
           <Route path="/terminal-installation-application" element={<InstalAplication />} />
           <Route path="/terminal-tariffs" element={<TerminalTariff/>} />
           <Route path="/v-pos-terminal" element={<VPos />} />
