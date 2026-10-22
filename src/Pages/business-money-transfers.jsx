@@ -38,7 +38,7 @@ const BusinesMoneyTransfers = () => {
       </div>
     );
   }
-const BusinesTransferCardData={}
+const BusinesTransferCardData={title:"Դրամական փոխանցումներ",description:"Իրականացնում ենք Հայաստանի ռեզիդենտ և ոչ ռեզիդենտ իրավաբանական անձանց և անհատ ձեռնարկատերերի դրամական փոխանցումներ Հայաստանի տարածքում և դեպի արտերկիր՝ դրամով և արտարժույթով: Փոխանցումներն իրականացվում են միջազգային բանկային ստանդարտներին համապատասխանող համակարգերով:",imageUrl:"https://www.evoca.am/images-cache/menu/1/161163847135/780x585.jpg",altText:""}
   return (
     <>
       <BusinessHeader />
