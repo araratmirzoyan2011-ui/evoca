@@ -81,65 +81,65 @@ const sitemapData = [
       },
       {
         title: "Լիզինգ",
-        path: "/lising",
+        path: "/leasing",
         items: [
-          { label: "Evoca Leasing", path: "/business/leasing" },
-          { label: "Հատուկ առաջարկ", path: "/business/special-offer" }
+          { label: "Evoca Leasing", path: "/leasing" },
+          { label: "Հատուկ առաջարկ", path: "/special-offer" }
         ]
       },
       {
         title: "Հաշիվներ",
-        path: "/business/accounts",
+        path: "/business-account-opening-and-services",
         items: [
-          { label: "Հաշիվների բացում և սպասարկում", path: "/business/accounts" },
-          { label: "Առարկայազուրկ մետաղական հաշիվներ", path: "/business/metal-accounts" }
+          { label: "Հաշիվների բացում և սպասարկում", path: "/business-account-opening-and-services" },
+          { label: "Առարկայազուրկ մետաղական հաշիվներ", path: "/business-unallocated-metal-accounts" }
         ]
       },
       {
         title: "Ավանդներ",
-        path: "/business/deposits",
+        path: "/business-classical-deposit",
         items: [
-          { label: "Դասական ավանդ", path: "/business/deposits" }
+          { label: "Դասական ավանդ", path: "/business-classical-deposit" }
         ]
       },
       {
         title: "Արժեթղթերի շուկա",
-        path: "/business/securities",
+        path: "/guarantee",
         items: [
-          { label: "Ներդրումային ծառայություններ", path: "/business/securities" },
-          { label: "Պարտատոմսեր", path: "/business/bonds" },
-          { label: "ՀԿԴ ծառայություններ", path: "/business/hkd" },
-          { label: "Ռեպո/Հակադարձ ռեպո գործարքներ", path: "/business/repo" },
-          { label: "EvocaINVEST", path: "/business/invest" }
+          { label: "Ներդրումային ծառայություններ", path: "/guarantee" },
+          { label: "Պարտատոմսեր", path: "/busines-bonds" },
+          { label: "ՀԿԴ ծառայություններ", path: "busines-stocks-cda-services" },
+          { label: "Ռեպո/Հակադարձ ռեպո գործարքներ", path: "/busines-stocks-repo-transactions" },
+          { label: "EvocaINVEST", path: "stocks-evocainvest" }
         ]
       },
       {
         title: "Առևտրի ֆինանսավորում",
-        path: "/business/trade",
+        path: "/business-investment-services",
         items: [
-          { label: "Երաշխիք", path: "/business/trade/guarantee" },
-          { label: "Ֆակտորինգային ֆինանսավորում", path: "/business/trade/factoring" },
-          { label: "Ակրեդիտիվ", path: "/business/trade/letter-of-credit" },
-          { label: "Ինկասո", path: "/business/trade/inkasso" }
+          { label: "Երաշխիք", path: "/business-investment-services" },
+          { label: "Ֆակտորինգային ֆինանսավորում", path: "/factoring-finance" },
+          { label: "Ակրեդիտիվ", path: "/letter-of-credit" },
+          { label: "Ինկասո", path: "/documentary-collection" }
         ]
       },
       {
         title: "Դիջիտալ",
-        path: "/business/digital",
+        path: "/v-pos-terminal",
         items: [
-          { label: "V-POS Տերմինալ", path: "/business/digital/v-pos" },
-          { label: "POS Տերմինալ", path: "/business/digital/pos" },
-          { label: "Սակագներ", path: "/business/digital/tariffs" },
-          { label: "Տերմինալի տեղադրման հայտ", path: "/business/digital/terminal-application" },
-          { label: "Evoca Mobile POS` mPOS", path: "/business/digital/mpos" }
+          { label: "V-POS Տերմինալ", path: "/v-pos-terminal" },
+          { label: "POS Տերմինալ", path: "/pos-terminal" },
+          { label: "Սակագներ", path: "/terminal-tariffs" },
+          { label: "Տերմինալի տեղադրման հայտ", path: "/terminal-installation-application" },
+          { label: "Evoca Mobile POS` mPOS", path: "/evoca-mobile-pos-mpos" }
         ]
       },
       {
         title: "Այլ",
-        path: "/business/other",
+        path: "/boxes",
         items: [
-          { label: "Պահատուփեր", path: "/business/other/lockers" },
-          { label: "Փոխանցումներ", path: "/business/other/transfers" }
+          { label: "Պահատուփեր", path: "/boxes" },
+          { label: "Փոխանցումներ", path: "/business-money-transfers" }
         ]
       }
     ]
