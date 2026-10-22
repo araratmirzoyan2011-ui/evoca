@@ -4,7 +4,7 @@ import BusinessHeader from "../Components/Busines-Header.jsx";
 import Footer from "../Components/Footer.jsx";
 import SocialIcons from "../Components/SocialIcons.jsx";
 import Navbar from "../Components/Menuall.jsx";
-import { EvocaNewsCard } from "../Components/EVocaCard1.jsx";
+import PosRequestForm from "../Components/PosRequestForm.jsx";
 import { db } from "../firebase"; 
 import { collection, getDocs } from "firebase/firestore";
 
@@ -53,7 +53,8 @@ const   InstalAplication = () => {
           </div>
 
           <div className="flex-1 w-full min-w-0 max-w-4xl text-gray-800 space-y-8 text-sm xs:text-base leading-relaxed break-words">
-            
+            <h1 className="text-4xl">Տերմինալի տեղադրման հայտ</h1>
+            <PosRequestForm />
 
           </div>
 
