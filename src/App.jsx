@@ -83,6 +83,7 @@ import Garant from "./Pages/business-investment-services";
 import Documentary from "./Pages/documentary-collection";
 import Credit from "./Pages/letter-of-credit";
 import VPos from "./Pages/v-pos-terminal";
+import Pos from "./Pages/pos-terminal";
 function App() {
   return (
     <BrowserRouter>
@@ -93,6 +94,7 @@ function App() {
           <Route path="/guarantee" element={<Guarantee />} />
           <Route path="/business-investment-services" element={<Garant />} />
           <Route path="/v-pos-terminal" element={<VPos />} />
+          <Route path="/pos-terminal" element={<Pos />} />
           <Route path="/stocks-repo-transactions" element={<Repo />} />
           <Route path="/factoring-finance" element={<Finance />} />
           <Route path="/letter-of-credit" element={<Credit />} />
