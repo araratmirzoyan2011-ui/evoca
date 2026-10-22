@@ -87,6 +87,7 @@ import Pos from "./Pages/pos-terminal";
 import TerminalTariff from "./Pages/terminal-tariffs";
 import InstalAplication from "./Pages/terminal-installation-application";
 import MobilePos from "./Pages/evoca-mobile-pos-mpos";
+import BusinesMoneyTransfers from "./Pages/business-money-transfers";
 function App() {
   return (
     <BrowserRouter>
@@ -96,6 +97,7 @@ function App() {
           <Route path="/business-loans" element={<Busines />} />
           <Route path="/guarantee" element={<Guarantee />} />
           <Route path="/business-investment-services" element={<Garant />} />
+          <Route path="/business-money-transfers" element={<BusinesMoneyTransfers />} />
           <Route path="/evoca-mobile-pos-mpos" element={<MobilePos />} />
           <Route path="/terminal-installation-application" element={<InstalAplication />} />
           <Route path="/terminal-tariffs" element={<TerminalTariff/>} />
