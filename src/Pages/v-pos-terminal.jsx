@@ -25,7 +25,7 @@ const VPos = () => {
   useEffect(() => {
     const fetchDataFromFirebase = async () => {
       try {
-        const menuSnapshot = await getDocs(collection(db, "menuItems"));
+        const menuSnapshot = await getDocs(collection(db, "munuItems2"));
         const menuList = menuSnapshot.docs.map(doc => doc.data());
         menuList.sort((a, b) => a.order - b.order);
         setMenuItems(menuList);
