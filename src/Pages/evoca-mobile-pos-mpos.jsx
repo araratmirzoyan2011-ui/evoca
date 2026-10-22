@@ -10,7 +10,8 @@ import { collection, getDocs } from "firebase/firestore";
 
 const MobilePos = () => {
   const [menuItems, setMenuItems] = useState([]);
-  
+  const [mobPosCardData, setMobPosCardData] = useState(null);
+  const [contentParagraphs, setContentParagraphs] = useState([]);
   const [pageLoading, setPageLoading] = useState(true);
 
   useEffect(() => {
@@ -20,6 +21,16 @@ const MobilePos = () => {
         const menuList = menuSnapshot.docs.map(doc => doc.data());
         menuList.sort((a, b) => a.order - b.order);
         setMenuItems(menuList);
+
+        const cardSnapshot = await getDocs(collection(db, "mobPosCard"));
+        if (!cardSnapshot.empty) {
+          setMobPosCardData(cardSnapshot.docs[0].data());
+        }
+
+        const paragraphsSnapshot = await getDocs(collection(db, "mobPosParagraphs"));
+        const paragraphsList = paragraphsSnapshot.docs.map(doc => doc.data());
+        paragraphsList.sort((a, b) => (a.order || 0) - (b.order || 0));
+        setContentParagraphs(paragraphsList);
 
       } catch (error) {
         console.error("Սխալ Firebase-ից տվյալներ կարդալիս:", error);
@@ -38,21 +49,20 @@ const MobilePos = () => {
       </div>
     );
   }
-const MobPosCardData={title:"Evoca Mobile POS՝ mPOS",description:"Evocabank-ի նոր mobile POS՝ mPOS գործիքի շնորհիվ Ձեր բիզնեսը կարող է ստանալ անկանխիկ վճարումներ` ավելի հեշտ ու արագ:",imageUrl:"https://www.evoca.am/images-cache/menu/1/16697156723793/780x585.png",altText:""}
 
-return (
+  return (
     <>
       <BusinessHeader />
       <Navbar items={menuItems} />
 
       <main className="w-full py-6 px-2 xs:px-4 md:px-12 bg-gray-50 overflow-x-hidden">
         <div className="max-w-7xl mx-auto w-full">
-          {MobPosCardData && (
+          {mobPosCardData && (
             <InfoCard
-              title={MobPosCardData.title}
-              description={MobPosCardData.description}
-              imageUrl={MobPosCardData.imageUrl}
-              altText={MobPosCardData.altText}
+              title={mobPosCardData.title}
+              description={mobPosCardData.description}
+              imageUrl={mobPosCardData.imageUrl}
+              altText={mobPosCardData.altText}
             />
           )}
         </div>
@@ -69,15 +79,17 @@ return (
 
           <div className="flex-1 w-full min-w-0 max-w-4xl text-gray-800 space-y-6 text-sm xs:text-base leading-relaxed break-words">
             
-
-            
-
-            
+            {contentParagraphs.map((item, index) => (
+              <p key={index}>
+                {item.content || item.text || JSON.stringify(item)}
+              </p>
+            ))}
 
           </div>
 
         </div>
       </section>
+
       <Footer />
     </>
   );
