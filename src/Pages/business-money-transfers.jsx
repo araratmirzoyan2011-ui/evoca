@@ -7,7 +7,7 @@ import Navbar from "../Components/Menuall.jsx";
 import InfoCard from "../Components/AccountsCard.jsx";
 import { db } from "../firebase"; 
 import { collection, getDocs } from "firebase/firestore";
-
+import { OnlineBanking } from "../Components/OnlineBanking.jsx";
 const BusinesMoneyTransfers = () => {
   const [menuItems, setMenuItems] = useState([]);
   const [pageLoading, setPageLoading] = useState(true);
@@ -73,7 +73,7 @@ const BusinesTransferCardData={title:"Դրամական փոխանցումներ"
 
         </div>
       </section>
-
+          <OnlineBanking />
       <Footer />
     </>
   );
