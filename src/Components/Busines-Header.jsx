@@ -116,9 +116,12 @@ export default function BusinessHeader() {
                     </nav>
 
                     <div className="flex items-center space-x-2 sm:space-x-3 flex-shrink-0">
-                        <button className="hidden sm:inline-block bg-purple-700 hover:bg-purple-800 text-white font-medium px-4 sm:px-6 py-2 sm:py-2.5 rounded-full shadow-md transition duration-200 text-sm sm:text-base whitespace-nowrap">
+                        <Link
+                            to="/login"
+                            className="hidden sm:inline-block bg-purple-700 hover:bg-purple-800 text-white font-medium px-4 sm:px-6 py-2 sm:py-2.5 rounded-full shadow-md transition duration-200 text-sm sm:text-base whitespace-nowrap"
+                        >
                             EvocaONLINE
-                        </button>
+                        </Link>
 
                         {/* Hamburger — երևում է lg-ից ցածր */}
                         <button
@@ -153,9 +156,12 @@ export default function BusinessHeader() {
                     <a href="#" className="block py-2 text-gray-800 font-medium hover:text-purple-700">Բիզնես</a>
                     <a href="#" className="block py-2 text-gray-800 font-medium hover:text-purple-700">Մեր մասին</a>
                     <a href="tel:8444" className="block py-2 text-purple-700 font-bold">Զանգել՝ 8444</a>
-                    <button className="w-full sm:hidden bg-purple-700 hover:bg-purple-800 text-white font-medium px-6 py-2.5 rounded-full shadow-md transition duration-200 mt-2">
-                        EvocaONLONE
-                    </button>
+                <Link 
+                            to="/login"
+                            className="w-full sm:hidden text-center bg-purple-700 hover:bg-purple-800 text-white font-medium px-6 py-2.5 rounded-full shadow-md transition duration-200"
+                        >
+                            EvocaONLINE
+                        </Link>
                 </div>
             )}
         </header>

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+
 export function Header() {
     const [isOnlineAppsOpen, setIsOnlineAppsOpen] = useState(false);
     const [isContactOpen, setIsContactOpen] = useState(false);
@@ -7,6 +8,7 @@ export function Header() {
 
     return (
         <header className="w-full bg-white border-b border-gray-200 font-sans relative">
+            {/* Nav yasegentla (Desktop) */}
             <div className="hidden md:flex max-w-7xl mx-auto px-4 h-12 items-center justify-between text-sm border-b border-gray-100">
                 <nav className="flex items-center space-x-4 lg:space-x-6 overflow-x-auto">
                     <Link to="/" className="text-gray-700 hover:text-purple-700 whitespace-nowrap">Անհատ</Link>
@@ -19,6 +21,7 @@ export function Header() {
                 </nav>
 
                 <div className="flex items-center space-x-4 lg:space-x-6 relative flex-shrink-0">
+                    {/* Online Apps */}
                     <div className="relative">
                         <div
                             onClick={() => {
@@ -43,6 +46,7 @@ export function Header() {
                         )}
                     </div>
 
+                    {/* Contact */}
                     <div className="relative">
                         <div
                             onClick={() => {
@@ -69,6 +73,7 @@ export function Header() {
                         )}
                     </div>
 
+                    {/* Icons */}
                     <div className="flex items-center space-x-3 lg:space-x-4 text-gray-700">
                         <button className="hover:text-purple-700 transition" title="Մասնաճյուղեր">
                             <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
@@ -95,14 +100,14 @@ export function Header() {
                 </div>
             </div>
 
-            {/* Հիմնական տող */}
+            {/* Umgca Oingundo (Main Row) */}
             <div className="sticky top-0 z-50 bg-white shadow-md w-full">
                 <div className="max-w-7xl mx-auto px-3 sm:px-4 h-16 sm:h-20 flex items-center justify-between">
-                    {/* Լոգո */}
-                    <div className="flex items-center space-x-1 cursor-pointer flex-shrink-0">
+                    {/* Logo */}
+                    <Link to="/" className="flex items-center space-x-1 cursor-pointer flex-shrink-0">
                         <span className="text-xl sm:text-2xl lg:text-3xl font-black tracking-wider text-gray-700">evoca</span>
                         <span className="w-2 h-2 sm:w-2.5 sm:h-2.5 bg-purple-600 rounded-full inline-block mt-1 sm:mt-2"></span>
-                    </div>
+                    </Link>
 
                     {/* Desktop navigation */}
                     <nav className="hidden lg:flex items-center space-x-6 text-gray-800 font-medium">
@@ -116,12 +121,16 @@ export function Header() {
                         <Link to="/evoca-touch" className="hover:text-purple-700 whitespace-nowrap">EvocaTOUCH</Link>
                     </nav>
 
+                    {/* Amaqhosha ngase-ekunene */}
                     <div className="flex items-center space-x-2 sm:space-x-3 flex-shrink-0">
-                        <button className="hidden sm:inline-block bg-purple-700 hover:bg-purple-800 text-white font-medium px-4 sm:px-6 py-2 sm:py-2.5 rounded-full shadow-md transition duration-200 text-sm sm:text-base whitespace-nowrap">
+                        
+                        <Link
+                            to="/login"
+                            className="hidden sm:inline-block bg-purple-700 hover:bg-purple-800 text-white font-medium px-4 sm:px-6 py-2 sm:py-2.5 rounded-full shadow-md transition duration-200 text-sm sm:text-base whitespace-nowrap"
+                        >
                             EvocaONLINE
-                        </button>
+                        </Link>
 
-                        {/* Hamburger — երևում է lg-ից ցածր */}
                         <button
                             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                             className="lg:hidden p-2 text-gray-700 hover:text-purple-700 transition"
@@ -139,25 +148,32 @@ export function Header() {
                 </div>
             </div>
 
-            {/* Mobile menu — dropdown */}
+            {/* I-Menu ye-Mobile */}
             {isMobileMenuOpen && (
                 <div className="lg:hidden bg-white border-t border-gray-100 shadow-lg px-4 py-3 space-y-1">
-                    <a href="#" className="block py-2 text-gray-800 font-medium hover:text-purple-700">Վարկեր</a>
-                    <a href="#" className="block py-2 text-gray-800 font-medium hover:text-purple-700">Քարտեր</a>
-                    <a href="#" className="block py-2 text-gray-800 font-medium hover:text-purple-700">Ավանդներ</a>
-                    <a href="#" className="block py-2 text-gray-800 font-medium hover:text-purple-700">Հաշիվներ</a>
-                    <a href="#" className="block py-2 text-gray-800 font-medium hover:text-purple-700">Փոխանցումներ</a>
-                    <a href="#" className="block py-2 text-gray-800 font-medium hover:text-purple-700">Արժեթղթեր</a>
-                    <a href="#" className="block py-2 text-gray-800 font-medium hover:text-purple-700">EvocaSALARY</a>
-                    <a href="#" className="block py-2 text-gray-800 font-medium hover:text-purple-700">EvocaTOUCH</a>
+                    <Link to="/loans" className="block py-2 text-gray-800 font-medium hover:text-purple-700">Վարկեր</Link>
+                    <Link to="/cards" className="block py-2 text-gray-800 font-medium hover:text-purple-700">Քարտեր</Link>
+                    <Link to="/depositsmain" className="block py-2 text-gray-800 font-medium hover:text-purple-700">Ավանդներ</Link>
+                    <Link to="/accounts" className="block py-2 text-gray-800 font-medium hover:text-purple-700">Հաշիվներ</Link>
+                    <Link to="/transfers" className="block py-2 text-gray-800 font-medium hover:text-purple-700">Փոխանցումներ</Link>
+                    <Link to="/securities" className="block py-2 text-gray-800 font-medium hover:text-purple-700">Արժեթղթեր</Link>
+                    <Link to="/evoca-salary" className="block py-2 text-gray-800 font-medium hover:text-purple-700">EvocaSALARY</Link>
+                    <Link to="/evoca-touch" className="block py-2 text-gray-800 font-medium hover:text-purple-700">EvocaTOUCH</Link>
                     <div className="border-t border-gray-100 my-2"></div>
-                    <a href="#" className="block py-2 text-gray-800 font-medium hover:text-purple-700">Անհատ</a>
-                    <a href="#" className="block py-2 text-gray-800 font-medium hover:text-purple-700">Բիզնես</a>
-                    <a href="#" className="block py-2 text-gray-800 font-medium hover:text-purple-700">Մեր մասին</a>
+                    <Link to="/" className="block py-2 text-gray-800 font-medium hover:text-purple-700">Անհատ</Link>
+                    <Link to="/business-loans" className="block py-2 text-gray-800 font-medium hover:text-purple-700">Բիզնես</Link>
+                    <Link to="/about" className="block py-2 text-gray-800 font-medium hover:text-purple-700">Մեր մասին</Link>
                     <a href="tel:8444" className="block py-2 text-purple-700 font-bold">Զանգել՝ 8444</a>
-                    <button className="w-full sm:hidden bg-purple-700 hover:bg-purple-800 text-white font-medium px-6 py-2.5 rounded-full shadow-md transition duration-200 mt-2">
-                        EvocaONLONE
-                    </button>
+                    
+                    <div className="pt-2 flex flex-col gap-2">
+                        
+                        <Link 
+                            to="/login"
+                            className="w-full sm:hidden text-center bg-purple-700 hover:bg-purple-800 text-white font-medium px-6 py-2.5 rounded-full shadow-md transition duration-200"
+                        >
+                            EvocaONLINE
+                        </Link>
+                    </div>
                 </div>
             )}
         </header>

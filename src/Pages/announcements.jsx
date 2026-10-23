@@ -2,14 +2,11 @@ import React, { useMemo, useState, useEffect } from "react";
 import { Header } from "../Components/Header.jsx";
 import Footer from "../Components/Footer.jsx";
 import AccordionItem from "../Components/announcements-accordion.jsx";
-
-// Firebase ինստանսի և Firestore մեթոդների ներմուծում
 import { db } from "../firebase"; 
 import { collection, getDocs } from "firebase/firestore";
 
 const ITEMS_PER_PAGE = 6;
 
-// "19.10.2026" -> "2026-10-19"
 const toISO = (d) => {
   if (!d) return "";
   const [dd, mm, yyyy] = d.split(".");
@@ -28,14 +25,12 @@ const Announcements = () => {
   const [to, setTo] = useState("");
   const [page, setPage] = useState(1);
 
-  // Տվյալների ներմուծում Firebase-ից կոմպոնենտը բեռնվելիս
   useEffect(() => {
     const fetchFromFirebase = async () => {
       try {
         setLoading(true);
         const fetchedPages = [];
 
-        // Քանի որ ունենք 8 էջ (collection)
         for (let i = 1; i <= 8; i++) {
           const querySnapshot = await getDocs(collection(db, `announcements_page${i}`));
           const pageItems = [];
@@ -44,7 +39,6 @@ const Announcements = () => {
             pageItems.push({ id: doc.id, ...doc.data() });
           });
 
-          // Որպեսզի ID-ների հերթականությունը չխառնվի, կարող ենք սորտավորել ըստ id-ի կամ պահպանել 
           pageItems.sort((a, b) => Number(a.id) - Number(b.id));
 
           fetchedPages.push(pageItems);
