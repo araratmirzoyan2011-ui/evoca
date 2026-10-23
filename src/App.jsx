@@ -90,6 +90,7 @@ import MobilePos from "./Pages/evoca-mobile-pos-mpos";
 import BusinesMoneyTransfers from "./Pages/business-money-transfers";
 import Announcements from "./Pages/announcements";
 import Login from "./Pages/Login";
+import AboutYou from "./Pages/About-you";
 function App() {
   return (
     <BrowserRouter>
@@ -109,6 +110,7 @@ function App() {
           <Route path="/pos-terminal" element={<Pos />} />
           <Route path="/stocks-repo-transactions" element={<Repo />} />
           <Route path="/factoring-finance" element={<Finance />} />
+          <Route path="/About-you" element={<AboutYou />} />
           <Route path="/letter-of-credit" element={<Credit />} />
           <Route path="/documentary-collection" element={<Documentary />} />
           
