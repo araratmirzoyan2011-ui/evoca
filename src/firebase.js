@@ -1,5 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
+import { getAuth } from "firebase/auth"; // Ավելացված է getAuth-ը
 
 const firebaseConfig = {
   apiKey: "AIzaSyB7_T3s6fQzq1AanGVjxp_qLS86Q2im2Wk",
@@ -12,4 +13,6 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
+
 export const db = getFirestore(app);
+export const auth = getAuth(app); // Ավելացված է auth-ի export-ը
