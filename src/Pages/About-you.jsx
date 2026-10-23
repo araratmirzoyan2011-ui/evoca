@@ -35,7 +35,6 @@ const AboutYou = () => {
       const user = auth.currentUser;
 
       if (user) {
-        // Տվյալները պահպանվում են "Users" collection-ում
         await setDoc(
           doc(db, "Users", user.uid),
           {
@@ -48,8 +47,7 @@ const AboutYou = () => {
         );
       }
 
-      // Հաջող պահպանումից հետո տեղափոխվում ենք Main էջ
-      navigate("/Main");
+      navigate("/user");
     } catch (err) {
       console.error(err);
       setError("Տվյալների պահպանման սխալ:");
@@ -143,7 +141,7 @@ const AboutYou = () => {
               disabled={loading}
               className="w-full bg-[#6a00e5] hover:bg-[#5800c4] text-white font-semibold py-3.5 rounded-lg transition duration-200 mt-4 shadow-sm cursor-pointer disabled:opacity-50"
             >
-              {loading ? "Պահպանվում է..." : "Պահպանել և գնալ հիմնական էջ"}
+              {loading ? "Պահպանվում է..." : "Պահպանել և գնալ User էջ"}
             </button>
           </form>
         </div>

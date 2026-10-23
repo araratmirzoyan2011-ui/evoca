@@ -91,6 +91,7 @@ import BusinesMoneyTransfers from "./Pages/business-money-transfers";
 import Announcements from "./Pages/announcements";
 import Login from "./Pages/Login";
 import AboutYou from "./Pages/About-you";
+import UserPage from "./Pages/User";
 function App() {
   return (
     <BrowserRouter>
@@ -103,6 +104,7 @@ function App() {
           <Route path="/business-money-transfers" element={<BusinesMoneyTransfers />} />
           <Route path="/announcements" element={<Announcements />} />
           <Route path="/evoca-mobile-pos-mpos" element={<MobilePos />} />
+          <Route path="/User" element={<UserPage />} />
           <Route path="/Login" element={<Login />} />
           <Route path="/terminal-installation-application" element={<InstalAplication />} />
           <Route path="/terminal-tariffs" element={<TerminalTariff/>} />

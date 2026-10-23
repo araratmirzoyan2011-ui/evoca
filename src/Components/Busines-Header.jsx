@@ -1,9 +1,33 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { auth, db } from '../firebase';
+import { doc, getDoc } from 'firebase/firestore';
+
 export default function BusinessHeader() {
     const [isOnlineAppsOpen, setIsOnlineAppsOpen] = useState(false);
     const [isContactOpen, setIsContactOpen] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const navigate = useNavigate();
+
+    const handleEvocaOnlineClick = async () => {
+        const currentUser = auth.currentUser;
+
+        if (currentUser) {
+            try {
+                const docRef = doc(db, "Users", currentUser.uid);
+                const docSnap = await getDoc(docRef);
+
+                if (docSnap.exists() && docSnap.data().fullName) {
+                    navigate("/user");
+                    return;
+                }
+            } catch (err) {
+                console.error("Ստուգման սխալ:", err);
+            }
+        }
+        
+        navigate("/login");
+    };
 
     return (
         <header className="w-full bg-white border-b border-gray-200 font-sans relative">
@@ -116,14 +140,13 @@ export default function BusinessHeader() {
                     </nav>
 
                     <div className="flex items-center space-x-2 sm:space-x-3 flex-shrink-0">
-                        <Link
-                            to="/login"
-                            className="hidden sm:inline-block bg-purple-700 hover:bg-purple-800 text-white font-medium px-4 sm:px-6 py-2 sm:py-2.5 rounded-full shadow-md transition duration-200 text-sm sm:text-base whitespace-nowrap"
+                        <button
+                            onClick={handleEvocaOnlineClick}
+                            className="hidden sm:inline-block bg-purple-700 hover:bg-purple-800 text-white font-medium px-4 sm:px-6 py-2 sm:py-2.5 rounded-full shadow-md transition duration-200 text-sm sm:text-base whitespace-nowrap cursor-pointer"
                         >
                             EvocaONLINE
-                        </Link>
+                        </button>
 
-                        {/* Hamburger — երևում է lg-ից ցածր */}
                         <button
                             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                             className="lg:hidden p-2 text-gray-700 hover:text-purple-700 transition"
@@ -156,12 +179,15 @@ export default function BusinessHeader() {
                     <a href="#" className="block py-2 text-gray-800 font-medium hover:text-purple-700">Բիզնես</a>
                     <a href="#" className="block py-2 text-gray-800 font-medium hover:text-purple-700">Մեր մասին</a>
                     <a href="tel:8444" className="block py-2 text-purple-700 font-bold">Զանգել՝ 8444</a>
-                <Link 
-                            to="/login"
-                            className="w-full sm:hidden text-center bg-purple-700 hover:bg-purple-800 text-white font-medium px-6 py-2.5 rounded-full shadow-md transition duration-200"
+                    
+                    <div className="pt-2">
+                        <button 
+                            onClick={handleEvocaOnlineClick}
+                            className="w-full sm:hidden text-center bg-purple-700 hover:bg-purple-800 text-white font-medium px-6 py-2.5 rounded-full shadow-md transition duration-200 cursor-pointer"
                         >
                             EvocaONLINE
-                        </Link>
+                        </button>
+                    </div>
                 </div>
             )}
         </header>

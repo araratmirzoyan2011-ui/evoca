@@ -1,15 +1,15 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { auth, db, googleProvider } from "../firebase";
 import { signInWithPopup } from "firebase/auth";
-import { doc, setDoc } from "firebase/firestore";
-import { useNavigate } from "react-router-dom";
+import { doc, getDoc, setDoc } from "firebase/firestore";
 import { Header } from "../Components/Header";
 import Footer from "../Components/Footer";
 
 const Login = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
 
   const handleGoogleLogin = async () => {
     setError("");
@@ -19,17 +19,24 @@ const Login = () => {
       const result = await signInWithPopup(auth, googleProvider);
       const user = result.user;
 
-      await setDoc(
-        doc(db, "users", user.uid),
-        {
-          email: user.email,
-          displayName: user.displayName,
-          uid: user.uid,
-        },
-        { merge: true }
-      );
+      const docRef = doc(db, "Users", user.uid);
+      const docSnap = await getDoc(docRef);
 
-      navigate("/about-you"); 
+      if (docSnap.exists() && docSnap.data().fullName) {
+        navigate("/user");
+      } else {
+        await setDoc(
+          docRef,
+          {
+            email: user.email || "",
+            displayName: user.displayName || "",
+            uid: user.uid,
+            updatedAt: new Date().toISOString(),
+          },
+          { merge: true }
+        );
+        navigate("/about-you");
+      }
     } catch (err) {
       if (
         err.code === "auth/popup-closed-by-user" ||

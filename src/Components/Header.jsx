@@ -1,14 +1,35 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { auth, db } from '../firebase';
+import { doc, getDoc } from 'firebase/firestore';
 
 export function Header() {
     const [isOnlineAppsOpen, setIsOnlineAppsOpen] = useState(false);
     const [isContactOpen, setIsContactOpen] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const navigate = useNavigate();
+
+    const handleEvocaOnlineClick = async () => {
+        const currentUser = auth.currentUser;
+
+        if (currentUser) {
+            try {
+                const docRef = doc(db, "Users", currentUser.uid);
+                const docSnap = await getDoc(docRef);
+                if (docSnap.exists() && docSnap.data().fullName) {
+                    navigate("/user");
+                    return;
+                }
+            } catch (err) {
+                console.error("Ստուգման սխալ:", err);
+            }
+        }
+        
+        navigate("/login");
+    };
 
     return (
         <header className="w-full bg-white border-b border-gray-200 font-sans relative">
-            {/* Nav yasegentla (Desktop) */}
             <div className="hidden md:flex max-w-7xl mx-auto px-4 h-12 items-center justify-between text-sm border-b border-gray-100">
                 <nav className="flex items-center space-x-4 lg:space-x-6 overflow-x-auto">
                     <Link to="/" className="text-gray-700 hover:text-purple-700 whitespace-nowrap">Անհատ</Link>
@@ -100,7 +121,7 @@ export function Header() {
                 </div>
             </div>
 
-            {/* Umgca Oingundo (Main Row) */}
+            {/* Main Row */}
             <div className="sticky top-0 z-50 bg-white shadow-md w-full">
                 <div className="max-w-7xl mx-auto px-3 sm:px-4 h-16 sm:h-20 flex items-center justify-between">
                     {/* Logo */}
@@ -121,15 +142,15 @@ export function Header() {
                         <Link to="/evoca-touch" className="hover:text-purple-700 whitespace-nowrap">EvocaTOUCH</Link>
                     </nav>
 
-                    {/* Amaqhosha ngase-ekunene */}
+                    {/* Right side buttons */}
                     <div className="flex items-center space-x-2 sm:space-x-3 flex-shrink-0">
                         
-                        <Link
-                            to="/login"
-                            className="hidden sm:inline-block bg-purple-700 hover:bg-purple-800 text-white font-medium px-4 sm:px-6 py-2 sm:py-2.5 rounded-full shadow-md transition duration-200 text-sm sm:text-base whitespace-nowrap"
+                        <button
+                            onClick={handleEvocaOnlineClick}
+                            className="hidden sm:inline-block bg-purple-700 hover:bg-purple-800 text-white font-medium px-4 sm:px-6 py-2 sm:py-2.5 rounded-full shadow-md transition duration-200 text-sm sm:text-base whitespace-nowrap cursor-pointer"
                         >
                             EvocaONLINE
-                        </Link>
+                        </button>
 
                         <button
                             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -148,7 +169,7 @@ export function Header() {
                 </div>
             </div>
 
-            {/* I-Menu ye-Mobile */}
+            {/* Mobile Menu */}
             {isMobileMenuOpen && (
                 <div className="lg:hidden bg-white border-t border-gray-100 shadow-lg px-4 py-3 space-y-1">
                     <Link to="/loans" className="block py-2 text-gray-800 font-medium hover:text-purple-700">Վարկեր</Link>
@@ -166,13 +187,12 @@ export function Header() {
                     <a href="tel:8444" className="block py-2 text-purple-700 font-bold">Զանգել՝ 8444</a>
                     
                     <div className="pt-2 flex flex-col gap-2">
-                        
-                        <Link 
-                            to="/login"
-                            className="w-full sm:hidden text-center bg-purple-700 hover:bg-purple-800 text-white font-medium px-6 py-2.5 rounded-full shadow-md transition duration-200"
+                        <button 
+                            onClick={handleEvocaOnlineClick}
+                            className="w-full sm:hidden text-center bg-purple-700 hover:bg-purple-800 text-white font-medium px-6 py-2.5 rounded-full shadow-md transition duration-200 cursor-pointer"
                         >
                             EvocaONLINE
-                        </Link>
+                        </button>
                     </div>
                 </div>
             )}
