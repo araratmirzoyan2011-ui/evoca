@@ -16,6 +16,7 @@ import {
   where,
   orderBy,
   serverTimestamp,
+  arrayRemove,
 } from "firebase/firestore";
 
 // WebRTC կարգավորումներ (STUN). Խիստ ցանցերի համար ավելացրու նաև TURN սերվեր։
@@ -27,6 +28,7 @@ const ICE_CONFIG = {
 };
 
 const RING_TIMEOUT_MS = 45000;
+const NOT_REGISTERED_TEXT = "Դուք չեք կարող բացել չատը, որովհետև գրանցված չեք։";
 
 const IDLE_CALL = {
   phase: "idle", // idle | calling | incoming | connecting | active
@@ -43,13 +45,48 @@ const formatDuration = (s) => {
   return `${m}:${sec}`;
 };
 
+const getChatId = (uid1, uid2) => [uid1, uid2].sort().join("_");
+
+// Փոքր ծանուցման ձայն
+const playBeep = () => {
+  try {
+    const Ctx = window.AudioContext || window.webkitAudioContext;
+    if (!Ctx) return;
+    const ctx = new Ctx();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = "sine";
+    osc.frequency.value = 880;
+    gain.gain.value = 0.08;
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start();
+    osc.stop(ctx.currentTime + 0.18);
+    osc.onended = () => ctx.close();
+  } catch (e) {
+    /* ignore */
+  }
+};
+
 export default function ChatModal() {
   const [isOpen, setIsOpen] = useState(false);
   const [isRegistered, setIsRegistered] = useState(false);
-  const [chatMessage, setChatMessage] = useState("");
+  const [profileLoaded, setProfileLoaded] = useState(false);
+  const [myName, setMyName] = useState("");
   const [usersList, setUsersList] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
-  const [loading, setLoading] = useState(false);
+
+  // ---------- ԽՄԲԵՐ ----------
+  const [groups, setGroups] = useState([]);
+  const [selectedGroupId, setSelectedGroupId] = useState(null);
+  const [isCreatingGroup, setIsCreatingGroup] = useState(false);
+  const [groupName, setGroupName] = useState("");
+  const [groupMembersSel, setGroupMembersSel] = useState([]);
+  const [groupError, setGroupError] = useState("");
+
+  // ---------- ԾԱՆՈՒՑՈՒՄՆԵՐ ----------
+  const [notifications, setNotifications] = useState([]); // չկարդացածներ
+  const [toasts, setToasts] = useState([]);
 
   // Չատի տվյալներ
   const [messages, setMessages] = useState([]);
@@ -63,7 +100,7 @@ export default function ChatModal() {
 
   // ---------- ԶԱՆԳԻ state-եր ----------
   const [call, setCall] = useState(IDLE_CALL);
-  const callRef = useRef(IDLE_CALL); // միշտ թարմ արժեք snapshot-ների համար
+  const callRef = useRef(IDLE_CALL);
   const [isMuted, setIsMuted] = useState(false);
   const [isVideoOff, setIsVideoOff] = useState(false);
   const [duration, setDuration] = useState(0);
@@ -86,12 +123,54 @@ export default function ChatModal() {
   const messagesEndRef = useRef(null);
   const navigate = useNavigate();
 
-  // auth.currentUser-ը կարող է սկզբում null լինել, ուստի լսում ենք փոփոխությունը
   const [currentUser, setCurrentUser] = useState(auth.currentUser);
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, (u) => setCurrentUser(u));
     return () => unsub();
   }, []);
+
+  const uid = currentUser?.uid;
+
+  // ---------- Ընթացիկ ընտրված չատ ----------
+  const selectedGroup = groups.find((g) => g.id === selectedGroupId) || null;
+
+  const getTarget = () => {
+    if (!uid) return null;
+    if (selectedGroup) {
+      return {
+        chatId: selectedGroup.id,
+        recipients: (selectedGroup.members || []).filter((m) => m !== uid),
+        groupName: selectedGroup.name,
+      };
+    }
+    if (selectedUser) {
+      return {
+        chatId: getChatId(uid, selectedUser.id),
+        recipients: [selectedUser.id],
+        groupName: null,
+      };
+    }
+    return null;
+  };
+
+  const activeChatId = getTarget()?.chatId || null;
+
+  // Refs՝ snapshot callback-ների համար
+  const isOpenRef = useRef(false);
+  const activeChatIdRef = useRef(null);
+  isOpenRef.current = isOpen;
+  activeChatIdRef.current = activeChatId;
+
+  const memberName = (id) => {
+    if (id === uid) return myName || "Ես";
+    return usersList.find((u) => u.id === id)?.fullName || "Անհայտ";
+  };
+
+  const unreadByChat = notifications.reduce((acc, n) => {
+    acc[n.chatId] = (acc[n.chatId] || 0) + 1;
+    return acc;
+  }, {});
+  const totalUnread = notifications.length;
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -101,66 +180,87 @@ export default function ChatModal() {
     scrollToBottom();
   }, [messages]);
 
-  // 1. Չատի պատուհանը բացել/փակել և օգտատերերի ստուգում
-  const handleChatToggle = async () => {
-    if (!isOpen) {
-      setLoading(true);
-
-      if (!currentUser) {
-        setIsRegistered(false);
-        setChatMessage("Դուք չեք կարող բացել չատը, որովհետև գրանցված չեք։");
-        setIsOpen(true);
-        setLoading(false);
-        return;
-      }
-
-      try {
-        const docRef = doc(db, "Users", currentUser.uid);
-        const docSnap = await getDoc(docRef);
-
-        if (docSnap.exists() && docSnap.data().fullName) {
-          setIsRegistered(true);
-          setChatMessage("");
-
-          const querySnapshot = await getDocs(collection(db, "Users"));
-          const allUsers = [];
-          querySnapshot.forEach((d) => {
-            if (d.id !== currentUser.uid) {
-              allUsers.push({ id: d.id, ...d.data() });
-            }
-          });
-          setUsersList(allUsers);
-          if (allUsers.length > 0 && !selectedUser) {
-            setSelectedUser(allUsers[0]);
-          }
-          setIsOpen(true);
-        } else {
-          setIsRegistered(false);
-          setChatMessage("Դուք չեք կարող բացել չատը, որովհետև գրանցված չեք։");
-          setIsOpen(true);
-        }
-      } catch (err) {
-        console.error("Ստուգման սխալ:", err);
-        setChatMessage("Տեղի ունեցավ սխալ ստուգման ընթացքում։");
-        setIsOpen(true);
-      } finally {
-        setLoading(false);
-      }
-    } else {
-      setIsOpen(false);
-    }
-  };
-
-  const getChatId = (uid1, uid2) => {
-    return [uid1, uid2].sort().join("_");
-  };
-
-  // 2. Realtime հաղորդագրություններ
+  // 1. Օգտատերերի realtime ցանկ + գրանցվածության ստուգում
   useEffect(() => {
-    if (!selectedUser || !currentUser) return;
+    if (!uid) {
+      setIsRegistered(false);
+      setProfileLoaded(true);
+      setUsersList([]);
+      return;
+    }
+    setProfileLoaded(false);
+    const unsub = onSnapshot(
+      collection(db, "Users"),
+      (snap) => {
+        const others = [];
+        let mine = null;
+        snap.forEach((d) => {
+          if (d.id === uid) mine = d.data();
+          else others.push({ id: d.id, ...d.data() });
+        });
+        setUsersList(others);
+        setIsRegistered(!!(mine && mine.fullName));
+        setMyName(mine?.fullName || currentUser?.displayName || currentUser?.email || "");
+        setProfileLoaded(true);
+      },
+      (err) => {
+        console.error("Users սխալ:", err);
+        setProfileLoaded(true);
+      }
+    );
+    return () => unsub();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [uid]);
 
-    const chatId = getChatId(currentUser.uid, selectedUser.id);
-    const messagesRef = collection(db, "chats", chatId, "messages");
+  // Առաջին չատի ավտոմատ ընտրություն
+  useEffect(() => {
+    if (
+      isRegistered &&
+      usersList.length > 0 &&
+      !selectedUser &&
+      !selectedGroupId &&
+      !isCreatingGroup
+    ) {
+      setSelectedUser(usersList[0]);
+    }
+  }, [isRegistered, usersList, selectedUser, selectedGroupId, isCreatingGroup]);
+
+  // 2. Խմբերի realtime ցանկ (միայն այն խմբերը, որտեղ ես անդամ եմ)
+  useEffect(() => {
+    if (!uid || !isRegistered) {
+      setGroups([]);
+      return;
+    }
+    const q = query(collection(db, "groups"), where("members", "array-contains", uid));
+    const unsub = onSnapshot(
+      q,
+      (snap) => {
+        const list = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+        list.sort((a, b) => (b.createdAt?.toMillis?.() || 0) - (a.createdAt?.toMillis?.() || 0));
+        setGroups(list);
+      },
+      (err) => console.error("Groups սխալ:", err)
+    );
+    return () => unsub();
+  }, [uid, isRegistered]);
+
+  // Եթե ընտրված խումբը այլևս չկա (լքել եմ)՝ ազատել ընտրությունը
+  useEffect(() => {
+    if (selectedGroupId && groups.length >= 0 && !groups.find((g) => g.id === selectedGroupId)) {
+      // Խմբերը կարող են դեռ բեռնվել. ազատում ենք միայն երբ ցանկը ստացվել է
+      const t = setTimeout(() => {
+        setSelectedGroupId((cur) => (cur && !groups.find((g) => g.id === cur) ? null : cur));
+      }, 800);
+      return () => clearTimeout(t);
+    }
+  }, [groups, selectedGroupId]);
+
+  // 3. Realtime հաղորդագրություններ (անձնական կամ խմբային)
+  useEffect(() => {
+    setMessages([]);
+    if (!activeChatId) return;
+
+    const messagesRef = collection(db, "chats", activeChatId, "messages");
     const q = query(messagesRef, orderBy("createdAt", "asc"));
 
     const unsubscribe = onSnapshot(q, (snapshot) => {
@@ -172,31 +272,162 @@ export default function ChatModal() {
     });
 
     return () => unsubscribe();
-  }, [selectedUser, currentUser]);
+  }, [activeChatId]);
 
-  // 3. Հաղորդագրություն ուղարկել / խմբագրել
+  // 4. Չկարդացած ծանուցումների լսում (աշխատում է նաև երբ չատը փակ է)
+  useEffect(() => {
+    if (!uid) {
+      setNotifications([]);
+      return;
+    }
+    let first = true;
+    const q = query(
+      collection(db, "notifications"),
+      where("toUid", "==", uid),
+      where("read", "==", false)
+    );
+    const unsub = onSnapshot(
+      q,
+      (snap) => {
+        const list = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+        setNotifications(list);
+
+        if (first) {
+          first = false;
+          return; // առաջին բեռնման ժամանակ toast չենք ցույց տալիս, միայն badge
+        }
+
+        snap.docChanges().forEach((ch) => {
+          if (ch.type !== "added") return;
+          const n = { id: ch.doc.id, ...ch.doc.data() };
+          // Եթե հենց այդ չատը բաց է՝ ծանուցում պետք չէ
+          if (isOpenRef.current && activeChatIdRef.current === n.chatId) return;
+
+          playBeep();
+          setToasts((prev) => [...prev.slice(-2), n]);
+          setTimeout(() => {
+            setToasts((prev) => prev.filter((t) => t.id !== n.id));
+          }, 7000);
+
+          // Բրաուզերի ծանուցում, եթե էջը հետին պլանում է
+          try {
+            if (
+              typeof Notification !== "undefined" &&
+              Notification.permission === "granted" &&
+              document.hidden
+            ) {
+              const title = n.chatType === "group" ? `${n.groupName} (խումբ)` : n.fromName;
+              const body =
+                n.chatType === "group" ? `${n.fromName}: ${n.preview}` : n.preview;
+              const bn = new Notification(title, { body });
+              bn.onclick = () => {
+                window.focus();
+                bn.close();
+              };
+            }
+          } catch (e) {
+            /* ignore */
+          }
+        });
+      },
+      (err) => console.error("Notifications սխալ:", err)
+    );
+    return () => unsub();
+  }, [uid]);
+
+  // Երբ չատը բաց է՝ ակտիվ չատի ծանուցումները նշել որպես կարդացված
+  useEffect(() => {
+    if (!isOpen || !activeChatId) return;
+    notifications
+      .filter((n) => n.chatId === activeChatId)
+      .forEach((n) => {
+        updateDoc(doc(db, "notifications", n.id), { read: true }).catch(() => {});
+      });
+  }, [notifications, isOpen, activeChatId]);
+
+  // Չատը բացել/փակել
+  const handleChatToggle = () => {
+    if (!isOpen) {
+      setIsOpen(true);
+      try {
+        if (typeof Notification !== "undefined" && Notification.permission === "default") {
+          Notification.requestPermission();
+        }
+      } catch (e) {
+        /* ignore */
+      }
+    } else {
+      setIsOpen(false);
+    }
+  };
+
+  // Toast-ի վրա սեղմելիս բացում ենք համապատասխան չատը
+  const openFromNotification = (n) => {
+    setToasts((prev) => prev.filter((t) => t.id !== n.id));
+    setIsCreatingGroup(false);
+    if (n.chatType === "group") {
+      setSelectedUser(null);
+      setSelectedGroupId(n.chatId);
+    } else {
+      const u = usersList.find((x) => x.id === n.fromId);
+      if (u) {
+        setSelectedGroupId(null);
+        setSelectedUser(u);
+      }
+    }
+    setIsOpen(true);
+  };
+
+  // Ծանուցում ենք ստացողներին (յուրաքանչյուրի համար առանձին փաստաթուղթ)
+  const notifyRecipients = async (target, preview) => {
+    if (!target || !uid) return;
+    try {
+      await Promise.all(
+        target.recipients.map((toUid) =>
+          addDoc(collection(db, "notifications"), {
+            toUid,
+            fromId: uid,
+            fromName: myName || "Անհայտ",
+            chatId: target.chatId,
+            chatType: target.groupName ? "group" : "user",
+            groupName: target.groupName || null,
+            preview,
+            read: false,
+            createdAt: serverTimestamp(),
+          })
+        )
+      );
+    } catch (err) {
+      console.error("Ծանուցման սխալ:", err);
+    }
+  };
+
+  // 5. Հաղորդագրություն ուղարկել / խմբագրել
   const handleSendMessage = async (e) => {
     e.preventDefault();
-    if (!inputText.trim() || !selectedUser || !currentUser) return;
+    const target = getTarget();
+    if (!inputText.trim() || !target || !currentUser) return;
 
-    const chatId = getChatId(currentUser.uid, selectedUser.id);
-    const messagesRef = collection(db, "chats", chatId, "messages");
+    const messagesRef = collection(db, "chats", target.chatId, "messages");
 
     try {
       if (editingMsgId) {
-        const msgDocRef = doc(db, "chats", chatId, "messages", editingMsgId);
+        const msgDocRef = doc(db, "chats", target.chatId, "messages", editingMsgId);
         await updateDoc(msgDocRef, {
           text: inputText,
           isEdited: true,
         });
         setEditingMsgId(null);
       } else {
+        const text = inputText;
         await addDoc(messagesRef, {
           senderId: currentUser.uid,
-          text: inputText,
+          senderName: myName || "Անհայտ",
+          text,
           type: "text",
           createdAt: serverTimestamp(),
         });
+        notifyRecipients(target, text.trim().slice(0, 80));
       }
       setInputText("");
     } catch (err) {
@@ -204,12 +435,12 @@ export default function ChatModal() {
     }
   };
 
-  // 4. Հաղորդագրություն ջնջել
+  // 6. Հաղորդագրություն ջնջել
   const handleDeleteMessage = async (msgId) => {
-    if (!selectedUser || !currentUser) return;
-    const chatId = getChatId(currentUser.uid, selectedUser.id);
+    const target = getTarget();
+    if (!target || !currentUser) return;
     try {
-      await deleteDoc(doc(db, "chats", chatId, "messages", msgId));
+      await deleteDoc(doc(db, "chats", target.chatId, "messages", msgId));
     } catch (err) {
       console.error("Ջնջման սխալ:", err);
     }
@@ -220,8 +451,10 @@ export default function ChatModal() {
     setInputText(msg.text);
   };
 
-  // 5. Ձայնային հաղորդագրություն
+  // 7. Ձայնային հաղորդագրություն
   const startRecording = async () => {
+    const target = getTarget(); // ֆիքսում ենք ձայնագրության սկզբում
+    if (!target) return;
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       mediaRecorderRef.current = new MediaRecorder(stream);
@@ -234,7 +467,6 @@ export default function ChatModal() {
       };
 
       mediaRecorderRef.current.onstop = async () => {
-        // Անջատում ենք միկրոֆոնը, որ չմնա միացած
         stream.getTracks().forEach((t) => t.stop());
 
         const audioBlob = new Blob(audioChunksRef.current, { type: "audio/webm" });
@@ -242,15 +474,20 @@ export default function ChatModal() {
         reader.readAsDataURL(audioBlob);
         reader.onloadend = async () => {
           const base64Audio = reader.result;
-          if (selectedUser && currentUser) {
-            const chatId = getChatId(currentUser.uid, selectedUser.id);
-            const messagesRef = collection(db, "chats", chatId, "messages");
-            await addDoc(messagesRef, {
-              senderId: currentUser.uid,
-              audioUrl: base64Audio,
-              type: "audio",
-              createdAt: serverTimestamp(),
-            });
+          if (currentUser) {
+            try {
+              const messagesRef = collection(db, "chats", target.chatId, "messages");
+              await addDoc(messagesRef, {
+                senderId: currentUser.uid,
+                senderName: myName || "Անհայտ",
+                audioUrl: base64Audio,
+                type: "audio",
+                createdAt: serverTimestamp(),
+              });
+              notifyRecipients(target, "🎤 Ձայնային հաղորդագրություն");
+            } catch (err) {
+              console.error("Ձայնի ուղարկման սխալ:", err);
+            }
           }
         };
       };
@@ -270,14 +507,69 @@ export default function ChatModal() {
   };
 
   // =====================================================
-  // 6. ԶԱՆԳԵՐ (WebRTC + Firestore signaling)
+  // 8. ԽՄԲԵՐԻ ԿԱՌԱՎԱՐՈՒՄ
+  // =====================================================
+  const openCreateGroup = () => {
+    setIsCreatingGroup(true);
+    setGroupName("");
+    setGroupMembersSel([]);
+    setGroupError("");
+  };
+
+  const toggleGroupMember = (id) => {
+    setGroupMembersSel((prev) =>
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
+    );
+  };
+
+  const handleCreateGroup = async () => {
+    if (!uid) return;
+    if (!groupName.trim()) {
+      setGroupError("Մուտքագրեք խմբի անունը։");
+      return;
+    }
+    if (groupMembersSel.length < 2) {
+      setGroupError("Խմբում պետք է լինի առնվազն 2 այլ մասնակից։");
+      return;
+    }
+    try {
+      const ref = await addDoc(collection(db, "groups"), {
+        name: groupName.trim(),
+        members: [uid, ...groupMembersSel],
+        createdBy: uid,
+        createdAt: serverTimestamp(),
+      });
+      setIsCreatingGroup(false);
+      setSelectedUser(null);
+      setSelectedGroupId(ref.id);
+    } catch (err) {
+      console.error("Խմբի ստեղծման սխալ:", err);
+      setGroupError("Չհաջողվեց ստեղծել խումբը։");
+    }
+  };
+
+  const handleLeaveGroup = async () => {
+    if (!selectedGroup || !uid) return;
+    if (!window.confirm(`Լքե՞լ «${selectedGroup.name}» խումբը։`)) return;
+    try {
+      await updateDoc(doc(db, "groups", selectedGroup.id), {
+        members: arrayRemove(uid),
+      });
+      setSelectedGroupId(null);
+    } catch (err) {
+      console.error("Խումբը լքելու սխալ:", err);
+    }
+  };
+
+  // =====================================================
+  // 9. ԶԱՆԳԵՐ (WebRTC + Firestore signaling)
   // =====================================================
   //
   // Firestore կառուցվածք.
   //   calls/{callId}                    -> { callerId, calleeId, type, status, offer, answer }
   //   calls/{callId}/offerCandidates    -> ICE candidates (զանգողից)
   //   calls/{callId}/answerCandidates   -> ICE candidates (պատասխանողից)
-  // callId = getChatId(uid1, uid2)
+  // callId = getChatId(uid1, uid2). Զանգերը աշխատում են միայն անձնական չատերում։
 
   const updateCall = (patch) => {
     callRef.current = { ...callRef.current, ...patch };
@@ -290,7 +582,6 @@ export default function ChatModal() {
     noticeTimeoutRef.current = setTimeout(() => setCallNotice(""), 3500);
   };
 
-  // Ամբողջ լոկալ մաքրումը (media, peer, listeners, timers)
   const cleanupCall = () => {
     clearTimeout(ringTimeoutRef.current);
     clearInterval(timerRef.current);
@@ -334,7 +625,6 @@ export default function ChatModal() {
     updateCall(IDLE_CALL);
   };
 
-  // Ավարտ առանց Firestore-ում գրելու (երբ մյուս կողմն է ավարտել)
   const endLocal = (notice) => {
     cleanupCall();
     if (notice) showNotice(notice);
@@ -414,7 +704,6 @@ export default function ChatModal() {
     return pc;
   };
 
-  // Լսում ենք մյուս կողմի ICE candidates-ը
   const listenCandidates = (callId, collectionName) => {
     const unsub = onSnapshot(collection(db, "calls", callId, collectionName), (snap) => {
       snap.docChanges().forEach((ch) => {
@@ -434,7 +723,6 @@ export default function ChatModal() {
     unsubsRef.current.push(unsub);
   };
 
-  // Լսում ենք call փաստաթղթի փոփոխությունները (answer, rejected, ended)
   const listenCallDoc = (callId) => {
     const unsub = onSnapshot(doc(db, "calls", callId), async (snap) => {
       const data = snap.data();
@@ -450,11 +738,7 @@ export default function ChatModal() {
         return;
       }
 
-      if (
-        callRef.current.isCaller &&
-        data.answer &&
-        !answerSetRef.current
-      ) {
+      if (callRef.current.isCaller && data.answer && !answerSetRef.current) {
         answerSetRef.current = true;
         try {
           await pc.setRemoteDescription(new RTCSessionDescription(data.answer));
@@ -471,7 +755,6 @@ export default function ChatModal() {
     unsubsRef.current.push(unsub);
   };
 
-  // --- Զանգ սկսել ---
   const startCall = async (type) => {
     if (!selectedUser || !currentUser) return;
     if (callRef.current.phase !== "idle") return;
@@ -488,7 +771,6 @@ export default function ChatModal() {
       const pc = createPeer(callId, "offerCandidates");
       stream.getTracks().forEach((t) => pc.addTrack(t, stream));
 
-      // Հին candidates-ի մաքրում
       for (const sub of ["offerCandidates", "answerCandidates"]) {
         const old = await getDocs(collection(db, "calls", callId, sub));
         await Promise.all(old.docs.map((d) => deleteDoc(d.ref)));
@@ -509,7 +791,6 @@ export default function ChatModal() {
       listenCallDoc(callId);
       listenCandidates(callId, "answerCandidates");
 
-      // Սա սկսում է ICE candidates հավաքելը
       await pc.setLocalDescription(offer);
 
       ringTimeoutRef.current = setTimeout(() => {
@@ -526,7 +807,6 @@ export default function ChatModal() {
     }
   };
 
-  // --- Մուտքային զանգին պատասխանել ---
   const acceptCall = async () => {
     const { callId, type, offer, phase } = callRef.current;
     if (phase !== "incoming" || !offer) return;
@@ -563,7 +843,6 @@ export default function ChatModal() {
     }
   };
 
-  // --- Մերժել մուտքային զանգը ---
   const rejectCall = () => {
     const { callId } = callRef.current;
     if (callId) {
@@ -572,7 +851,6 @@ export default function ChatModal() {
     cleanupCall();
   };
 
-  // --- Անջատել (երկու կողմերի համար) ---
   const hangUp = (notice) => {
     const { callId, phase } = callRef.current;
     if (callId && phase !== "idle") {
@@ -582,7 +860,6 @@ export default function ChatModal() {
     if (typeof notice === "string" && notice) showNotice(notice);
   };
 
-  // Mute / Camera toggle (իրականում անջատում են track-երը)
   const toggleMute = () => {
     const next = !isMuted;
     localStreamRef.current?.getAudioTracks().forEach((t) => {
@@ -601,11 +878,11 @@ export default function ChatModal() {
 
   // Մուտքային զանգերի լսում (աշխատում է նույնիսկ երբ չատը փակ է)
   useEffect(() => {
-    if (!currentUser) return;
+    if (!uid) return;
 
     const q = query(
       collection(db, "calls"),
-      where("calleeId", "==", currentUser.uid),
+      where("calleeId", "==", uid),
       where("status", "==", "ringing")
     );
 
@@ -614,13 +891,11 @@ export default function ChatModal() {
         const data = ch.doc.data();
 
         if (ch.type === "added") {
-          // Եթե արդեն զանգի մեջ ենք՝ մերժում ենք որպես զբաղված
           if (callRef.current.phase !== "idle") {
             updateDoc(ch.doc.ref, { status: "rejected" }).catch(() => {});
             continue;
           }
 
-          // Շատ հին "ringing" զանգերը անտեսում ենք
           const created = data.createdAt?.toMillis?.();
           if (created && Date.now() - created > RING_TIMEOUT_MS + 5000) continue;
 
@@ -632,7 +907,6 @@ export default function ChatModal() {
             /* ignore */
           }
 
-          // Մինչ տվյալները բեռնվում էին՝ կարող էր վիճակը փոխվել
           if (callRef.current.phase !== "idle") continue;
 
           updateCall({
@@ -646,7 +920,6 @@ export default function ChatModal() {
         }
 
         if (ch.type === "removed") {
-          // Զանգողը անջատեց մինչ մենք պատասխանել ենք
           if (
             callRef.current.phase === "incoming" &&
             callRef.current.callId === ch.doc.id
@@ -659,15 +932,13 @@ export default function ChatModal() {
 
     return () => unsub();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentUser?.uid]);
+  }, [uid]);
 
-  // Stream-երը կապում ենք video տարրերի հետ
   useEffect(() => {
     if (localVideoRef.current) localVideoRef.current.srcObject = localStream;
     if (remoteVideoRef.current) remoteVideoRef.current.srcObject = remoteStream;
   }, [localStream, remoteStream, call.phase, call.type]);
 
-  // Կոմպոնենտի unmount-ի ժամանակ զանգը ավարտել
   useEffect(() => {
     return () => {
       const { callId, phase } = callRef.current;
@@ -698,19 +969,25 @@ export default function ChatModal() {
     }
   };
 
+  const hasActiveChat = !!(selectedUser || selectedGroup);
+
   return (
     <>
       <div className="fixed bottom-5 right-5 z-50">
         {!isOpen ? (
           <button
             onClick={handleChatToggle}
-            disabled={loading}
-            className="bg-purple-700 hover:bg-purple-800 text-white p-4 rounded-full shadow-lg flex items-center justify-center transition duration-200 cursor-pointer disabled:opacity-50"
+            className="relative bg-purple-700 hover:bg-purple-800 text-white p-4 rounded-full shadow-lg flex items-center justify-center transition duration-200 cursor-pointer"
             title="Բացել չատը"
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
             </svg>
+            {totalUnread > 0 && (
+              <span className="absolute -top-1 -right-1 min-w-[20px] h-5 px-1 bg-red-500 text-white text-[11px] font-bold rounded-full flex items-center justify-center animate-pulse">
+                {totalUnread > 99 ? "99+" : totalUnread}
+              </span>
+            )}
           </button>
         ) : (
           <div className="bg-white w-[90vw] sm:w-[680px] h-[520px] rounded-2xl shadow-2xl border border-gray-200 flex flex-col overflow-hidden relative">
@@ -727,10 +1004,10 @@ export default function ChatModal() {
               </button>
             </div>
 
-            {!isRegistered ? (
+            {!currentUser || (profileLoaded && !isRegistered) ? (
               <div className="p-6 my-auto text-center flex flex-col items-center">
                 <div className="text-red-600 text-sm font-medium bg-red-50 p-4 rounded-xl border border-red-200 mb-4 max-w-sm">
-                  {chatMessage}
+                  {NOT_REGISTERED_TEXT}
                 </div>
                 <button
                   onClick={() => navigate("/login")}
@@ -739,22 +1016,85 @@ export default function ChatModal() {
                   Մուտք գործել / Գրանցվել
                 </button>
               </div>
+            ) : !profileLoaded ? (
+              <div className="my-auto text-center text-xs text-gray-400 py-10">Բեռնվում է...</div>
             ) : (
               <div className="flex flex-grow overflow-hidden relative">
-                {/* ՁԱԽ ՄԱՍ. Օգտատերերի ցանկ */}
+                {/* ՁԱԽ ՄԱՍ. Խմբեր + Օգտատերերի ցանկ */}
                 <div className="w-1/3 min-w-[180px] bg-gray-50 border-r border-gray-200 flex flex-col p-2 overflow-y-auto">
-                  <p className="text-[11px] font-bold text-gray-500 uppercase px-2 py-1 mb-1">
+                  {/* Խմբեր */}
+                  <div className="flex items-center justify-between px-2 py-1 mb-1">
+                    <p className="text-[11px] font-bold text-gray-500 uppercase">
+                      Խմբեր ({groups.length})
+                    </p>
+                    <button
+                      type="button"
+                      onClick={openCreateGroup}
+                      className="text-[11px] font-bold text-purple-700 hover:bg-purple-100 rounded px-1.5 py-0.5 cursor-pointer"
+                      title="Ստեղծել նոր խումբ"
+                    >
+                      ＋ Նոր
+                    </button>
+                  </div>
+
+                  {groups.length === 0 ? (
+                    <p className="text-[11px] text-gray-400 px-2 pb-2">Խմբեր դեռ չկան</p>
+                  ) : (
+                    groups.map((g) => {
+                      const isSelected = selectedGroupId === g.id && !isCreatingGroup;
+                      const unread = unreadByChat[g.id] || 0;
+                      return (
+                        <button
+                          key={g.id}
+                          onClick={() => {
+                            setIsCreatingGroup(false);
+                            setSelectedUser(null);
+                            setSelectedGroupId(g.id);
+                            setEditingMsgId(null);
+                            setInputText("");
+                          }}
+                          className={`w-full p-2.5 mb-1.5 rounded-xl text-left flex items-center gap-2.5 transition cursor-pointer ${
+                            isSelected
+                              ? "bg-purple-100 border border-purple-300 text-purple-900"
+                              : "bg-white hover:bg-gray-100 border border-gray-200 text-gray-800"
+                          }`}
+                        >
+                          <div className="w-8 h-8 rounded-full bg-indigo-600 text-white font-bold flex items-center justify-center text-sm flex-shrink-0">
+                            👥
+                          </div>
+                          <div className="overflow-hidden flex-grow">
+                            <p className="text-xs font-bold truncate">{g.name}</p>
+                            <p className="text-[10px] text-gray-500 truncate">
+                              {(g.members || []).length} մասնակից
+                            </p>
+                          </div>
+                          {unread > 0 && (
+                            <span className="min-w-[18px] h-[18px] px-1 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center flex-shrink-0">
+                              {unread}
+                            </span>
+                          )}
+                        </button>
+                      );
+                    })
+                  )}
+
+                  {/* Անձնական չատեր */}
+                  <p className="text-[11px] font-bold text-gray-500 uppercase px-2 py-1 mt-2 mb-1">
                     Չատեր ({usersList.length})
                   </p>
                   {usersList.length === 0 ? (
                     <p className="text-xs text-gray-400 text-center py-6">Չկան այլ մարդիկ</p>
                   ) : (
                     usersList.map((u) => {
-                      const isSelected = selectedUser?.id === u.id;
+                      const isSelected =
+                        selectedUser?.id === u.id && !selectedGroupId && !isCreatingGroup;
+                      const unread = unreadByChat[getChatId(uid, u.id)] || 0;
                       return (
                         <button
                           key={u.id}
                           onClick={() => {
+                            setIsCreatingGroup(false);
+                            setSelectedGroupId(null);
                             setSelectedUser(u);
                             setEditingMsgId(null);
                             setInputText("");
@@ -768,53 +1108,158 @@ export default function ChatModal() {
                           <div className="w-8 h-8 rounded-full bg-purple-700 text-white font-bold flex items-center justify-center text-xs flex-shrink-0">
                             {u.fullName ? u.fullName.charAt(0).toUpperCase() : "U"}
                           </div>
-                          <div className="overflow-hidden">
+                          <div className="overflow-hidden flex-grow">
                             <p className="text-xs font-bold truncate">{u.fullName}</p>
                             <p className="text-[10px] text-gray-500 truncate">{u.email}</p>
                           </div>
+                          {unread > 0 && (
+                            <span className="min-w-[18px] h-[18px] px-1 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center flex-shrink-0">
+                              {unread}
+                            </span>
+                          )}
                         </button>
                       );
                     })
                   )}
                 </div>
 
-                {/* ԱՋ ՄԱՍ. Չատի պատուհան */}
+                {/* ԱՋ ՄԱՍ */}
                 <div className="w-2/3 flex flex-col bg-white relative">
-                  {selectedUser ? (
-                    <>
-                      {/* Header՝ Զանգի և Վիդեոզանգի կոճակներով */}
+                  {isCreatingGroup ? (
+                    /* ---- Նոր խմբի ստեղծում ---- */
+                    <div className="flex flex-col h-full">
                       <div className="p-3 border-b border-gray-100 bg-gray-50/50 flex items-center justify-between">
-                        <div>
-                          <p className="text-xs font-bold text-gray-800">{selectedUser.fullName}</p>
-                          <p className="text-[10px] text-gray-400">{selectedUser.email}</p>
+                        <p className="text-xs font-bold text-gray-800">Նոր խումբ</p>
+                        <button
+                          type="button"
+                          onClick={() => setIsCreatingGroup(false)}
+                          className="text-xs text-gray-500 hover:text-gray-800 cursor-pointer"
+                        >
+                          ✕ Չեղարկել
+                        </button>
+                      </div>
+
+                      <div className="p-3 flex flex-col gap-3 flex-grow overflow-hidden">
+                        <input
+                          type="text"
+                          value={groupName}
+                          onChange={(e) => setGroupName(e.target.value)}
+                          maxLength={40}
+                          placeholder="Խմբի անունը..."
+                          className="px-3 py-2 text-xs border border-gray-300 rounded-xl focus:outline-none focus:border-purple-600"
+                        />
+
+                        <p className="text-[11px] font-bold text-gray-500 uppercase">
+                          Ընտրեք մասնակիցներին ({groupMembersSel.length})
+                        </p>
+
+                        <div className="flex-grow overflow-y-auto space-y-1.5 pr-1">
+                          {usersList.length === 0 ? (
+                            <p className="text-xs text-gray-400">Չկան այլ մարդիկ</p>
+                          ) : (
+                            usersList.map((u) => {
+                              const checked = groupMembersSel.includes(u.id);
+                              return (
+                                <label
+                                  key={u.id}
+                                  className={`flex items-center gap-2.5 p-2 rounded-xl border cursor-pointer transition ${
+                                    checked
+                                      ? "bg-purple-50 border-purple-300"
+                                      : "bg-white border-gray-200 hover:bg-gray-50"
+                                  }`}
+                                >
+                                  <input
+                                    type="checkbox"
+                                    checked={checked}
+                                    onChange={() => toggleGroupMember(u.id)}
+                                    className="accent-purple-700"
+                                  />
+                                  <div className="w-7 h-7 rounded-full bg-purple-700 text-white font-bold flex items-center justify-center text-[11px] flex-shrink-0">
+                                    {u.fullName ? u.fullName.charAt(0).toUpperCase() : "U"}
+                                  </div>
+                                  <div className="overflow-hidden">
+                                    <p className="text-xs font-bold truncate">{u.fullName}</p>
+                                    <p className="text-[10px] text-gray-500 truncate">{u.email}</p>
+                                  </div>
+                                </label>
+                              );
+                            })
+                          )}
                         </div>
 
-                        {/* Զանգի և Վիդեոզանգի կոճակները */}
-                        <div className="flex items-center gap-2">
-                          <button
-                            type="button"
-                            onClick={() => startCall("audio")}
-                            disabled={inCall}
-                            className="p-2 text-purple-700 hover:bg-purple-50 rounded-lg transition cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
-                            title="Ձայնային զանգ"
-                          >
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                            </svg>
-                          </button>
+                        {groupError && (
+                          <p className="text-[11px] text-red-600 font-medium">{groupError}</p>
+                        )}
 
-                          <button
-                            type="button"
-                            onClick={() => startCall("video")}
-                            disabled={inCall}
-                            className="p-2 text-purple-700 hover:bg-purple-50 rounded-lg transition cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
-                            title="Տեսազանգ"
-                          >
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                            </svg>
-                          </button>
-                        </div>
+                        <button
+                          type="button"
+                          onClick={handleCreateGroup}
+                          className="bg-purple-700 hover:bg-purple-800 text-white py-2 rounded-xl text-xs font-semibold transition cursor-pointer"
+                        >
+                          Ստեղծել խումբը
+                        </button>
+                      </div>
+                    </div>
+                  ) : hasActiveChat ? (
+                    <>
+                      {/* Header */}
+                      <div className="p-3 border-b border-gray-100 bg-gray-50/50 flex items-center justify-between gap-2">
+                        {selectedGroup ? (
+                          <>
+                            <div className="overflow-hidden">
+                              <p className="text-xs font-bold text-gray-800 truncate">
+                                👥 {selectedGroup.name}
+                              </p>
+                              <p
+                                className="text-[10px] text-gray-400 truncate"
+                                title={(selectedGroup.members || []).map(memberName).join(", ")}
+                              >
+                                {(selectedGroup.members || []).map(memberName).join(", ")}
+                              </p>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={handleLeaveGroup}
+                              className="text-[11px] text-red-600 hover:bg-red-50 rounded-lg px-2 py-1 transition cursor-pointer flex-shrink-0"
+                              title="Լքել խումբը"
+                            >
+                              Լքել
+                            </button>
+                          </>
+                        ) : (
+                          <>
+                            <div>
+                              <p className="text-xs font-bold text-gray-800">{selectedUser.fullName}</p>
+                              <p className="text-[10px] text-gray-400">{selectedUser.email}</p>
+                            </div>
+
+                            <div className="flex items-center gap-2">
+                              <button
+                                type="button"
+                                onClick={() => startCall("audio")}
+                                disabled={inCall}
+                                className="p-2 text-purple-700 hover:bg-purple-50 rounded-lg transition cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+                                title="Ձայնային զանգ"
+                              >
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                                </svg>
+                              </button>
+
+                              <button
+                                type="button"
+                                onClick={() => startCall("video")}
+                                disabled={inCall}
+                                className="p-2 text-purple-700 hover:bg-purple-50 rounded-lg transition cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+                                title="Տեսազանգ"
+                              >
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                                </svg>
+                              </button>
+                            </div>
+                          </>
+                        )}
                       </div>
 
                       {/* Հաղորդագրությունների ցանկ */}
@@ -833,6 +1278,12 @@ export default function ChatModal() {
                                   isMe ? "items-end" : "items-start"
                                 }`}
                               >
+                                {/* Խմբում ուրիշների անունը */}
+                                {selectedGroup && !isMe && (
+                                  <span className="text-[10px] font-semibold text-purple-700 mb-0.5 ml-1">
+                                    {msg.senderName || memberName(msg.senderId)}
+                                  </span>
+                                )}
                                 <div
                                   className={`max-w-[85%] p-2.5 rounded-xl text-xs relative ${
                                     isMe
@@ -931,10 +1382,30 @@ export default function ChatModal() {
         )}
       </div>
 
-      {/* ԶԱՆԳԻ ՊԱՏՈՒՀԱՆ (չատի մոդալից դուրս, որպեսզի մուտքային զանգը երևա նույնիսկ չատը փակ ժամանակ) */}
+      {/* ՆՈՐ ՀԱՂՈՐԴԱԳՐՈՒԹՅԱՆ ԾԱՆՈՒՑՈՒՄՆԵՐ (toast) */}
+      <div className="fixed top-5 right-5 z-[65] flex flex-col gap-2 w-[min(320px,90vw)]">
+        {toasts.map((n) => (
+          <button
+            key={n.id}
+            type="button"
+            onClick={() => openFromNotification(n)}
+            className="text-left bg-white border border-purple-200 border-l-4 border-l-purple-700 shadow-xl rounded-xl px-4 py-3 cursor-pointer hover:bg-purple-50 transition"
+          >
+            <p className="text-[11px] font-bold text-purple-700">
+              💬 Ձեզ նոր հաղորդագրություն է գրել
+            </p>
+            <p className="text-xs font-semibold text-gray-800 mt-0.5 truncate">
+              {n.fromName}
+              {n.chatType === "group" ? ` · «${n.groupName}»` : ""}
+            </p>
+            <p className="text-xs text-gray-500 truncate">{n.preview}</p>
+          </button>
+        ))}
+      </div>
+
+      {/* ԶԱՆԳԻ ՊԱՏՈՒՀԱՆ */}
       {inCall && call.peer && (
         <div className="fixed inset-0 z-[60] bg-gray-900/95 flex flex-col items-center justify-between p-6 text-white">
-          {/* Հեռավոր տեսանյութ (միշտ DOM-ում է, որ ձայնը նվագարկվի) */}
           <video
             ref={remoteVideoRef}
             autoPlay
@@ -946,7 +1417,6 @@ export default function ChatModal() {
             }
           />
 
-          {/* Վերևի տեղեկություն */}
           <div className="relative z-10 text-center mt-8">
             <div className="w-24 h-24 rounded-full bg-purple-600 mx-auto flex items-center justify-center text-3xl font-bold border-4 border-purple-400/30 mb-3 shadow-xl">
               {call.peer.fullName?.charAt(0).toUpperCase() || "U"}
@@ -961,7 +1431,6 @@ export default function ChatModal() {
             </p>
           </div>
 
-          {/* Սեփական տեսախցիկ (փոքր պատուհան) */}
           {isVideoCall && call.phase !== "incoming" && (
             <div className="absolute top-4 right-4 z-10 w-28 h-36 sm:w-36 sm:h-48 bg-gray-800 rounded-xl border border-gray-600 overflow-hidden shadow-lg">
               <video
@@ -979,7 +1448,6 @@ export default function ChatModal() {
             </div>
           )}
 
-          {/* Կառավարման կոճակներ */}
           <div className="relative z-10 flex items-center gap-4 mb-6">
             {call.phase === "incoming" ? (
               <>
@@ -1037,7 +1505,7 @@ export default function ChatModal() {
         </div>
       )}
 
-      {/* Ծանուցում (մերժվեց, բաց թողնված, սխալ և այլն) */}
+      {/* Զանգի ծանուցում (մերժվեց, բաց թողնված, սխալ և այլն) */}
       {callNotice && (
         <div className="fixed bottom-24 right-5 z-[70] bg-gray-900 text-white text-xs px-4 py-2.5 rounded-xl shadow-xl max-w-xs">
           {callNotice}
