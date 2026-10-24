@@ -84,6 +84,9 @@ export default function ChatModal() {
   const [groupMembersSel, setGroupMembersSel] = useState([]);
   const [groupError, setGroupError] = useState("");
 
+  // Փոքր էկրանների համար՝ ցույց տալ կա՛մ ցանկը, կա՛մ չատը
+  const [mobileShowChat, setMobileShowChat] = useState(false);
+
   // ---------- ԾԱՆՈՒՑՈՒՄՆԵՐ ----------
   const [notifications, setNotifications] = useState([]); // չկարդացածներ
   const [toasts, setToasts] = useState([]);
@@ -375,6 +378,7 @@ export default function ChatModal() {
         setSelectedUser(u);
       }
     }
+    setMobileShowChat(true);
     setIsOpen(true);
   };
 
@@ -542,6 +546,7 @@ export default function ChatModal() {
       setIsCreatingGroup(false);
       setSelectedUser(null);
       setSelectedGroupId(ref.id);
+      setMobileShowChat(true);
     } catch (err) {
       console.error("Խմբի ստեղծման սխալ:", err);
       setGroupError("Չհաջողվեց ստեղծել խումբը։");
@@ -556,6 +561,7 @@ export default function ChatModal() {
         members: arrayRemove(uid),
       });
       setSelectedGroupId(null);
+      setMobileShowChat(false);
     } catch (err) {
       console.error("Խումբը լքելու սխալ:", err);
     }
@@ -990,7 +996,7 @@ export default function ChatModal() {
             )}
           </button>
         ) : (
-          <div className="bg-white w-[90vw] sm:w-[680px] h-[520px] rounded-2xl shadow-2xl border border-gray-200 flex flex-col overflow-hidden relative">
+          <div className="bg-white w-[92vw] sm:w-[680px] h-[85vh] max-h-[520px] rounded-2xl shadow-2xl border border-gray-200 flex flex-col overflow-hidden relative">
             {/* Վերնագիր */}
             <div className="bg-purple-700 text-white px-4 py-3 flex items-center justify-between border-b border-purple-800">
               <span className="font-bold text-sm">
@@ -1021,7 +1027,11 @@ export default function ChatModal() {
             ) : (
               <div className="flex flex-grow overflow-hidden relative">
                 {/* ՁԱԽ ՄԱՍ. Խմբեր + Օգտատերերի ցանկ */}
-                <div className="w-1/3 min-w-[180px] bg-gray-50 border-r border-gray-200 flex flex-col p-2 overflow-y-auto">
+                <div
+                  className={`${
+                    mobileShowChat || isCreatingGroup ? "hidden" : "flex"
+                  } sm:flex w-full sm:w-1/3 sm:min-w-[180px] bg-gray-50 border-r border-gray-200 flex-col p-2 overflow-y-auto`}
+                >
                   {/* Խմբեր */}
                   <div className="flex items-center justify-between px-2 py-1 mb-1">
                     <p className="text-[11px] font-bold text-gray-500 uppercase">
@@ -1052,6 +1062,7 @@ export default function ChatModal() {
                             setSelectedGroupId(g.id);
                             setEditingMsgId(null);
                             setInputText("");
+                            setMobileShowChat(true);
                           }}
                           className={`w-full p-2.5 mb-1.5 rounded-xl text-left flex items-center gap-2.5 transition cursor-pointer ${
                             isSelected
@@ -1098,6 +1109,7 @@ export default function ChatModal() {
                             setSelectedUser(u);
                             setEditingMsgId(null);
                             setInputText("");
+                            setMobileShowChat(true);
                           }}
                           className={`w-full p-2.5 mb-1.5 rounded-xl text-left flex items-center gap-2.5 transition cursor-pointer ${
                             isSelected
@@ -1124,7 +1136,11 @@ export default function ChatModal() {
                 </div>
 
                 {/* ԱՋ ՄԱՍ */}
-                <div className="w-2/3 flex flex-col bg-white relative">
+                <div
+                  className={`${
+                    mobileShowChat || isCreatingGroup ? "flex" : "hidden"
+                  } sm:flex w-full sm:w-2/3 flex-col bg-white relative`}
+                >
                   {isCreatingGroup ? (
                     /* ---- Նոր խմբի ստեղծում ---- */
                     <div className="flex flex-col h-full">
@@ -1206,7 +1222,15 @@ export default function ChatModal() {
                       <div className="p-3 border-b border-gray-100 bg-gray-50/50 flex items-center justify-between gap-2">
                         {selectedGroup ? (
                           <>
-                            <div className="overflow-hidden">
+                            <button
+                              type="button"
+                              onClick={() => setMobileShowChat(false)}
+                              className="sm:hidden text-purple-700 font-bold text-base mr-1 cursor-pointer flex-shrink-0"
+                              title="Հետ"
+                            >
+                              ←
+                            </button>
+                            <div className="overflow-hidden flex-grow">
                               <p className="text-xs font-bold text-gray-800 truncate">
                                 👥 {selectedGroup.name}
                               </p>
@@ -1228,7 +1252,15 @@ export default function ChatModal() {
                           </>
                         ) : (
                           <>
-                            <div>
+                            <button
+                              type="button"
+                              onClick={() => setMobileShowChat(false)}
+                              className="sm:hidden text-purple-700 font-bold text-base mr-1 cursor-pointer flex-shrink-0"
+                              title="Հետ"
+                            >
+                              ←
+                            </button>
+                            <div className="flex-grow">
                               <p className="text-xs font-bold text-gray-800">{selectedUser.fullName}</p>
                               <p className="text-[10px] text-gray-400">{selectedUser.email}</p>
                             </div>
