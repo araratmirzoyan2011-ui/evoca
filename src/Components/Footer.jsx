@@ -1,9 +1,44 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { auth, db } from '../firebase';
+import { doc, getDoc } from 'firebase/firestore';
 
 export default function Footer() {
+  const [isChatOpen, setIsChatOpen] = useState(false);
+  const [chatMessage, setChatMessage] = useState("");
+  const navigate = useNavigate();
+
+  // Չատի կոճակի սեղմման ստուգում
+  const handleChatClick = async () => {
+    const currentUser = auth.currentUser;
+
+    if (!currentUser) {
+      setChatMessage("Դուք չեք կարող բացել չատը, որովհետև գրանցված չեք։");
+      setIsChatOpen(true);
+      return;
+    }
+
+    try {
+      const docRef = doc(db, "Users", currentUser.uid);
+      const docSnap = await getDoc(docRef);
+
+      if (docSnap.exists() && docSnap.data().fullName) {
+        // Եթե գրանցված է և լրացրել է տվյալները
+        setChatMessage("");
+        setIsChatOpen(true);
+      } else {
+        setChatMessage("Դուք չեք կարող բացել չատը, որովհետև գրանցված չեք։");
+        setIsChatOpen(true);
+      }
+    } catch (err) {
+      console.error("Ստուգման սխալ:", err);
+      setChatMessage("Տեղի ունեցավ սխալ ստուգման ընթացքում։");
+      setIsChatOpen(true);
+    }
+  };
+
   return (
-    <footer className="bg-white text-gray-800 border-t border-gray-200 py-10 px-5 font-sans">
+    <footer className="bg-white text-gray-800 border-t border-gray-200 py-10 px-5 font-sans relative">
       <div className="max-w-7xl mx-auto flex flex-wrap justify-between gap-8 max-[400px]:flex-col max-[400px]:items-center max-[400px]:text-center">
         
         <div className="flex-1 min-w-[200px] max-[400px]:w-full max-[400px]:flex max-[400px]:flex-col max-[400px]:items-center">
@@ -110,6 +145,70 @@ export default function Footer() {
           </ul>
         </div>
 
+      </div>
+
+      {/* Աջ անկյունում ֆիքսված չատի կոճակ և պատուհան */}
+      <div className="fixed bottom-5 right-5 z-50">
+        {!isChatOpen ? (
+          <button
+            onClick={handleChatClick}
+            className="bg-purple-700 hover:bg-purple-800 text-white p-4 rounded-full shadow-lg flex items-center justify-center transition duration-200 cursor-pointer"
+            title="Բացել չատը"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+            </svg>
+          </button>
+        ) : (
+          <div className="bg-white w-80 rounded-2xl shadow-2xl border border-gray-200 flex flex-col overflow-hidden">
+            {/* Չատի վերնագիր */}
+            <div className="bg-purple-700 text-white px-4 py-3 flex items-center justify-between">
+              <span className="font-bold text-sm">Chats</span>
+              <button
+                onClick={() => setIsChatOpen(false)}
+                className="text-white hover:text-gray-200 font-bold text-lg cursor-pointer"
+              >
+                &times;
+              </button>
+            </div>
+
+            {/* Չատի մարմին */}
+            <div className="p-4 h-64 flex flex-col justify-center items-center text-center bg-gray-50">
+              {chatMessage ? (
+                <div className="text-red-600 text-sm font-medium bg-red-50 p-3 rounded-lg border border-red-200">
+                  {chatMessage}
+                </div>
+              ) : (
+                <div className="text-gray-600 text-sm">
+                  Բարև ձեզ։ Ինչպե՞ս կարող ենք օգնել ձեզ այսօր։
+                </div>
+              )}
+            </div>
+
+            {/* Եթե գրանցված է՝ ուղարկելու դաշտ, հակառակ դեպքում՝ գրանցման կոճակ */}
+            {!chatMessage ? (
+              <div className="p-3 bg-white border-t border-gray-100 flex gap-2">
+                <input
+                  type="text"
+                  placeholder="Գրեք հաղորդագրություն..."
+                  className="w-full px-3 py-2 text-xs border border-gray-300 rounded-lg focus:outline-none focus:border-purple-600"
+                />
+                <button className="bg-purple-700 hover:bg-purple-800 text-white px-4 py-2 text-xs rounded-lg font-medium cursor-pointer">
+                  Ուղարկել
+                </button>
+              </div>
+            ) : (
+              <div className="p-3 bg-white border-t border-gray-100 text-center">
+                <button
+                  onClick={() => navigate("/login")}
+                  className="w-full bg-purple-700 hover:bg-purple-800 text-white py-2 rounded-lg text-xs font-semibold transition cursor-pointer"
+                >
+                  Մուտք գործել / Գրանցվել
+                </button>
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </footer>
   );
