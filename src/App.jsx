@@ -93,15 +93,20 @@ import Login from "./Pages/Login";
 import AboutYou from "./Pages/About-you";
 import UserPage from "./Pages/User";
 import Cart from "./Pages/cart";
+import OnlineMap from "./Pages/online-map";
+import LocationSharer from "./Components/LocationSharer";
 function App() {
   return (
     <BrowserRouter>
+
+<LocationSharer />
       <div className="content">
         <Routes>=
           <Route path="/" element={<Main />} />
           <Route path="/business-loans" element={<Busines />} />
           <Route path="/guarantee" element={<Guarantee />} />
           <Route path="/business-investment-services" element={<Garant />} />
+          <Route path="/online-map" element={<OnlineMap />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/business-money-transfers" element={<BusinesMoneyTransfers />} />
           <Route path="/announcements" element={<Announcements />} />

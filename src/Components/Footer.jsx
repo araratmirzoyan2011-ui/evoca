@@ -112,8 +112,16 @@ export default function Footer() {
         </div>
 
       </div>
+      <Link
+        to="/online-map"
+        title="Live քարտեզ"
+        className="fixed bottom-6 right-24 z-50 w-14 h-14 rounded-full bg-purple-700 text-white flex items-center justify-center shadow-lg hover:bg-purple-800 transition"
+      >
+        <svg className="w-6 h-6 fill-current" viewBox="0 0 24 24">
+          <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z" />
+        </svg>
+      </Link>
 
-      {/* Չատի կոմպոնենտը ֆիքսված աջ անկյունում */}
       <ChatModal />
     </footer>
   );
