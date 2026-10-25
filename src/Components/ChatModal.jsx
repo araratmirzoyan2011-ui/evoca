@@ -1537,7 +1537,6 @@ export default function ChatModal() {
         </div>
       )}
 
-      {/* Զանգի ծանուցում (մերժվեց, բաց թողնված, սխալ և այլն) */}
       {callNotice && (
         <div className="fixed bottom-24 right-5 z-[70] bg-gray-900 text-white text-xs px-4 py-2.5 rounded-xl shadow-xl max-w-xs">
           {callNotice}
