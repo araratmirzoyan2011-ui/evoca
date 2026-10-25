@@ -1,22 +1,41 @@
 import React from "react";
+import useCartStore from "./useCarStore";
 
 const CardItem = ({ card }) => {
   const { title, description, image, stats = [], link = "#" } = card;
 
+  const toggleItem = useCartStore((s) => s.toggleItem);
+  const liked = useCartStore((s) => s.items.some((i) => i.title === title));
+
   return (
     <div className="w-full border-b border-gray-200 py-10">
       <div className="max-w-[1310px] mx-auto px-4 flex flex-col md:flex-row gap-10 md:gap-16 items-start">
-        {/* Քարտի նկար + ստվեր */}
-        <div className="w-full md:w-[390px] shrink-0">
-          <img
-            src={image}
-            alt={title}
-            className="w-full rounded-xl object-cover"
-          />
+        
+        <div className="w-full md:w-[390px] shrink-0 relative">
+          <img src={image} alt={title} className="w-full rounded-xl object-cover" />
+
+          <button
+            onClick={() => toggleItem(card)}
+            aria-label="Հավանել"
+            className="absolute top-3 right-3 flex h-10 w-10 items-center justify-center rounded-full bg-white/90 shadow transition hover:scale-110"
+          >
+            <svg
+              width="22"
+              height="22"
+              viewBox="0 0 24 24"
+              fill={liked ? "#6a00d8" : "none"}
+              stroke="#6a00d8"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z" />
+            </svg>
+          </button>
+
           <div className="mx-auto mt-8 h-4 w-[90%] rounded-full bg-black/20 blur-xl" />
         </div>
 
-        {/* Տեքստային մաս */}
         <div className="flex-1">
           <h2 className="text-[28px] font-bold text-black">{title}</h2>
 
@@ -24,7 +43,6 @@ const CardItem = ({ card }) => {
             {description}
           </p>
 
-          {/* Ցուցանիշներ */}
           <div className="mt-6 grid grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-6">
             {stats.map((item, index) => (
               <div key={index}>
@@ -41,7 +59,6 @@ const CardItem = ({ card }) => {
             ))}
           </div>
 
-          {/* Կոճակ */}
           <a
             href={link}
             className="mt-6 inline-flex items-center gap-3 rounded-full bg-[#ece4f6] px-7 py-3 text-[15px] font-semibold text-[#6a00d8] transition hover:bg-[#e0d3f1]"
