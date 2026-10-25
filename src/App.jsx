@@ -92,6 +92,7 @@ import Announcements from "./Pages/announcements";
 import Login from "./Pages/Login";
 import AboutYou from "./Pages/About-you";
 import UserPage from "./Pages/User";
+import Cart from "./Pages/cart";
 function App() {
   return (
     <BrowserRouter>
@@ -101,6 +102,7 @@ function App() {
           <Route path="/business-loans" element={<Busines />} />
           <Route path="/guarantee" element={<Guarantee />} />
           <Route path="/business-investment-services" element={<Garant />} />
+          <Route path="/cart" element={<Cart />} />
           <Route path="/business-money-transfers" element={<BusinesMoneyTransfers />} />
           <Route path="/announcements" element={<Announcements />} />
           <Route path="/evoca-mobile-pos-mpos" element={<MobilePos />} />
