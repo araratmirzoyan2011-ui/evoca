@@ -33,7 +33,7 @@ export default function BusinessHeader() {
         <header className="w-full bg-white border-b border-gray-200 font-sans relative">
             <div className="hidden md:flex max-w-7xl mx-auto px-4 h-12 items-center justify-between text-sm border-b border-gray-100">
                 <nav className="flex items-center space-x-4 lg:space-x-6 overflow-x-auto">
-                    <Link to="/" className="text-gray-700 hover:text-purple-700 whitespace-nowrap">Անհատ</Link>
+                    <Link to="/loans" className="text-gray-700 hover:text-purple-700 whitespace-nowrap">Անհատ</Link>
                     <Link to="/business-loans" className="text-gray-700 hover:text-purple-700 whitespace-nowrap">Բիզնես</Link>
                     <Link to="/instant-payments" className="text-gray-700 hover:text-purple-700 whitespace-nowrap">Ակնթարթային վճարումներ</Link>
                     <Link to="/about" className="text-gray-700 hover:text-purple-700 whitespace-nowrap">Մեր մասին</Link>
@@ -123,10 +123,10 @@ export default function BusinessHeader() {
             <div className="sticky top-0 z-50 bg-white shadow-md w-full">
                 <div className="max-w-7xl mx-auto px-3 sm:px-4 h-16 sm:h-20 flex items-center justify-between">
                     {/* Լոգո */}
-                    <div className="flex items-center space-x-1 cursor-pointer flex-shrink-0">
+                    <Link to="/" className="flex items-center space-x-1 cursor-pointer flex-shrink-0">
                         <span className="text-xl sm:text-2xl lg:text-3xl font-black tracking-wider text-gray-700">evoca</span>
                         <span className="w-2 h-2 sm:w-2.5 sm:h-2.5 bg-purple-600 rounded-full inline-block mt-1 sm:mt-2"></span>
-                    </div>
+                    </Link>
 
                     <nav className="hidden lg:flex items-center space-x-6 text-gray-800 font-medium">
                         <Link to="/business-loans" className="hover:text-purple-700 whitespace-nowrap">Վարկեր</Link>

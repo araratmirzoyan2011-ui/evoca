@@ -32,7 +32,7 @@ export function Header() {
         <header className="w-full bg-white border-b border-gray-200 font-sans relative">
             <div className="hidden md:flex max-w-7xl mx-auto px-4 h-12 items-center justify-between text-sm border-b border-gray-100">
                 <nav className="flex items-center space-x-4 lg:space-x-6 overflow-x-auto">
-                    <Link to="/" className="text-gray-700 hover:text-purple-700 whitespace-nowrap">Անհատ</Link>
+                    <Link to="/loans" className="text-gray-700 hover:text-purple-700 whitespace-nowrap">Անհատ</Link>
                     <Link to="/business-loans" className="text-gray-700 hover:text-purple-700 whitespace-nowrap">Բիզնես</Link>
                     <Link to="/instant-payments" className="text-gray-700 hover:text-purple-700 whitespace-nowrap">Ակնթարթային վճարումներ</Link>
                     <Link to="/about" className="text-gray-700 hover:text-purple-700 whitespace-nowrap">Մեր մասին</Link>
