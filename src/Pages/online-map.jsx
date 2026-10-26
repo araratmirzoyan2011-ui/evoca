@@ -92,12 +92,12 @@ const OnlineMap = () => {
         <h1 className="text-2xl font-bold mb-4">Live քարտեզ</h1>
 
         <div className="flex flex-col md:flex-row gap-4">
-          <div className="flex-1 h-[70vh] rounded-xl overflow-hidden border">
-            <MapContainer
-              center={[40.1792, 44.4991]}
-              zoom={12}
-              className="w-full h-full z-0"
-            >
+  <div className="w-full md:flex-1 min-w-0 h-[55vh] md:h-[70vh] rounded-xl overflow-hidden border">
+    <MapContainer
+      center={[40.1792, 44.4991]}
+      zoom={12}
+      className="w-full h-full z-0"
+    >
               <TileLayer
                 attribution="&copy; OpenStreetMap contributors"
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
