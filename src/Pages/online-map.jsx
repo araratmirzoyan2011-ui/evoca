@@ -119,8 +119,8 @@ const OnlineMap = () => {
             </MapContainer>
           </div>
 
-          <aside className="md:w-64 border rounded-xl p-3 h-[70vh] overflow-y-auto">
-            <h2 className="font-semibold mb-2">
+          <aside className="w-full md:w-64 border rounded-xl p-3 max-h-[30vh] md:max-h-none md:h-[70vh] overflow-y-auto">
+ <h2 className="font-semibold mb-2">
               Գրանցվածներ՝ {people.length} (առցանց՝ {onlineCount})
             </h2>
             <ul className="space-y-2 text-sm">
