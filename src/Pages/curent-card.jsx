@@ -5,6 +5,7 @@ import { doc, getDoc } from "firebase/firestore";
 import { db } from "../firebase";
 import { Header } from "../Components/Header";
 import Footer from "../Components/Footer";
+import CardHero from "../Components/CardHero";
 
 const CurrentCard = () => {
   const { id } = useParams();
@@ -38,26 +39,8 @@ const CurrentCard = () => {
   return (
     <div className="min-h-screen flex flex-col bg-white">
       <Header />
-      <main className="flex-1 max-w-[1310px] w-full mx-auto px-4 py-8">
-        <h1 className="text-[36px] font-bold text-black mb-6">{title}</h1>
-        <div className="flex flex-col md:flex-row gap-10">
-          <img src={image} alt={title} className="w-full md:w-[390px] rounded-xl object-cover" />
-
-          <div className="flex-1">
-            <p className="text-[15px] leading-6 text-gray-800">{description}</p>
-
-            <div className="mt-6 grid grid-cols-2 lg:grid-cols-4 gap-6">
-              {stats.map((item, index) => (
-                <div key={index}>
-                  <p className="text-[13px] text-gray-800">{item.label}</p>
-                  <p className="text-[32px] font-semibold text-[#6a00d8]">{item.value}</p>
-                  <p className="mt-2 text-[13px] text-gray-800">{item.text}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </main>
+      <CardHero title={title} description={description} image={image} />
+      
       <Footer />
     </div>
   );
