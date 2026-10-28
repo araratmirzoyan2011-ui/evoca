@@ -6,6 +6,10 @@ import { doc, getDoc } from 'firebase/firestore';
 export default function BusinessHeader() {
     const [isOnlineAppsOpen, setIsOnlineAppsOpen] = useState(false);
     const [isContactOpen, setIsContactOpen] = useState(false);
+    const [isLangOpen, setIsLangOpen] = useState(false);
+    const [lang, setLang] = useState('hy');
+    const [isSearchOpen, setIsSearchOpen] = useState(false);
+    const [searchQuery, setSearchQuery] = useState('');
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const navigate = useNavigate();
     const dropdownsRef = useRef(null);
@@ -15,10 +19,19 @@ export default function BusinessHeader() {
             if (dropdownsRef.current && !dropdownsRef.current.contains(e.target)) {
                 setIsOnlineAppsOpen(false);
                 setIsContactOpen(false);
+                setIsLangOpen(false);
             }
         };
         document.addEventListener('mousedown', handleClickOutside);
         return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
+
+    useEffect(() => {
+        const handleEsc = (e) => {
+            if (e.key === 'Escape') setIsSearchOpen(false);
+        };
+        document.addEventListener('keydown', handleEsc);
+        return () => document.removeEventListener('keydown', handleEsc);
     }, []);
 
     const handleEvocaOnlineClick = async () => {
@@ -39,6 +52,14 @@ export default function BusinessHeader() {
         }
 
         navigate("/login");
+    };
+
+    const handleSearch = () => {
+        if (searchQuery.trim()) {
+            navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+            setIsSearchOpen(false);
+            setSearchQuery('');
+        }
     };
 
     return (
@@ -62,6 +83,7 @@ export default function BusinessHeader() {
                             onClick={() => {
                                 setIsOnlineAppsOpen(!isOnlineAppsOpen);
                                 setIsContactOpen(false);
+                                setIsLangOpen(false);
                             }}
                             className="flex items-center space-x-1 text-purple-700 font-medium cursor-pointer select-none py-2 whitespace-nowrap"
                         >
@@ -87,6 +109,7 @@ export default function BusinessHeader() {
                             onClick={() => {
                                 setIsContactOpen(!isContactOpen);
                                 setIsOnlineAppsOpen(false);
+                                setIsLangOpen(false);
                             }}
                             className="flex items-center space-x-1 text-purple-700 font-medium cursor-pointer select-none py-2 whitespace-nowrap"
                         >
@@ -110,23 +133,69 @@ export default function BusinessHeader() {
 
                     {/* Icons */}
                     <div className="flex items-center space-x-3 lg:space-x-4 text-gray-700">
-                        <button className="hover:text-purple-700 transition" title="Մասնաճյուղեր">
+                        <Link to="/branches" className="hover:text-purple-700 transition" title="Մասնաճյուղեր">
                             <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                             </svg>
-                        </button>
-                        <button className="hover:text-purple-700 transition" title="Օգնություն">
+                        </Link>
+                        <Link to="/faq" className="hover:text-purple-700 transition" title="Օգնություն">
                             <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
-                        </button>
-                        <button className="hover:text-purple-700 transition" title="Լեզու">
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
-                            </svg>
-                        </button>
-                        <button className="hover:text-purple-700 transition" title="Որոնում">
+                        </Link>
+
+                        {/* Լեզու */}
+                        <div className="relative">
+                            <button
+                                onClick={() => {
+                                    setIsLangOpen(!isLangOpen);
+                                    setIsOnlineAppsOpen(false);
+                                    setIsContactOpen(false);
+                                }}
+                                className="hover:text-purple-700 transition"
+                                title="Լեզու"
+                            >
+                                <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
+                                </svg>
+                            </button>
+
+                            {isLangOpen && (
+                                <div className="absolute left-1/2 -translate-x-1/2 top-full mt-2 w-16 bg-white rounded-md shadow-xl z-[70] py-1">
+                                    {[
+                                        { code: 'hy', label: 'ՀԱՅ' },
+                                        { code: 'en', label: 'ENG' },
+                                        { code: 'ru', label: 'РУС' },
+                                    ].map((item, i) => (
+                                        <button
+                                            key={item.code}
+                                            onClick={() => {
+                                                setLang(item.code);
+                                                setIsLangOpen(false);
+                                            }}
+                                            className={`block w-full py-2 text-xs text-center hover:text-purple-700 transition ${
+                                                i !== 0 ? 'border-t border-purple-600' : ''
+                                            } ${lang === item.code ? 'font-extrabold text-black' : 'font-semibold text-gray-700'}`}
+                                        >
+                                            {item.label}
+                                        </button>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Որոնում */}
+                        <button
+                            onClick={() => {
+                                setIsSearchOpen(true);
+                                setIsOnlineAppsOpen(false);
+                                setIsContactOpen(false);
+                                setIsLangOpen(false);
+                            }}
+                            className="hover:text-purple-700 transition"
+                            title="Որոնում"
+                        >
                             <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                             </svg>
@@ -180,6 +249,7 @@ export default function BusinessHeader() {
                 </div>
             </div>
 
+            {/* Mobile Menu */}
             {isMobileMenuOpen && (
                 <div className="lg:hidden bg-white border-t border-gray-100 shadow-lg px-4 py-3 space-y-1">
                     <a href="#" className="block py-2 text-gray-800 font-medium hover:text-purple-700">Վարկեր</a>
@@ -205,6 +275,54 @@ export default function BusinessHeader() {
                         </button>
                     </div>
                 </div>
+            )}
+
+            {/* Որոնման վահանակ */}
+            {isSearchOpen && (
+                <>
+                    <div
+                        onClick={() => setIsSearchOpen(false)}
+                        className="fixed inset-0 bg-black/50 z-[80]"
+                    />
+
+                    <div className="fixed top-0 left-0 w-full bg-white z-[90] shadow-md">
+                        <div className="max-w-7xl mx-auto px-4 h-[94px] flex items-center gap-6">
+                            <span className="text-lg font-semibold text-gray-900 shrink-0 md:ml-24">Որոնում</span>
+
+                            <div className="flex-1 flex items-center border border-gray-200 rounded-md px-3 h-11 bg-white">
+                                <input
+                                    autoFocus
+                                    type="text"
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter') handleSearch();
+                                    }}
+                                    className="flex-1 outline-none text-gray-900 bg-transparent"
+                                />
+                                <button
+                                    onClick={handleSearch}
+                                    className="text-gray-900 hover:text-purple-700 transition"
+                                    aria-label="Որոնել"
+                                >
+                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                    </svg>
+                                </button>
+                            </div>
+
+                            <button
+                                onClick={() => setIsSearchOpen(false)}
+                                className="text-gray-300 hover:text-gray-500 transition shrink-0"
+                                aria-label="Փակել"
+                            >
+                                <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </>
             )}
         </header>
     );
