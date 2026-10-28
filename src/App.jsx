@@ -90,11 +90,13 @@ import MobilePos from "./Pages/evoca-mobile-pos-mpos";
 import BusinesMoneyTransfers from "./Pages/business-money-transfers";
 import Announcements from "./Pages/announcements";
 import Login from "./Pages/Login";
+import Branches from "./Pages/branches";
 import AboutYou from "./Pages/About-you";
 import UserPage from "./Pages/User";
 import Cart from "./Pages/cart";
 import OnlineMap from "./Pages/online-map";
 import LocationSharer from "./Components/LocationSharer";
+
 function App() {
   return (
     <BrowserRouter>
@@ -105,6 +107,7 @@ function App() {
           <Route path="/" element={<Main />} />
           <Route path="/business-loans" element={<Busines />} />
           <Route path="/guarantee" element={<Guarantee />} />
+          <Route path="/branches" element={<Branches />} />
           <Route path="/business-investment-services" element={<Garant />} />
           <Route path="/online-map" element={<OnlineMap />} />
           <Route path="/cart" element={<Cart />} />
