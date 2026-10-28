@@ -58,33 +58,20 @@ const CardItem = ({ card }) => {
           </p>
 
           <div className="mt-6 grid grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-6">
-  {stats.map((item, index) => {
-    let parsedItem = item;
-
-    if (typeof item === "string") {
-      try {
-        parsedItem = JSON.parse(item);
-      } catch (e) {
-        console.error("JSON Parse Error for item:", item, e);
-        return null; // Եթե տվյալը սխալ ֆորմատով է, պարզապես բաց է թողնում այն, որ ամբողջ էջը չփակվի
-      }
-    }
-
-    return (
-      <div key={index}>
-        <p className="min-h-[18px] text-[13px] text-gray-800">
-          {parsedItem?.title}
-        </p>
-        <p className="text-[32px] font-semibold leading-tight text-[#6a00d8]">
-          {parsedItem?.value}
-        </p>
-        <p className="mt-3 max-w-[170px] text-[13px] leading-5 text-gray-800">
-          {parsedItem?.text}
-        </p>
-      </div>
-    );
-  })}
-</div>
+            {stats.map((item, index) => (
+              <div key={index}>
+                <p className="min-h-[18px] text-[13px] text-gray-800">
+                  {item.title}
+                </p>
+                <p className="text-[32px] font-semibold leading-tight text-[#6a00d8]">
+                  {item.value}
+                </p>
+                <p className="mt-3 max-w-[170px] text-[13px] leading-5 text-gray-800">
+                  {item.text}
+                </p>
+              </div>
+            ))}
+          </div>
 
           <Link
             to={`/current-card/${card.id}`}
