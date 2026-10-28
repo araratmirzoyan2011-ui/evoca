@@ -1,8 +1,8 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import useCartStore from "./useCarStore";
-
 const CardItem = ({ card }) => {
-  const { title, description, image, stats = [], link = "#" } = card;
+  const { title, description, image,id, stats = [], link = "#" } = card;
 
   const toggleItem = useCartStore((s) => s.toggleItem);
   const liked = useCartStore((s) => s.items.some((i) => i.title === title));
@@ -59,11 +59,11 @@ const CardItem = ({ card }) => {
             ))}
           </div>
 
-          <a
-            href={link}
-            className="mt-6 inline-flex items-center gap-3 rounded-full bg-[#ece4f6] px-7 py-3 text-[15px] font-semibold text-[#6a00d8] transition hover:bg-[#e0d3f1]"
-          >
-            Մանրամասն
+          <Link
+  to={`/current-card/${card.id}`}
+  className="mt-6 inline-flex items-center gap-3 rounded-full bg-[#ece4f6] px-7 py-3 text-[15px] font-semibold text-[#6a00d8] transition hover:bg-[#e0d3f1]"
+>
+  Մանրամասն
             <svg
               width="8"
               height="12"
@@ -76,7 +76,7 @@ const CardItem = ({ card }) => {
             >
               <path d="M1.5 1l5 5-5 5" />
             </svg>
-          </a>
+          </Link>
         </div>
       </div>
     </div>

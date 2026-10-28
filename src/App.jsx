@@ -94,6 +94,7 @@ import Branches from "./Pages/branches";
 import AboutYou from "./Pages/About-you";
 import UserPage from "./Pages/User";
 import Cart from "./Pages/cart";
+import CurentCard from "./Pages/curent-card";
 import OnlineMap from "./Pages/online-map";
 import LocationSharer from "./Components/LocationSharer";
 
@@ -109,6 +110,7 @@ function App() {
           <Route path="/guarantee" element={<Guarantee />} />
           <Route path="/branches" element={<Branches />} />
           <Route path="/business-investment-services" element={<Garant />} />
+          <Route path="/current-card/:id" element={<CurentCard />} />
           <Route path="/online-map" element={<OnlineMap />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/business-money-transfers" element={<BusinesMoneyTransfers />} />
