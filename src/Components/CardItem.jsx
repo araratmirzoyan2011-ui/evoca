@@ -1,8 +1,21 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import useCartStore from "./useCarStore";
+
+// Օգնական ֆունկցիա՝ Markdown-ի ** տեքստերը գեղեցկացնելու կամ մաքրելու համար
+const renderHighlighted = (text) =>
+  (text || "").split(/(\*\*[^*]+\*\*)/g).map((part, i) =>
+    part.startsWith("**") ? (
+      <span key={i} className="text-[#6a00d8] font-semibold">
+        {part.slice(2, -2)}
+      </span>
+    ) : (
+      <React.Fragment key={i}>{part}</React.Fragment>
+    )
+  );
+
 const CardItem = ({ card }) => {
-  const { title, description, image,id, stats = [], link = "#" } = card;
+  const { title, title2, image, id, stats = [], link = "#" } = card;
 
   const toggleItem = useCartStore((s) => s.toggleItem);
   const liked = useCartStore((s) => s.items.some((i) => i.title === title));
@@ -37,33 +50,47 @@ const CardItem = ({ card }) => {
         </div>
 
         <div className="flex-1">
+          {/* Այստեղ կարող եք փոխել title-ը, եթե Firebase-ում անունը գրված է որպես id */}
           <h2 className="text-[28px] font-bold text-black">{title}</h2>
 
           <p className="mt-5 max-w-[560px] text-[15px] leading-6 text-gray-800">
-            {description}
+            {renderHighlighted(title2)}
           </p>
 
           <div className="mt-6 grid grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-6">
-            {stats.map((item, index) => (
-              <div key={index}>
-                <p className="min-h-[18px] text-[13px] text-gray-800">
-                  {item.label}
-                </p>
-                <p className="text-[32px] font-semibold leading-tight text-[#6a00d8]">
-                  {item.value}
-                </p>
-                <p className="mt-3 max-w-[170px] text-[13px] leading-5 text-gray-800">
-                  {item.text}
-                </p>
-              </div>
-            ))}
-          </div>
+  {stats.map((item, index) => {
+    let parsedItem = item;
+
+    if (typeof item === "string") {
+      try {
+        parsedItem = JSON.parse(item);
+      } catch (e) {
+        console.error("JSON Parse Error for item:", item, e);
+        return null; // Եթե տվյալը սխալ ֆորմատով է, պարզապես բաց է թողնում այն, որ ամբողջ էջը չփակվի
+      }
+    }
+
+    return (
+      <div key={index}>
+        <p className="min-h-[18px] text-[13px] text-gray-800">
+          {parsedItem?.title}
+        </p>
+        <p className="text-[32px] font-semibold leading-tight text-[#6a00d8]">
+          {parsedItem?.value}
+        </p>
+        <p className="mt-3 max-w-[170px] text-[13px] leading-5 text-gray-800">
+          {parsedItem?.text}
+        </p>
+      </div>
+    );
+  })}
+</div>
 
           <Link
-  to={`/current-card/${card.id}`}
-  className="mt-6 inline-flex items-center gap-3 rounded-full bg-[#ece4f6] px-7 py-3 text-[15px] font-semibold text-[#6a00d8] transition hover:bg-[#e0d3f1]"
->
-  Մանրամասն
+            to={`/current-card/${card.id}`}
+            className="mt-6 inline-flex items-center gap-3 rounded-full bg-[#ece4f6] px-7 py-3 text-[15px] font-semibold text-[#6a00d8] transition hover:bg-[#e0d3f1]"
+          >
+            Մանրամասն
             <svg
               width="8"
               height="12"
