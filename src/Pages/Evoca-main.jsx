@@ -18,9 +18,10 @@ import PartnersSection from '../Components/PartnerSection.jsx';
 import { CurrencySection } from '../Components/CurrencySection.jsx';
 import { EvocaNewsCard } from '../Components/EVocaCard1.jsx';
 import { EvocaReviewCard } from '../Components/EvocaReviewCard.jsx';
-import { Link } from 'react-router-dom';
 import Footer from '../Components/Footer.jsx';
+import { Link, useNavigate } from 'react-router-dom';
 function Main() {
+  const navigate = useNavigate();
  const [slidesData, setSlidesData] = useState([]);
 const [bestOffersData, setBestOffersData] = useState([]);
 const [cardsSliderData, setCardsSliderData] = useState([]);
@@ -143,9 +144,12 @@ if (partnersDocsData.length > 0 && partnersDocsData[0].partners) {
           </p>
           <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6">
             <img src="https://www.evoca.am/img/biometric-section-QR-Code.png" alt="QR code" className="w-[130px] h-[130px] sm:w-[180px] sm:h-[180px]" />
-            <button className="w-full sm:w-auto bg-[#6600cc] text-white font-semibold px-6 py-2.5 sm:px-8 sm:py-3 text-sm sm:text-base rounded-full hover:bg-[#5500aa] transition-all cursor-pointer">
-              Իմանալ ավելին
-            </button>
+            <button
+  onClick={() => navigate('/evoca-touch')}
+  className="w-full sm:w-auto bg-[#6600cc] text-white font-semibold px-6 py-2.5 sm:px-8 sm:py-3 text-sm sm:text-base rounded-full hover:bg-[#5500aa] transition-all cursor-pointer"
+>
+  Իմանալ ավելին
+</button>
           </div>
         </div>
       </div>
