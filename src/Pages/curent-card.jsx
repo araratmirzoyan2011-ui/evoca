@@ -6,8 +6,10 @@ import { db } from "../firebase";
 import { Header } from "../Components/Header";
 import Footer from "../Components/Footer";
 import CardHero from "../Components/CardHero";
+import CardTariffs from "../Components/Components/CardTariffs";
 
 const CurrentCard = () => {
+    
   const { id } = useParams();
   const [card, setCard] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -40,7 +42,7 @@ const CurrentCard = () => {
     <div className="min-h-screen flex flex-col bg-white">
       <Header />
       <CardHero title={title} description={description} image={image} />
-      
+      <CardTariffs stats={stats} />
       <Footer />
     </div>
   );
