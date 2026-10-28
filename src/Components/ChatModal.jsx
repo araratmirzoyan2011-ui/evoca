@@ -19,7 +19,6 @@ import {
   arrayRemove,
 } from "firebase/firestore";
 
-// WebRTC կարգավորումներ (STUN). Խիստ ցանցերի համար ավելացրու նաև TURN սերվեր։
 const ICE_CONFIG = {
   iceServers: [
     { urls: "stun:stun.l.google.com:19302" },
