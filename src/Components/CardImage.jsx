@@ -1,4 +1,3 @@
-// src/components/CardImage.jsx
 const CardImage = ({ src, title }) => {
   return (
     <div className="flex flex-col items-center gap-4">
