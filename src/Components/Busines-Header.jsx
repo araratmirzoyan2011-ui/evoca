@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { auth, db } from '../firebase';
 import { doc, getDoc } from 'firebase/firestore';
@@ -8,6 +8,18 @@ export default function BusinessHeader() {
     const [isContactOpen, setIsContactOpen] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const navigate = useNavigate();
+    const dropdownsRef = useRef(null);
+
+    useEffect(() => {
+        const handleClickOutside = (e) => {
+            if (dropdownsRef.current && !dropdownsRef.current.contains(e.target)) {
+                setIsOnlineAppsOpen(false);
+                setIsContactOpen(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
 
     const handleEvocaOnlineClick = async () => {
         const currentUser = auth.currentUser;
@@ -25,13 +37,14 @@ export default function BusinessHeader() {
                 console.error("Ստուգման սխալ:", err);
             }
         }
-        
+
         navigate("/login");
     };
 
     return (
-        <header className="w-full bg-white border-b border-gray-200 font-sans relative">
-            <div className="hidden md:flex max-w-7xl mx-auto px-4 h-12 items-center justify-between text-sm border-b border-gray-100">
+        <header className="w-full bg-white border-b border-gray-200 font-sans relative z-50">
+            {/* Վերին տող */}
+            <div className="hidden md:flex relative z-[60] max-w-7xl mx-auto px-4 h-12 items-center justify-between text-sm border-b border-gray-100">
                 <nav className="flex items-center space-x-4 lg:space-x-6 overflow-x-auto">
                     <Link to="/loans" className="text-gray-700 hover:text-purple-700 whitespace-nowrap">Անհատ</Link>
                     <Link to="/business-loans" className="text-gray-700 hover:text-purple-700 whitespace-nowrap">Բիզնես</Link>
@@ -42,7 +55,8 @@ export default function BusinessHeader() {
                     <Link to="/career" className="text-gray-700 hover:text-purple-700 whitespace-nowrap">Կարիերա</Link>
                 </nav>
 
-                <div className="flex items-center space-x-4 lg:space-x-6 relative flex-shrink-0">
+                <div ref={dropdownsRef} className="flex items-center space-x-4 lg:space-x-6 relative flex-shrink-0">
+                    {/* Online Apps */}
                     <div className="relative">
                         <div
                             onClick={() => {
@@ -58,15 +72,16 @@ export default function BusinessHeader() {
                         </div>
 
                         {isOnlineAppsOpen && (
-                            <div className="absolute right-0 mt-1 w-56 bg-white border border-gray-100 rounded-lg shadow-xl py-3 z-50 text-gray-800">
-                                <Link to="/online-applications/sme-loan" className="block px-6 py-2.5 hover:bg-purple-50 hover:text-purple-700 font-medium">ՖՄՁ վարկավորում</Link>
-                                <Link to="/online-applications/visa-infinite" className="block px-6 py-2.5 hover:bg-purple-50 hover:text-purple-700 font-medium">Visa Infinite</Link>
-                                <Link to="/online-applications/mastercard-gold" className="block px-6 py-2.5 hover:bg-purple-50 hover:text-purple-700 font-medium">MasterCard Gold</Link>
-                                <Link to="/online-applications/visa-gold" className="block px-6 py-2.5 hover:bg-purple-50 hover:text-purple-700 font-medium">Visa Gold</Link>
+                            <div className="absolute left-0 w-full mt-1 bg-white border border-gray-100 rounded-lg shadow-xl py-2 z-[70] text-gray-800 text-center whitespace-nowrap">
+                                <Link to="/online-applications/sme-loan" className="block px-2 py-2 text-sm hover:bg-purple-50 hover:text-purple-700 font-medium">ՖՄՁ վարկավորում</Link>
+                                <Link to="/online-applications/visa-infinite" className="block px-2 py-2 text-sm hover:bg-purple-50 hover:text-purple-700 font-medium">Visa Infinite</Link>
+                                <Link to="/online-applications/mastercard-gold" className="block px-2 py-2 text-sm hover:bg-purple-50 hover:text-purple-700 font-medium">MasterCard Gold</Link>
+                                <Link to="/online-applications/visa-gold" className="block px-2 py-2 text-sm hover:bg-purple-50 hover:text-purple-700 font-medium">Visa Gold</Link>
                             </div>
                         )}
                     </div>
 
+                    {/* Contact */}
                     <div className="relative">
                         <div
                             onClick={() => {
@@ -82,17 +97,18 @@ export default function BusinessHeader() {
                         </div>
 
                         {isContactOpen && (
-                            <div className="absolute right-0 mt-1 w-60 bg-white border border-gray-100 rounded-lg shadow-xl py-3 z-50 text-gray-800 text-center">
-                                <a href="tel:+37410605555" className="block px-4 py-2 hover:bg-purple-50 hover:text-purple-700 font-bold">+374 10 605555</a>
-                                <a href="tel:+37498205555" className="block px-4 py-2 hover:bg-purple-50 hover:text-purple-700 font-bold">+374 98 205555</a>
-                                <a href="tel:+37499605555" className="block px-4 py-2 hover:bg-purple-50 hover:text-purple-700 font-bold">+374 99 605555</a>
-                                <a href="tel:8444" className="block px-4 py-2 hover:bg-purple-50 hover:text-purple-700 font-bold text-lg">8444</a>
+                            <div className="absolute left-0 w-full mt-1 bg-white border border-gray-100 rounded-lg shadow-xl py-2 z-[70] text-gray-800 text-center whitespace-nowrap">
+                                <a href="tel:+37410605555" className="block px-2 py-2 text-sm hover:bg-purple-50 hover:text-purple-700 font-bold">+374 10 605555</a>
+                                <a href="tel:+37498205555" className="block px-2 py-2 text-sm hover:bg-purple-50 hover:text-purple-700 font-bold">+374 98 205555</a>
+                                <a href="tel:+37499605555" className="block px-2 py-2 text-sm hover:bg-purple-50 hover:text-purple-700 font-bold">+374 99 605555</a>
+                                <a href="tel:8444" className="block px-2 py-2 hover:bg-purple-50 hover:text-purple-700 font-bold text-lg">8444</a>
                                 <div className="border-t border-gray-100 my-1"></div>
-                                <a href="#" className="block px-4 py-2.5 text-purple-700 font-semibold hover:bg-purple-50">Պատվիրել զանգ</a>
+                                <a href="#" className="block px-2 py-2 text-sm text-purple-700 font-semibold hover:bg-purple-50">Պատվիրել զանգ</a>
                             </div>
                         )}
                     </div>
 
+                    {/* Icons */}
                     <div className="flex items-center space-x-3 lg:space-x-4 text-gray-700">
                         <button className="hover:text-purple-700 transition" title="Մասնաճյուղեր">
                             <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
@@ -179,9 +195,9 @@ export default function BusinessHeader() {
                     <a href="#" className="block py-2 text-gray-800 font-medium hover:text-purple-700">Բիզնես</a>
                     <a href="#" className="block py-2 text-gray-800 font-medium hover:text-purple-700">Մեր մասին</a>
                     <a href="tel:8444" className="block py-2 text-purple-700 font-bold">Զանգել՝ 8444</a>
-                    
+
                     <div className="pt-2">
-                        <button 
+                        <button
                             onClick={handleEvocaOnlineClick}
                             className="w-full sm:hidden text-center bg-purple-700 hover:bg-purple-800 text-white font-medium px-6 py-2.5 rounded-full shadow-md transition duration-200 cursor-pointer"
                         >
