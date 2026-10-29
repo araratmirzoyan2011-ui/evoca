@@ -5,7 +5,6 @@ import ProfileCard from '../Components/ProfileCard.jsx';
 import React, { useState, useEffect } from 'react';
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../firebase';
-
 function Managment() {
   const [boardMembers, setBoardMembers] = useState([]);
   const [managementMembers, setManagementMembers] = useState([]);
