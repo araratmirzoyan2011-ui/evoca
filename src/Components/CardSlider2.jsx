@@ -38,8 +38,8 @@ const CardSlider = ({ currentId, heading = "Այլ քարտեր" }) => {
       try {
         const snap = await getDocs(collection(db, "CardmenuItems"));
         const list = snap.docs
-          .map((d) => ({ id: d.id, ...d.data() }))
-          .filter((c) => c.id !== currentId);
+  .map((d) => ({ ...d.data(), id: d.id }))
+  .filter((c) => c.id !== currentId);
         setCards(list);
       } catch (error) {
         console.error("Սխալ քարտերը ստանալիս:", error);
@@ -70,8 +70,8 @@ const CardSlider = ({ currentId, heading = "Այլ քարտեր" }) => {
         >
           {cards.map((card) => (
             <Link
-              key={card.id}
-              to={`/cards/${card.id}`}
+  key={card.id}
+  to={`/current-card/${card.id}`}
               onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
               className="w-full shrink-0 snap-start px-3 sm:w-1/2 lg:w-1/4"
             >

@@ -39,8 +39,8 @@ const LoanSlider = ({ currentId, heading = "Այլ վարկեր" }) => {
         // Հավաքում ենք տվյալները "loans" հավաքածուից
         const snap = await getDocs(collection(db, "loans"));
         const list = snap.docs
-          .map((d) => ({ id: d.id, ...d.data() }))
-          .filter((l) => l.id !== currentId); // Բացառում ենք ընթացիկ վարկը
+  .map((d) => ({ ...d.data(), id: d.id }))
+  .filter((l) => l.id !== currentId);
         setLoans(list);
       } catch (error) {
         console.error("Սխալ վարկերը ստանալիս:", error);
@@ -71,8 +71,8 @@ const LoanSlider = ({ currentId, heading = "Այլ վարկեր" }) => {
         >
           {loans.map((loan) => (
             <Link
-              key={loan.id}
-              to={`/loans/${loan.id}`} // Փոխվել է հղման ուղին դեպի վարկեր
+  key={loan.id}
+  to={`/current-loan/${loan.id}`}
               onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
               className="w-full shrink-0 snap-start px-3 sm:w-1/2 lg:w-1/4"
             >
