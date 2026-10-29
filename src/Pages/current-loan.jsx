@@ -10,6 +10,7 @@ import LoanTariff from "../Components/LoanTariff.jsx";
 import LoanConditions from "../Components/LoanConditions.jsx";
 import LoanDocuments from "../Components/LoanDocuments.jsx";
 
+import InfoBanner from '../Components/infoBanner.jsx';
 const tabs = [
   { key: "about", label: "Վարկի մասին" },
   { key: "conditions", label: "Պայմաններ" },
@@ -100,28 +101,33 @@ const LoanDetails = () => {
 
             <div className="py-8">
               {activeTab === "about" && (
-                <div
-                  className={`grid items-start gap-10 ${
-                    stats.length > 0
-                      ? "lg:grid-cols-[minmax(0,570px)_minmax(0,657px)] lg:justify-between"
-                      : "flex justify-center"
-                  }`}
-                >
-                  <div
-                    className={`space-y-6 text-[18px] leading-[26px] text-gray-950 ${
-                      stats.length === 0
-                        ? "max-w-[700px] mx-auto w-full text-center"
-                        : ""
-                    }`}
-                  >
-                    {details.map((paragraph, index) => (
-                      <p key={index}>{renderHighlighted(paragraph)}</p>
-                    ))}
-                  </div>
+  <>
+    <div
+      className={`grid items-start gap-10 ${
+        stats.length > 0
+          ? "lg:grid-cols-[minmax(0,570px)_minmax(0,657px)] lg:justify-between"
+          : "flex justify-center"
+      }`}
+    >
+      <div
+        className={`space-y-6 text-[18px] leading-[26px] text-gray-950 ${
+          stats.length === 0
+            ? "max-w-[700px] mx-auto w-full text-center"
+            : ""
+        }`}
+      >
+        {details.map((paragraph, index) => (
+          <p key={index}>{renderHighlighted(paragraph)}</p>
+        ))}
+      </div>
 
-                  {stats.length > 0 && <LoanTariff stats={stats} />}
-                </div>
-              )}
+      {stats.length > 0 && <LoanTariff stats={stats} />}
+    </div>
+    {loan.bannertitle && loan.bannersrc && (
+  <InfoBanner title={loan.bannertitle} imageSrc={loan.bannersrc} />
+)}
+  </>
+)}
 
               {activeTab === "conditions" && (
                 <LoanConditions conditions={loan.conditions} />
