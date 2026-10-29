@@ -7,7 +7,7 @@ import Footer from "../Components/Footer";
 import { OnlineBanking } from "../Components/OnlineBanking.jsx";
 import CardHero from "../Components/CardHero.jsx";
 import LoanTariff from "../Components/LoanTariff.jsx";
-import LoanConditions from "../Components/LoanConditions.jsx";
+import DepositConditions from "../Components/DepositConditions.jsx";
 
 const tabs = [
   { key: "about", label: "Ավանդի մասին" },
@@ -122,7 +122,7 @@ const CurrentDeposit = () => {
               )}
 
               {activeTab === "conditions" && (
-                <LoanConditions conditions={deposit.conditions} />
+                <DepositConditions conditions={deposit.conditions} />
               )}
             </div>
           </>
