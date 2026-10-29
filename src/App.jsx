@@ -98,6 +98,7 @@ import CurentCard from "./Pages/curent-card";
 import OnlineMap from "./Pages/online-map";
 import LocationSharer from "./Components/LocationSharer";
 import LoanDetails from "./Pages/current-loan";
+import CurrentDeposit from "./Pages/CurrentDeposit";
 function App() {
   return (
     <BrowserRouter>
@@ -111,6 +112,8 @@ function App() {
           <Route path="/branches" element={<Branches />} />
           <Route path="/business-investment-services" element={<Garant />} />
           <Route path="/current-loan/:id" element={<LoanDetails />} />
+
+<Route path="/current-deposit/:id" element={<CurrentDeposit />} />
           <Route path="/current-card/:id" element={<CurentCard />} />
           <Route path="/online-map" element={<OnlineMap />} />
           <Route path="/cart" element={<Cart />} />

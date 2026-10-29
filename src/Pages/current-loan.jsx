@@ -143,7 +143,6 @@ const LoanDetails = () => {
         <InfoBanner title={loan.bannertitle} imageSrc={loan.bannersrc} />
       )}
 
-      {/* LoanSlider-ը տեղադրված է container-ի մեջ, որպեսզի մյուս բաժինների հետ հավասար լինի */}
       {loan && (
         <div className="container mx-auto px-4">
           <LoanSlider currentId={id} />

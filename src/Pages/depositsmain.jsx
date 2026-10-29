@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import LoanCard from "../Components/LoanCard";
 import { Header } from '../Components/Header';
 import Footer from '../Components/Footer';
@@ -7,6 +8,7 @@ import { db } from "../firebase.js";
 import { collection, getDocs, query, orderBy } from 'firebase/firestore';
 
 const DepositMain = () => {
+  const navigate = useNavigate();
   const [menuItems, setMenuItems] = useState([]);
   const [deposits, setDeposits] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -41,8 +43,9 @@ const DepositMain = () => {
     fetchData();
   }, []);
 
-  const handleDetailsClick = (title) => {
-    console.log("Details:", title);
+   const handleDetailsClick = (deposit) => {
+    const id = deposit.docId || deposit.id;
+    navigate(`/current-deposit/${id}`);
   };
 
   return (
@@ -56,21 +59,26 @@ const DepositMain = () => {
         </h1>
       </div>
 
-      <div className="container mx-auto px-4">
+       <div className="container mx-auto px-4">
         {loading && <p className="text-center">Բեռնվում է...</p>}
         {error && <p className="text-center text-red-600">{error}</p>}
 
         {!loading &&
           !error &&
           deposits.map((deposit) => (
-            <LoanCard
+            <div
               key={deposit.docId || deposit.id}
-              title={deposit.title}
-              description={deposit.description}
-              imageSrc={deposit.imageSrc}
-              stats={deposit.stats}
-              onDetailsClick={() => handleDetailsClick(deposit.title)}
-            />
+              onClick={() => handleDetailsClick(deposit)}
+              className="cursor-pointer"
+            >
+              <LoanCard
+                title={deposit.title}
+                description={deposit.description}
+                imageSrc={deposit.imageSrc}
+                stats={deposit.stats}
+                onDetailsClick={() => handleDetailsClick(deposit)}
+              />
+            </div>
           ))}
       </div>
 
