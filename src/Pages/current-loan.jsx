@@ -7,12 +7,26 @@ import Footer from "../Components/Footer";
 import { OnlineBanking } from "../Components/OnlineBanking.jsx";
 import CardHero from "../Components/CardHero.jsx";
 import LoanTariff from "../Components/LoanTariff.jsx";
-import SeedLoanDetails from "../Components/SeedLoanDetails.jsx";
+import LoanConditions from "../Components/LoanConditions.jsx";
+import LoanDocuments from "../Components/LoanDocuments.jsx";
+
 const tabs = [
   { key: "about", label: "Վարկի մասին" },
   { key: "conditions", label: "Պայմաններ" },
   { key: "documents", label: "Պահանջվող փաստաթղթերի ցանկ" },
 ];
+
+// «Evocabank» բառը ընդգծում է մանուշակագույնով
+const renderHighlighted = (text = "") =>
+  text.split(/(Evocabank)/g).map((part, i) =>
+    part === "Evocabank" ? (
+      <span key={i} className="text-[#6a00d8]">
+        {part}
+      </span>
+    ) : (
+      part
+    )
+  );
 
 const LoanDetails = () => {
   const { id } = useParams();
@@ -20,16 +34,22 @@ const LoanDetails = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState("about");
-    const stats = loan?.stats ?? [];
+
+  const stats = loan?.stats ?? [];
   const details = loan?.details ?? [];
-    const renderHighlighted = (text) => text;
+
   useEffect(() => {
     const fetchLoan = async () => {
+      setLoading(true);
+      setError(null);
+      setActiveTab("about");
+
       try {
         const snap = await getDoc(doc(db, "loans", id));
         if (snap.exists()) {
           setLoan({ ...snap.data(), docId: snap.id });
         } else {
+          setLoan(null);
           setError("Վարկը չի գտնվել");
         }
       } catch (e) {
@@ -43,7 +63,7 @@ const LoanDetails = () => {
     fetchLoan();
   }, [id]);
 
- return (
+  return (
     <>
       <Header />
 
@@ -80,30 +100,36 @@ const LoanDetails = () => {
 
             <div className="py-8">
               {activeTab === "about" && (
-  <div
-    className={`grid items-start gap-10 ${
-      stats.length > 0
-        ? "lg:grid-cols-[minmax(0,570px)_minmax(0,657px)] lg:justify-between"
-        : "flex justify-center"
-    }`}
-  >
-    <div
-      className={`space-y-6 text-[18px] leading-[26px] text-gray-950 ${
-        stats.length === 0 ? "max-w-[700px] mx-auto w-full text-center" : ""
-      }`}
-    >
-      {details.map((paragraph, index) => (
-        <p key={index}>{renderHighlighted(paragraph)}</p>
-      ))}
-    </div>
+                <div
+                  className={`grid items-start gap-10 ${
+                    stats.length > 0
+                      ? "lg:grid-cols-[minmax(0,570px)_minmax(0,657px)] lg:justify-between"
+                      : "flex justify-center"
+                  }`}
+                >
+                  <div
+                    className={`space-y-6 text-[18px] leading-[26px] text-gray-950 ${
+                      stats.length === 0
+                        ? "max-w-[700px] mx-auto w-full text-center"
+                        : ""
+                    }`}
+                  >
+                    {details.map((paragraph, index) => (
+                      <p key={index}>{renderHighlighted(paragraph)}</p>
+                    ))}
+                  </div>
 
-    {stats.length > 0 && <LoanTariff stats={stats} />}
-  </div>
-)}
-              {activeTab === "conditions" && <div>
-               
-                </div>}
-              {activeTab === "documents" && <div>{/* loan.documents */}</div>}
+                  {stats.length > 0 && <LoanTariff stats={stats} />}
+                </div>
+              )}
+
+              {activeTab === "conditions" && (
+                <LoanConditions conditions={loan.conditions} />
+              )}
+
+              {activeTab === "documents" && (
+                <LoanDocuments documents={loan.documents} />
+              )}
             </div>
           </>
         )}
@@ -114,4 +140,5 @@ const LoanDetails = () => {
     </>
   );
 };
-export default LoanDetails
+
+export default LoanDetails;
