@@ -77,72 +77,73 @@ const LoanDetails = () => {
       )}
 
       <div className="container mx-auto px-4 mt-10">
-        {loading && <p className="text-center">Բեռնվում է...</p>}
-        {error && <p className="text-center text-red-600">{error}</p>}
+  {loading && <p className="text-center">Բեռնվում է...</p>}
+  {error && <p className="text-center text-red-600">{error}</p>}
 
-        {loan && (
-          <>
-            {/* Tab-երի տող */}
-            <div className="flex gap-10 border-b border-gray-200 overflow-x-auto">
-              {tabs.map((tab) => (
-                <button
-                  key={tab.key}
-                  onClick={() => setActiveTab(tab.key)}
-                  className={`pb-4 whitespace-nowrap text-sm font-semibold cursor-pointer transition-colors border-b-4 -mb-px ${
-                    activeTab === tab.key
-                      ? "text-gray-900 border-purple-700"
-                      : "text-gray-500 border-transparent hover:text-gray-800"
-                  }`}
-                >
-                  {tab.label}
-                </button>
-              ))}
-            </div>
-
-            <div className="py-8">
-              {activeTab === "about" && (
-  <>
-    <div
-      className={`grid items-start gap-10 ${
-        stats.length > 0
-          ? "lg:grid-cols-[minmax(0,570px)_minmax(0,657px)] lg:justify-between"
-          : "flex justify-center"
-      }`}
-    >
-      <div
-        className={`space-y-6 text-[18px] leading-[26px] text-gray-950 ${
-          stats.length === 0
-            ? "max-w-[700px] mx-auto w-full text-center"
-            : ""
-        }`}
-      >
-        {details.map((paragraph, index) => (
-          <p key={index}>{renderHighlighted(paragraph)}</p>
+  {loan && (
+    <>
+      {/* Tab-երի տող */}
+      <div className="flex gap-10 border-b border-gray-200 overflow-x-auto">
+        {tabs.map((tab) => (
+          <button
+            key={tab.key}
+            onClick={() => setActiveTab(tab.key)}
+            className={`pb-4 whitespace-nowrap text-sm font-semibold cursor-pointer transition-colors border-b-4 -mb-px ${
+              activeTab === tab.key
+                ? "text-gray-900 border-purple-700"
+                : "text-gray-500 border-transparent hover:text-gray-800"
+            }`}
+          >
+            {tab.label}
+          </button>
         ))}
       </div>
 
-      {stats.length > 0 && <LoanTariff stats={stats} />}
-    </div>
-    {loan.bannertitle && loan.bannersrc && (
-  <InfoBanner title={loan.bannertitle} imageSrc={loan.bannersrc} />
-)}
-  </>
-)}
-
-              {activeTab === "conditions" && (
-                <LoanConditions conditions={loan.conditions} />
-              )}
-
-              {activeTab === "documents" && (
-                <LoanDocuments documents={loan.documents} />
-              )}
+      <div className="py-8">
+        {activeTab === "about" && (
+          <div
+            className={`grid items-start gap-10 ${
+              stats.length > 0
+                ? "lg:grid-cols-[minmax(0,570px)_minmax(0,657px)] lg:justify-between"
+                : "flex justify-center"
+            }`}
+          >
+            <div
+              className={`space-y-6 text-[18px] leading-[26px] text-gray-950 ${
+                stats.length === 0
+                  ? "max-w-[700px] mx-auto w-full text-center"
+                  : ""
+              }`}
+            >
+              {details.map((paragraph, index) => (
+                <p key={index}>{renderHighlighted(paragraph)}</p>
+              ))}
             </div>
-          </>
+
+            {stats.length > 0 && <LoanTariff stats={stats} />}
+          </div>
+        )}
+
+        {activeTab === "conditions" && (
+          <LoanConditions conditions={loan.conditions} />
+        )}
+
+        {activeTab === "documents" && (
+          <LoanDocuments documents={loan.documents} />
         )}
       </div>
+    </>
+  )}
+</div> 
+{/* Container-ը փակում ենք այստեղ */}
 
-      <OnlineBanking />
-      <Footer />
+{/* 2. InfoBanner-ը դնում ենք container-ից ԴՈՒՐՍ (միայն եթե ակտիվ է "about" tab-ը) */}
+{loan && activeTab === "about" && loan.bannersrc && (
+  <InfoBanner title={loan.bannertitle} imageSrc={loan.bannersrc} />
+)}
+
+<OnlineBanking />
+<Footer />
     </>
   );
 };
