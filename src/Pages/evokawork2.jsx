@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { Header } from '../Components/Header.jsx';
+import Header from '../Components/Carrer-Header.jsx';
 import Footer from '../Components/Footer.jsx';
-import Navbar from '../Components/Menu2.jsx';
+import Navbar from '../Components/Menuall.jsx';
 import { db } from '../firebase.js';
 import {
   collection,
   getDocs,
+  orderBy,
+  query,
 } from 'firebase/firestore';
 import CultureBanner from '../Components/CultureBanner.jsx';
 import EvocaCard from '../Components/PaymentCard.jsx';
@@ -15,15 +17,17 @@ function Work2() {
   const [sections2, setSections2] = useState({});
   const [benefits, setBenefits] = useState([]);
   const [jobs, setJobs] = useState([]);
+  const [menuItems, setMenuItems] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const loadData = async () => {
       try {
-        const [sectionsSnap, benefitsSnap, jobsSnap] = await Promise.all([
+        const [sectionsSnap, benefitsSnap, jobsSnap, menuSnap] = await Promise.all([
           getDocs(collection(db, "CareerSections5")),
           getDocs(collection(db, "CareerBenefits2")),
           getDocs(collection(db, "CareerJobs")),
+          getDocs(query(collection(db, "CultureMenuItems2"), orderBy("order"))),
         ]);
 
         // 1. Մշակույթի բաններների տվյալներ
@@ -39,13 +43,16 @@ function Work2() {
         bList.sort((a, b) => (a.id || 0) - (b.id || 0));
         setBenefits(bList);
 
-        // 3. Աշխատատեղերի տվյալներ Firebase-ի CareerJobs collection-ից
+        // 3. Աշխատատեղերի տվյալներ
         const jList = jobsSnap.docs.map((d) => ({
           docId: d.id,
           ...d.data(),
         }));
         jList.sort((a, b) => (a.id || 0) - (b.id || 0));
         setJobs(jList);
+
+        // 4. Navbar մենյուի տարրեր
+        setMenuItems(menuSnap.docs.map((d) => d.data()));
 
       } catch (err) {
         console.error("Career data load error:", err);
@@ -64,7 +71,7 @@ function Work2() {
   return (
     <>
       <Header />
-      <Navbar />
+      <Navbar items={menuItems} />
 
       {loading ? (
         <div className="flex min-h-[60vh] items-center justify-center text-[#6a0fd9] font-medium">
@@ -101,7 +108,7 @@ function Work2() {
             )}
           </div>
 
-          {/* Բաժին 2․ Աշխատատեղերի ցանկ (Job Cards) Firebase-ից */}
+          {/* Բաժին 2․ Աշխատատեղերի ցանկ (Job Cards) */}
           <section className="w-full max-w-6xl mx-auto px-4 my-12">
             <div className="text-center mb-10">
               <h2 className="text-2xl md:text-3xl font-bold text-[#2d124d] mb-3">

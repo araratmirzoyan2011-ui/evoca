@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { Header } from '../Components/Header.jsx';
+import Header from '../Components/Carrer-Header.jsx';
 import Footer from '../Components/Footer.jsx';
-import Navbar from '../Components/Menu2.jsx';
+import Navbar from '../Components/Menuall.jsx';
 import { db } from '../firebase.js';
 import HiringSteps from '../Components/HiringSteps.jsx';
 import JoinTeamForm from '../Components/JoinTeamForm.jsx';
@@ -11,6 +11,8 @@ import {
   addDoc,
   collection,
   getDocs,
+  orderBy,
+  query,
   serverTimestamp,
 } from 'firebase/firestore';
 
@@ -25,28 +27,33 @@ const handleJoin = async ({ values, files }) => {
 function Intership() {
   const [sections6, setSections6] = useState({});
   const [benefits, setBenefits] = useState([]);
+  const [menuItems, setMenuItems] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const loadData = async () => {
       try {
-        const [sectionsSnap, benefitsSnap] = await Promise.all([
+        const [sectionsSnap, benefitsSnap, menuSnap] = await Promise.all([
           getDocs(collection(db, "CareerSections6")),
           getDocs(collection(db, "CareerBenefits3")),
+          getDocs(query(collection(db, "CultureMenuItems2"), orderBy("order"))),
         ]);
 
-        // 1. CareerSections6 collection-ի փաստաթղթերի ներմուծում
+        // 1. CareerSections6 collection
         const s = {};
         sectionsSnap.forEach((d) => (s[d.id] = d.data()));
         setSections6(s);
 
-        // 2. CareerBenefits3 collection-ի ներմուծում (ԲՈՒՀ-երի / առավելությունների ցանկ)
+        // 2. CareerBenefits3 collection
         const bList = benefitsSnap.docs.map((d) => ({
           docId: d.id,
           ...d.data(),
         }));
         bList.sort((a, b) => (a.id || 0) - (b.id || 0));
         setBenefits(bList);
+
+        // 3. Navbar մենյուի տարրեր
+        setMenuItems(menuSnap.docs.map((d) => d.data()));
       } catch (err) {
         console.error("Intership data load error:", err);
       } finally {
@@ -63,7 +70,7 @@ function Intership() {
   return (
     <>
       <Header />
-      <Navbar />
+      <Navbar items={menuItems} />
 
       {loading ? (
         <div className="flex min-h-[60vh] items-center justify-center text-[#6a0fd9] font-medium">

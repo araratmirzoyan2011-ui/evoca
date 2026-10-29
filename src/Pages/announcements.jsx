@@ -1,5 +1,6 @@
 import React, { useMemo, useState, useEffect } from "react";
-import { Header } from "../Components/Header.jsx";
+
+import Header from '../Components/About-us-Header.jsx';
 import Footer from "../Components/Footer.jsx";
 import AccordionItem from "../Components/announcements-accordion.jsx";
 import { db } from "../firebase"; 

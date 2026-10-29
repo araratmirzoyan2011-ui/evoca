@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { Header } from '../Components/Header.jsx';
+import Header from '../Components/Carrer-Header.jsx';
 import Footer from '../Components/Footer.jsx';
-import Navbar from '../Components/Menu2.jsx';
+import Navbar from '../Components/Menuall.jsx';
 import { db } from '../firebase';
 import {
   addDoc,
@@ -43,15 +43,18 @@ function Career() {
   const [sections, setSections] = useState({});
   const [slides, setSlides] = useState([]);
   const [members, setMembers] = useState([]);
+  const [menuItems, setMenuItems] = useState([]); // Navbar-ի menuItems state-ը
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const load = async () => {
       try {
-        const [sectionsSnap, slidesSnap, membersSnap] = await Promise.all([
+        const [sectionsSnap, slidesSnap, membersSnap, menuItemsSnap] = await Promise.all([
           getDocs(collection(db, "careerSections")),
           getDocs(query(collection(db, "careerSlides"), orderBy("order"))),
           getDocs(query(collection(db, "careerTeamMembers"), orderBy("order"))),
+          // Firebase-ից բեռնում ենք CultureMenuItems1 collection-ը
+          getDocs(query(collection(db, "CultureMenuItems1"), orderBy("order"))),
         ]);
 
         const s = {};
@@ -60,6 +63,8 @@ function Career() {
         setSections(s);
         setSlides(slidesSnap.docs.map((d) => d.data()));
         setMembers(membersSnap.docs.map((d) => d.data()));
+        // Ստանում ենք մենյուի տարրերը ({ label, path })
+        setMenuItems(menuItemsSnap.docs.map((d) => d.data()));
       } catch (err) {
         console.error("Career data load error:", err);
       } finally {
@@ -72,7 +77,8 @@ function Career() {
   return (
     <>
       <Header />
-      <Navbar />
+      {/* Փոխանցում ենք բեռնված մենյուի ցանկը Navbar-ին */}
+      <Navbar items={menuItems} />
 
       {loading ? (
         <div className="flex min-h-[60vh] items-center justify-center text-[#6a0fd9]">

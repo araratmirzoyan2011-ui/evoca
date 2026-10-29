@@ -1,22 +1,29 @@
 import React, { useEffect, useState } from 'react';
-import { Header } from '../Components/Header.jsx';
+import Header from '../Components/Carrer-Header.jsx';
 import Footer from '../Components/Footer.jsx';
-import Navbar from '../Components/Menu2.jsx';
+import Navbar from '../Components/Menuall.jsx';
 import { db } from '../firebase.js';
 import CultureBanner from '../Components/CultureBanner.jsx';
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, getDocs, orderBy, query } from 'firebase/firestore';
 
 function Bridge() {
   const [sections7, setSections7] = useState({});
+  const [menuItems, setMenuItems] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const loadData = async () => {
       try {
-        const sectionsSnap = await getDocs(collection(db, "CareerSections7"));
+        const [sectionsSnap, menuSnap] = await Promise.all([
+          getDocs(collection(db, "CareerSections7")),
+          getDocs(query(collection(db, "CultureMenuItems2"), orderBy("order"))),
+        ]);
+
         const s = {};
         sectionsSnap.forEach((d) => (s[d.id] = d.data()));
         setSections7(s);
+
+        setMenuItems(menuSnap.docs.map((d) => d.data()));
       } catch (err) {
         console.error("Bridge data load error:", err);
       } finally {
@@ -32,7 +39,7 @@ function Bridge() {
   return (
     <>
       <Header />
-      <Navbar />
+      <Navbar items={menuItems} />
 
       {loading ? (
         <div className="flex min-h-[60vh] items-center justify-center text-[#6a0fd9] font-medium">

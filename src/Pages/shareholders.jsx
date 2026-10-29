@@ -1,4 +1,5 @@
-import { Header } from '../Components/Header.jsx';
+
+import Header from '../Components/About-us-Header.jsx';
 import Footer from '../Components/Footer.jsx';
 import Navbar from '../Components/Menu.jsx';
 import SocialIcons from '../Components/SocialIcons.jsx';

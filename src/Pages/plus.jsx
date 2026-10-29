@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { Header } from '../Components/Header.jsx';
+import Header from '../Components/Carrer-Header.jsx';
 import Footer from '../Components/Footer.jsx';
-import Navbar from '../Components/Menu2.jsx';
+import Navbar from '../Components/Menuall.jsx';
 import { db } from '../firebase';
 import {
   addDoc,
   collection,
   getDocs,
+  orderBy,
+  query,
   serverTimestamp,
 } from 'firebase/firestore';
 import CultureBanner from '../Components/CultureBanner.jsx';
@@ -38,15 +40,16 @@ const handleJoin = async ({ values, files }) => {
 function Plus() {
   const [sections2, setSections2] = useState({});
   const [benefits, setBenefits] = useState([]);
+  const [menuItems, setMenuItems] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const loadData = async () => {
       try {
-        // Բեռնում ենք և՛ CareerSections2-ը, և՛ CareerBenefits-ը միաժամանակ
-        const [sectionsSnap, benefitsSnap] = await Promise.all([
+        const [sectionsSnap, benefitsSnap, menuSnap] = await Promise.all([
           getDocs(collection(db, "CareerSections2")),
-          getDocs(collection(db, "CareerBenefits"))
+          getDocs(collection(db, "CareerBenefits")),
+          getDocs(query(collection(db, "CultureMenuItems1"), orderBy("order"))),
         ]);
 
         const s = {};
@@ -57,10 +60,10 @@ function Plus() {
           docId: d.id,
           ...d.data(),
         }));
-        // Եթե ուզում ես պահպանել ID-ների հերթականությունը, կարողես սորտավորել ըստ `id` դաշտի
         bList.sort((a, b) => (a.id || 0) - (b.id || 0));
-        
         setBenefits(bList);
+
+        setMenuItems(menuSnap.docs.map((d) => d.data()));
       } catch (err) {
         console.error("Career data load error:", err);
       } finally {
@@ -73,7 +76,7 @@ function Plus() {
   return (
     <>
       <Header />
-      <Navbar />
+      <Navbar items={menuItems} />
 
       {loading ? (
         <div className="flex min-h-[60vh] items-center justify-center text-[#6a0fd9]">

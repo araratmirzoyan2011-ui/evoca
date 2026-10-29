@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { Header } from '../Components/Header.jsx';
+import Header from '../Components/Carrer-Header.jsx';
 import Footer from '../Components/Footer.jsx';
-import Navbar from '../Components/Menu2.jsx';
+import Navbar from '../Components/Menuall.jsx';
 import { db } from '../firebase.js';
 import {
   addDoc,
   collection,
   getDocs,
+  orderBy,
+  query,
   serverTimestamp,
 } from 'firebase/firestore';
 import CultureBanner from '../Components/CultureBanner.jsx';
@@ -38,17 +40,23 @@ const handleJoin = async ({ values, files }) => {
 
 function Answer() {
   const [sections, setSections] = useState({});
+  const [menuItems, setMenuItems] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const loadCareerSections = async () => {
       try {
-        const sectionsSnap = await getDocs(collection(db, "CareerSections4"));
+        const [sectionsSnap, menuSnap] = await Promise.all([
+          getDocs(collection(db, "CareerSections4")),
+          getDocs(query(collection(db, "CultureMenuItems1"), orderBy("order"))),
+        ]);
+
         const data = {};
         sectionsSnap.forEach((doc) => {
           data[doc.id] = doc.data();
         });
         setSections(data);
+        setMenuItems(menuSnap.docs.map((d) => d.data()));
       } catch (err) {
         console.error("Firebase data fetch error:", err);
       } finally {
@@ -67,7 +75,7 @@ function Answer() {
   return (
     <>
       <Header />
-      <Navbar />
+      <Navbar items={menuItems} />
 
       {loading ? (
         <div className="flex min-h-[60vh] items-center justify-center text-[#6a0fd9] font-medium">
