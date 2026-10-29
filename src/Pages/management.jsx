@@ -1,4 +1,3 @@
-
 import Header from '../Components/About-us-Header.jsx';
 import Footer from '../Components/Footer.jsx';
 import Navbar from '../Components/Menu.jsx';
@@ -59,13 +58,16 @@ function Managment() {
           <h1 className="text-2xl sm:text-3xl font-bold text-center text-gray-800 mb-10">
             Բանկի խորհուրդ
           </h1>
-          
+
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 justify-items-center">
             {boardMembers.map((member) => (
-              <ProfileCard 
+              <ProfileCard
                 key={member.id}
+                id={member.id}
+                group="board"
                 photo={member.photo}
                 name={member.name}
+                degrees={member.degrees}
                 role={member.role}
               />
             ))}
@@ -76,13 +78,16 @@ function Managment() {
           <h1 className="text-2xl sm:text-3xl font-bold text-center text-gray-800 mb-10">
             Բանկի վարչություն
           </h1>
-          
+
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 justify-items-center">
             {managementMembers.map((member) => (
-              <ProfileCard 
+              <ProfileCard
                 key={member.id}
+                id={member.id}
+                group="management"
                 photo={member.photo}
                 name={member.name}
+                degrees={member.degrees}
                 role={member.role}
               />
             ))}
@@ -93,13 +98,16 @@ function Managment() {
           <h1 className="text-2xl sm:text-3xl font-bold text-center text-gray-800 mb-10">
             Բանկի ներքին աուդիտ
           </h1>
-          
+
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 justify-items-center">
             {auditarr.map((member) => (
-              <ProfileCard 
+              <ProfileCard
                 key={member.id}
+                id={member.id}
+                group="audit"
                 photo={member.photo}
                 name={member.name}
+                degrees={member.degrees}
                 role={member.role}
               />
             ))}

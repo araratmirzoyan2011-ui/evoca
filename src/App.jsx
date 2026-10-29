@@ -99,6 +99,7 @@ import OnlineMap from "./Pages/online-map";
 import LocationSharer from "./Components/LocationSharer";
 import LoanDetails from "./Pages/current-loan";
 import CurrentDeposit from "./Pages/CurrentDeposit";
+import ProfileManagment from "./Pages/Profile-managment";
 function App() {
   return (
     <BrowserRouter>
@@ -111,6 +112,7 @@ function App() {
           <Route path="/guarantee" element={<Guarantee />} />
           <Route path="/branches" element={<Branches />} />
           <Route path="/business-investment-services" element={<Garant />} />
+          <Route path="/management/:group/:id" element={<ProfileManagment />} />
           <Route path="/current-loan/:id" element={<LoanDetails />} />
 
 <Route path="/current-deposit/:id" element={<CurrentDeposit />} />

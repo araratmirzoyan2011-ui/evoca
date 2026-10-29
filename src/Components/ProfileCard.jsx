@@ -1,8 +1,15 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
-export default function ProfileCard({ photo, name, degrees, role }) {
+export default function ProfileCard({ id, group, photo, name, degrees, role }) {
+  // Works with both shapes: separate `degrees` field, or "NAME, LL.M., MPA" in one string
+  const [baseName, ...rest] = (name || '').split(',');
+  const deg = degrees || rest.join(',').trim();
+
   return (
-    <div className="group mx-auto flex w-full max-w-[240px] flex-col items-center text-center">
+    <Link
+      to={`/management/${group}/${id}`}
+      className="group mx-auto flex w-full max-w-[240px] cursor-pointer flex-col items-center text-center">
       {/* Photo + rounded inverted-triangle background */}
       <div className="relative aspect-square w-full">
         <svg
@@ -27,17 +34,15 @@ export default function ProfileCard({ photo, name, degrees, role }) {
 
       {/* Name + degrees */}
       <h3 className="mt-5 px-2 text-[15px] font-semibold uppercase leading-snug text-gray-900">
-        {name}
-        {degrees && ','}
-        {degrees && (
-          <span className="block text-[13px] font-semibold">{degrees}</span>
-        )}
+        {baseName.trim()}
+        {deg && ','}
+        {deg && <span className="block text-[13px] font-semibold">{deg}</span>}
       </h3>
 
       {/* Role */}
       <p className="mt-3 px-3 text-[13px] leading-relaxed text-gray-700">
         {role}
       </p>
-    </div>
+    </Link>
   );
 }
