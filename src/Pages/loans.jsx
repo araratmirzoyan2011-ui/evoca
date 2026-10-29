@@ -5,8 +5,9 @@ import Footer from '../Components/Footer';
 import Navbar from '../Components/Menuall.jsx';
 import { db } from "../firebase.js";
 import { collection, getDocs, query, orderBy } from 'firebase/firestore';
-
+import { useNavigate } from 'react-router-dom';
 const Loans = () => {
+  const navigate = useNavigate();
   const [loansData, setLoansData] = useState([]);
   const [menuItems, setMenuItems] = useState([]);
   const [menuLoading, setMenuLoading] = useState(false);
@@ -21,7 +22,8 @@ const Loans = () => {
           getDocs(query(collection(db, "loansMenu"), orderBy("order"))),
         ]);
 
-        setLoansData(loansSnap.docs.map((d) => d.data()));
+        // docId-ն ավելացնում ենք data-ի հետ
+        setLoansData(loansSnap.docs.map((d) => ({ ...d.data(), docId: d.id })));
         setMenuItems(menuSnap.docs.map((d) => d.data()));
       } catch (e) {
         console.error(e);
@@ -34,8 +36,8 @@ const Loans = () => {
     fetchData();
   }, []);
 
-  const handleDetailsClick = (title) => {
-    console.log("Details:", title);
+  const handleDetailsClick = (docId) => {
+    navigate(`/current-loan/${docId}`);
   };
 
   return (
@@ -57,13 +59,13 @@ const Loans = () => {
           !error &&
           loansData.map((loan) => (
             <LoanCard
-              key={loan.id}
-              title={loan.title}
-              description={loan.description}
-              imageSrc={loan.imageSrc}
-              stats={loan.stats}
-              onDetailsClick={() => handleDetailsClick(loan.title)}
-            />
+  key={loan.docId}
+  title={loan.title}
+  description={loan.description}
+  imageSrc={loan.imageSrc}
+  stats={loan.stats}
+  onDetailsClick={() => handleDetailsClick(loan.docId)}
+/>
           ))}
       </div>
 
