@@ -13,7 +13,6 @@ function Managment() {
   const [auditarr, setAuditarr] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Տվյալների ներբեռնումը Firebase-ից
   useEffect(() => {
     const fetchData = async () => {
       try {
