@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import LoanCard from "../Components/LoanCard";
+import DepositSlider from "../Components/DepositSlider";
 import { Header } from '../Components/Header';
 import Footer from '../Components/Footer';
 import Navbar from '../Components/Menuall.jsx';
@@ -43,11 +44,11 @@ const DepositMain = () => {
     fetchData();
   }, []);
 
-   const handleDetailsClick = (deposit) => {
+  const handleDetailsClick = (deposit) => {
     const id = deposit.docId || deposit.id;
     navigate(`/current-deposit/${id}`);
   };
-
+  
   return (
     <>
       <Header />
@@ -59,7 +60,7 @@ const DepositMain = () => {
         </h1>
       </div>
 
-       <div className="container mx-auto px-4">
+      <div className="container mx-auto px-4">
         {loading && <p className="text-center">Բեռնվում է...</p>}
         {error && <p className="text-center text-red-600">{error}</p>}
 
@@ -69,7 +70,7 @@ const DepositMain = () => {
             <div
               key={deposit.docId || deposit.id}
               onClick={() => handleDetailsClick(deposit)}
-              className="cursor-pointer"
+              className="cursor-pointer mb-6"
             >
               <LoanCard
                 title={deposit.title}
@@ -80,6 +81,7 @@ const DepositMain = () => {
               />
             </div>
           ))}
+
       </div>
 
       <Footer />

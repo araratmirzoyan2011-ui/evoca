@@ -8,7 +8,7 @@ import { OnlineBanking } from "../Components/OnlineBanking.jsx";
 import CardHero from "../Components/CardHero.jsx";
 import LoanTariff from "../Components/LoanTariff.jsx";
 import DepositConditions from "../Components/DepositConditions.jsx";
-
+import DepositSlider from "../Components/DepositSlider.jsx";
 const tabs = [
   { key: "about", label: "Ավանդի մասին" },
   { key: "conditions", label: "Պայմաններ և սակագներ" },
@@ -127,8 +127,11 @@ const CurrentDeposit = () => {
             </div>
           </>
         )}
-      </div>
+          <DepositSlider heading="Ավանդներ" />
 
+      </div>
+      
+           
       <OnlineBanking />
       <Footer />
     </>
