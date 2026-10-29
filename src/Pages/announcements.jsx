@@ -3,7 +3,8 @@ import React, { useMemo, useState, useEffect } from "react";
 import Header from '../Components/About-us-Header.jsx';
 import Footer from "../Components/Footer.jsx";
 import AccordionItem from "../Components/announcements-accordion.jsx";
-import { db } from "../firebase"; 
+import AwardsDecor from "../Components/AwardsDecor.jsx";
+import { db } from "../firebase";
 import { collection, getDocs } from "firebase/firestore";
 
 const ITEMS_PER_PAGE = 6;
@@ -35,7 +36,7 @@ const Announcements = () => {
         for (let i = 1; i <= 8; i++) {
           const querySnapshot = await getDocs(collection(db, `announcements_page${i}`));
           const pageItems = [];
-          
+
           querySnapshot.forEach((doc) => {
             pageItems.push({ id: doc.id, ...doc.data() });
           });
@@ -85,9 +86,9 @@ const Announcements = () => {
     <>
       <Header />
 
-      <main className="bg-[#f3f2fa] min-h-screen py-10">
-        <div className="max-w-4xl mx-auto px-4">
-          {/* Title + date filter */}
+      <main>
+        {/* Title + date filter */}
+        <div className="max-w-[1200px] mx-auto px-4 pt-10 pb-8">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900">
               Հայտարարություններ
@@ -130,72 +131,84 @@ const Announcements = () => {
               />
             </div>
           </div>
+        </div>
 
-          <div className="mt-10 flex flex-col gap-5">
-            {loading ? (
-              <p className="text-gray-500 text-center py-10">Բեռնվում է տվյալները Firebase-ից...</p>
-            ) : currentItems.length === 0 ? (
-              <p className="text-gray-500 text-center py-10">
-                Հայտարարություններ չեն գտնվել
-              </p>
-            ) : (
-              currentItems.map((a) => (
-                <AccordionItem
-                  key={a.id}
-                  title={a.title}
-                  date={a.date}
-                  description={a.description}
-                  items={a.items}
-                />
-              ))
-            )}
-            {!loading && totalPages > 1 && (
-              <div className="flex items-center justify-center gap-6 mt-8 select-none">
-                <button
-                  onClick={() => goTo(page - 1)}
-                  disabled={page === 1}
-                  className={`text-2xl ${
-                    page === 1
-                      ? "text-gray-300 cursor-default"
-                      : "text-purple-700 cursor-pointer"
-                  }`}
-                  aria-label="Նախորդ"
-                >
-                  ←
-                </button>
+        {/* Ֆոնով բլոկ */}
+        <section className="relative overflow-hidden py-12 md:py-16">
+          <div className="absolute inset-0 bg-[#f3f3f9] md:rounded-tl-[260px]" />
 
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map(
-                  (p) => (
-                    <button
-                      key={p}
-                      onClick={() => goTo(p)}
-                      className={`w-9 h-9 rounded-full text-sm font-bold cursor-pointer transition-colors ${
-                        p === page
-                          ? "bg-purple-700 text-white"
-                          : "text-gray-800 hover:text-purple-700"
-                      }`}
-                    >
-                      {p}
-                    </button>
-                  )
+          <div className="relative max-w-[1200px] mx-auto px-4">
+            <div className="relative grid grid-cols-1 lg:grid-cols-[480px_1fr] gap-10 items-start">
+              <AwardsDecor />
+
+              <div className="relative z-10 flex flex-col gap-5">
+                {loading ? (
+                  <p className="text-gray-500 text-center py-10">
+                    Բեռնվում է տվյալները Firebase-ից...
+                  </p>
+                ) : currentItems.length === 0 ? (
+                  <p className="text-gray-500 text-center py-10">
+                    Հայտարարություններ չեն գտնվել
+                  </p>
+                ) : (
+                  currentItems.map((a) => (
+                    <AccordionItem
+                      key={a.id}
+                      title={a.title}
+                      date={a.date}
+                      description={a.description}
+                      items={a.items}
+                    />
+                  ))
                 )}
 
-                <button
-                  onClick={() => goTo(page + 1)}
-                  disabled={page === totalPages}
-                  className={`text-2xl ${
-                    page === totalPages
-                      ? "text-gray-300 cursor-default"
-                      : "text-purple-700 cursor-pointer"
-                  }`}
-                  aria-label="Հաջորդ"
-                >
-                  →
-                </button>
+                {!loading && totalPages > 1 && (
+                  <div className="flex items-center justify-center gap-6 mt-8 select-none">
+                    <button
+                      onClick={() => goTo(page - 1)}
+                      disabled={page === 1}
+                      className={`text-2xl ${
+                        page === 1
+                          ? "text-gray-300 cursor-default"
+                          : "text-purple-700 cursor-pointer"
+                      }`}
+                      aria-label="Նախորդ"
+                    >
+                      ←
+                    </button>
+
+                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+                      <button
+                        key={p}
+                        onClick={() => goTo(p)}
+                        className={`w-9 h-9 rounded-full text-sm font-bold cursor-pointer transition-colors ${
+                          p === page
+                            ? "bg-purple-700 text-white"
+                            : "text-gray-800 hover:text-purple-700"
+                        }`}
+                      >
+                        {p}
+                      </button>
+                    ))}
+
+                    <button
+                      onClick={() => goTo(page + 1)}
+                      disabled={page === totalPages}
+                      className={`text-2xl ${
+                        page === totalPages
+                          ? "text-gray-300 cursor-default"
+                          : "text-purple-700 cursor-pointer"
+                      }`}
+                      aria-label="Հաջորդ"
+                    >
+                      →
+                    </button>
+                  </div>
+                )}
               </div>
-            )}
+            </div>
           </div>
-        </div>
+        </section>
       </main>
 
       <Footer />

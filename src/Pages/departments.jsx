@@ -6,8 +6,10 @@ import Footer from '../Components/Footer.jsx';
 import Navbar from '../Components/Menu.jsx';
 import CardComponent from '../Components/AwardCard.jsx';
 import Pagination from '../Components/Pagination.jsx';
-
+import AwardsDecor from '../Components/AwardsDecor.jsx';
 const ITEMS_PER_PAGE = 20;
+
+
 
 function Departments() {
   const [awards, setAwards] = useState([]);
@@ -47,40 +49,59 @@ function Departments() {
       <Header />
       <Navbar />
 
-      <main className="max-w-[1200px] mx-auto px-4 py-10">
-        <h1 className="text-[#2d3436] text-4xl font-bold mb-8">Մրցանակներ</h1>
+      <main>
+        <div className="max-w-[1200px] mx-auto px-4 pt-10 pb-8">
+          <h1 className="text-[#2d3436] text-4xl font-bold">Մրցանակներ</h1>
+        </div>
 
-        {loading && <p className="text-center py-20 text-[#2d3436]">Բեռնվում է...</p>}
+        {/* Ֆոնով բլոկ */}
+        <section className="relative overflow-hidden py-12 md:py-16">
+          <div className="absolute inset-0 bg-[#f3f3f9] md:rounded-tl-[260px]" />
 
-        {error && (
-          <p className="text-center py-20 text-red-500">Սխալ՝ {error}</p>
-        )}
+          <div className="relative max-w-[1200px] mx-auto px-4">
+            <div className="relative grid grid-cols-1 lg:grid-cols-[480px_1fr] gap-10 items-start">
+              <AwardsDecor />
 
-        {!loading && !error && awards.length === 0 && (
-          <p className="text-center py-20 text-[#2d3436]">Մրցանակներ չեն գտնվել։</p>
-        )}
+              <div className="relative z-10">
+                {loading && (
+                  <p className="text-center py-20 text-[#2d3436]">Բեռնվում է...</p>
+                )}
 
-        {!loading && !error && awards.length > 0 && (
-          <>
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-              {currentItems.map(({ id, year, title, sourceName, logoUrl }) => (
-                <CardComponent
-                  key={id}
-                  year={year}
-                  title={title}
-                  sourceName={sourceName}
-                  logoUrl={logoUrl}
-                />
-              ))}
+                {error && (
+                  <p className="text-center py-20 text-red-500">Սխալ՝ {error}</p>
+                )}
+
+                {!loading && !error && awards.length === 0 && (
+                  <p className="text-center py-20 text-[#2d3436]">
+                    Մրցանակներ չեն գտնվել։
+                  </p>
+                )}
+
+                {!loading && !error && awards.length > 0 && (
+                  <>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      {currentItems.map(({ id, year, title, sourceName, logoUrl }) => (
+                        <CardComponent
+                          key={id}
+                          year={year}
+                          title={title}
+                          sourceName={sourceName}
+                          logoUrl={logoUrl}
+                        />
+                      ))}
+                    </div>
+
+                    <Pagination
+                      currentPage={page}
+                      totalPages={totalPages}
+                      onPageChange={handlePageChange}
+                    />
+                  </>
+                )}
+              </div>
             </div>
-
-            <Pagination
-              currentPage={page}
-              totalPages={totalPages}
-              onPageChange={handlePageChange}
-            />
-          </>
-        )}
+          </div>
+        </section>
       </main>
 
       <Footer />
