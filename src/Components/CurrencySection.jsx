@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 export function CurrencySection() {
+  const navigate = useNavigate(); // React Router-ի երթուղավորման հուկը
+  
   const [activeTab, setActiveTab] = useState('cash'); 
   
   // Հաշվիչի վիճակը (State)
@@ -69,7 +72,7 @@ export function CurrencySection() {
             20,000 ԱՄՆ դոլարից ավել կամ դրան համարժեք այլ արտարժույթի փոխարկման դեպքում գործարքը հաստատվում է Բանկի հայեցողությամբ և Բանկի կողմից որոշված փոխարժեքով։ 100,000 դրամ կամ դրան համարժեք արտարժույթից ավելի փոխանակման գործարքների իրականացման համար անհրաժեշտ է ներկայացնել անձը հաստատող փաստաթուղթ։
           </p>
 
-          {/* Թաբեր (Tabs) - Ավելացված է հատուկ փոքր էկրանների (մինչև 400px) համար ոլորման հնարավորություն */}
+          {/* Թաբեր (Tabs) */}
           <div className="flex items-center gap-x-6 sm:gap-x-8 border-b border-gray-200 mb-6 pb-1 overflow-x-auto scrollbar-none whitespace-nowrap">
             <button 
               onClick={() => setActiveTab('cash')}
@@ -227,7 +230,11 @@ export function CurrencySection() {
             </div>
           </div>
 
-          <button className="w-full bg-purple-50 hover:bg-purple-100 text-purple-700 py-3 sm:py-3.5 rounded-full font-bold text-xs sm:text-sm transition-colors flex items-center justify-center space-x-2 group cursor-pointer shadow-sm">
+          {/* Կոճակը, որը սեղմելիս տեղափոխում է /branches երթուղի */}
+          <button 
+            onClick={() => navigate('/branches')}
+            className="w-full bg-purple-50 hover:bg-purple-100 text-purple-700 py-3 sm:py-3.5 rounded-full font-bold text-xs sm:text-sm transition-colors flex items-center justify-center space-x-2 group cursor-pointer shadow-sm"
+          >
             <span>Դիտել քարտեզը</span>
             <svg className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />

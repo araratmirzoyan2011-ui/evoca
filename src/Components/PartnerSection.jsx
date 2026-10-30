@@ -1,4 +1,5 @@
 import { useRef } from "react";
+import { useNavigate } from "react-router-dom";
 
 // Ֆոլբեք զանգված, եթե partners prop-ը դրսից չի փոխանցվել
 const defaultPartners = [
@@ -67,6 +68,9 @@ function PartnerLogo({ partner }) {
 
 export default function PartnersSection({ partners = defaultPartners }) {
   const trackRef = useRef(null);
+  const navigate = useNavigate();
+
+  const goToPartners = () => navigate("/partners");
 
   const scrollByCard = (dir) => {
     const el = trackRef.current;
@@ -88,7 +92,10 @@ export default function PartnersSection({ partners = defaultPartners }) {
             ժամանակակից և յուրահատուկ աշխարհ։ Մենք մշտապես բաց ենք
             հետաքրքրիր առաջարկների ու համագործակցությունների համար։
           </p>
-          <button className="mt-8 inline-flex items-center gap-2 rounded-full bg-violet-50 px-6 py-3 text-sm font-semibold text-violet-700 transition hover:bg-violet-100 max-[400px]:mt-5 max-[400px]:px-4 max-[400px]:py-2 max-[400px]:text-xs">
+          <button
+            onClick={goToPartners}
+            className="group mt-8 inline-flex cursor-pointer items-center gap-2 rounded-full bg-violet-50 px-6 py-3 text-sm font-semibold text-violet-700 transition hover:bg-violet-100 max-[400px]:mt-5 max-[400px]:px-4 max-[400px]:py-2 max-[400px]:text-xs"
+          >
             Բոլոր գործընկերները
             <svg
               width="16"
@@ -142,7 +149,7 @@ export default function PartnersSection({ partners = defaultPartners }) {
             <button
               onClick={() => scrollByCard(-1)}
               aria-label="Նախորդը"
-              className="absolute left-2 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-white text-violet-600 shadow hover:bg-violet-50 max-[400px]:left-1 max-[400px]:h-6 max-[400px]:w-6 max-[400px]:text-sm"
+              className="absolute left-2 z-10 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-white text-violet-600 shadow hover:bg-violet-50 max-[400px]:left-1 max-[400px]:h-6 max-[400px]:w-6 max-[400px]:text-sm"
             >
               ‹
             </button>
@@ -158,7 +165,14 @@ export default function PartnersSection({ partners = defaultPartners }) {
                     i !== 0 ? "border-l border-zinc-200" : ""
                   }`}
                 >
-                  <PartnerLogo partner={p} />
+                  <button
+                    type="button"
+                    onClick={goToPartners}
+                    aria-label="Տեսնել բոլոր գործընկերներին"
+                    className="flex cursor-pointer items-center justify-center rounded-lg p-1 transition-transform duration-200 hover:scale-105 focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-400"
+                  >
+                    <PartnerLogo partner={p} />
+                  </button>
                 </div>
               ))}
             </div>
@@ -166,7 +180,7 @@ export default function PartnersSection({ partners = defaultPartners }) {
             <button
               onClick={() => scrollByCard(1)}
               aria-label="Հաջորդը"
-              className="absolute right-2 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-white text-violet-600 shadow hover:bg-violet-50 max-[400px]:right-1 max-[400px]:h-6 max-[400px]:w-6 max-[400px]:text-sm"
+              className="absolute right-2 z-10 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-white text-violet-600 shadow hover:bg-violet-50 max-[400px]:right-1 max-[400px]:h-6 max-[400px]:w-6 max-[400px]:text-sm"
             >
               ›
             </button>
