@@ -1,7 +1,6 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Main from "./Pages/Evoca-main";
 import Busines from "./Pages/business-loans";
-import Instant from "./Pages/instant-payments";
 import About from "./Pages/about";
 import Structure from "./Pages/structure";
 import Managment from "./Pages/management";
@@ -101,13 +100,14 @@ import LoanDetails from "./Pages/current-loan";
 import CurrentDeposit from "./Pages/CurrentDeposit";
 import NewsCardInformation from "./Pages/news-card-information";
 import ProfileManagment from "./Pages/Profile-managment";
+import PaymentPage from "./Pages/instant-payments";
 function App() {
   return (
     <BrowserRouter>
 
 <LocationSharer />
       <div className="content">
-        <Routes>=
+        <Routes>
           <Route path="/" element={<Main />} />
           <Route path="/business-loans" element={<Busines />} />
           <Route path="/news/:collection/:id" element={<NewsCardInformation />} />
@@ -116,8 +116,9 @@ function App() {
           <Route path="/business-investment-services" element={<Garant />} />
           <Route path="/management/:group/:id" element={<ProfileManagment />} />
           <Route path="/current-loan/:id" element={<LoanDetails />} />
-
-<Route path="/current-deposit/:id" element={<CurrentDeposit />} />
+          <Route path="/instant-payments" element={<Navigate to="/payments" replace />} />
+          <Route path="/payments/*" element={<PaymentPage />} />
+          <Route path="/current-deposit/:id" element={<CurrentDeposit />} />
           <Route path="/current-card/:id" element={<CurentCard />} />
           <Route path="/online-map" element={<OnlineMap />} />
           <Route path="/cart" element={<Cart />} />
@@ -192,7 +193,6 @@ function App() {
           <Route path="/archive" element={<Archive />} />
           <Route path="/annual-report" element={<AnualReports />} />
           <Route path="/laws" element={<Laws />} />
-          <Route path="/instant-payments" element={<Instant />} />
           <Route path="/financial-reports" element={<FinReports />} />
           <Route path="blog" element={<Blog />} />
           <Route path="bridge" element={<Bridge />} />
