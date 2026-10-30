@@ -1,31 +1,81 @@
 import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import {
-  doc,
-  getDoc,
-  collection,
-  getDocs,
-  query,
-  orderBy,
-} from "firebase/firestore";
+import { doc, getDoc, collection, getDocs } from "firebase/firestore";
 import { db } from "../firebase";
 import { Header } from "../Components/Header.jsx";
 import Footer from "../Components/Footer.jsx";
 import NewsCard from "../Components/NewsCard.jsx";
 
+// URL-ից եկած collection-ի անունը թույլատրում ենք միայն այս երեքը
 const ALLOWED_COLLECTIONS = ["news", "newsFeatured", "newsBottom"];
 
-// **թավ տեքստ** -> <strong>
+// "26.10.2026" -> timestamp (դասավորելու համար)
+const toTime = (s) => {
+  const [d, m, y] = String(s || "").split(".").map(Number);
+  return y ? new Date(y, m - 1, d).getTime() : 0;
+};
+
+// **թավ** և *շեղ* տեքստը՝ երկուսն էլ մանուշակագույն
 const renderInline = (text) =>
-  text.split("**").map((part, i) =>
-    i % 2 ? (
-      <strong key={i} className="font-bold text-[#5B12D6]">
-        {part}
-      </strong>
-    ) : (
-      part
-    )
-  );
+  text.split(/(\*\*[^*]+\*\*|\*[^*]+\*)/g).map((part, i) => {
+    if (part.startsWith("**") && part.endsWith("**") && part.length > 4) {
+      return (
+        <strong key={i} className="font-bold text-[#5B12D6]">
+          {part.slice(2, -2)}
+        </strong>
+      );
+    }
+    if (part.startsWith("*") && part.endsWith("*") && part.length > 2) {
+      return (
+        <em key={i} className="italic text-[#5B12D6]">
+          {part.slice(1, -1)}
+        </em>
+      );
+    }
+    return part;
+  });
+
+// content դաշտը -> բլոկներ՝ պարբերություն, "## ենթավերնագիր", "- ցուցակ"
+const renderContent = (content) => {
+  const blocks = [];
+  content
+    .split(/\\n|\n/)
+    .filter((l) => l.trim())
+    .forEach((line) => {
+      if (line.startsWith("- ")) {
+        const last = blocks[blocks.length - 1];
+        if (last?.type === "list") last.items.push(line.slice(2));
+        else blocks.push({ type: "list", items: [line.slice(2)] });
+      } else if (line.startsWith("## ")) {
+        blocks.push({ type: "heading", text: line.slice(3) });
+      } else {
+        blocks.push({ type: "p", text: line });
+      }
+    });
+
+  return blocks.map((b, i) => {
+    if (b.type === "heading") {
+      return (
+        <h2 key={i} className="font-bold text-[#5B12D6]">
+          {renderInline(b.text)}
+        </h2>
+      );
+    }
+    if (b.type === "list") {
+      return (
+        <ul key={i} className="space-y-2">
+          {b.items.map((it, j) => (
+            <li key={j} className="flex gap-3">
+              <span className="mt-[9px] h-1.5 w-1.5 shrink-0 rounded-full bg-[#5B12D6]" />
+              <span>{renderInline(it)}</span>
+            </li>
+          ))}
+        </ul>
+      );
+    }
+    return <p key={i}>{renderInline(b.text)}</p>;
+  });
+};
 
 const SocialIcons = () => {
   const url = encodeURIComponent(window.location.href);
@@ -120,18 +170,23 @@ export default function NewsCardInformation() {
     const load = async () => {
       setLoading(true);
       try {
-        const [snap, listSnap] = await Promise.all([
+        const [snap, ...lists] = await Promise.all([
           getDoc(doc(db, collectionName, id)),
-          getDocs(query(collection(db, collectionName), orderBy("order"))),
+          ...ALLOWED_COLLECTIONS.map((name) =>
+            getDocs(collection(db, name)).then((s) =>
+              s.docs.map((d) => ({ ...d.data(), id: d.id, collection: name }))
+            )
+          ),
         ]);
         if (cancelled) return;
 
         setItem(snap.exists() ? { id: snap.id, ...snap.data() } : null);
         setOthers(
-          listSnap.docs
-            .filter((d) => d.id !== id)
+          lists
+            .flat()
+            .filter((o) => !(o.collection === collectionName && o.id === id))
+            .sort((a, b) => toTime(b.date) - toTime(a.date))
             .slice(0, 3)
-            .map((d) => ({ id: d.id, ...d.data() }))
         );
       } catch (err) {
         console.error("Error loading news item:", err);
@@ -149,10 +204,6 @@ export default function NewsCardInformation() {
 
   // Firestore-ի փաստաթղթում ըստ ցանկության՝
   // content (տեքստ, պարբերությունները բաժանված "\n"-ով) և articleLink
-  const paragraphs = item?.content
-    ? item.content.split("\n").filter((p) => p.trim())
-    : [];
-
   return (
     <>
       <Header />
@@ -206,9 +257,7 @@ export default function NewsCardInformation() {
             {/* Հոդվածի տեքստ */}
             <section className="mx-auto max-w-[788px] px-6 pb-20 pt-14">
               <div className="max-w-[750px] space-y-6 text-[15px] leading-6 text-black">
-                {paragraphs.map((p, i) => (
-                  <p key={i}>{renderInline(p)}</p>
-                ))}
+                {item.content && renderContent(item.content)}
 
                 {item.articleLink && (
                   <p>
@@ -235,9 +284,9 @@ export default function NewsCardInformation() {
                   <div className="mt-5 grid gap-x-[30px] gap-y-10 sm:grid-cols-3">
                     {others.map((o) => (
                       <NewsCard
-                        key={o.id}
+                        key={`${o.collection}-${o.id}`}
                         item={o}
-                        collection={collectionName}
+                        collection={o.collection}
                       />
                     ))}
                   </div>
