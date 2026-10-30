@@ -101,6 +101,7 @@ import CurrentDeposit from "./Pages/CurrentDeposit";
 import NewsCardInformation from "./Pages/news-card-information";
 import ProfileManagment from "./Pages/Profile-managment";
 import PaymentPage from "./Pages/instant-payments";
+import Search from "./Pages/search";
 function App() {
   return (
     <BrowserRouter>
@@ -111,6 +112,8 @@ function App() {
           <Route path="/" element={<Main />} />
           <Route path="/business-loans" element={<Busines />} />
           <Route path="/news/:collection/:id" element={<NewsCardInformation />} />
+          
+          <Route path="/search" element={<Search />} />
           <Route path="/guarantee" element={<Guarantee />} />
           <Route path="/branches" element={<Branches />} />
           <Route path="/business-investment-services" element={<Garant />} />
