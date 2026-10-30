@@ -43,7 +43,6 @@ function Main() {
   const navigate = useNavigate();
   const [slidesData, setSlidesData] = useState([]);
   const [bestOffersData, setBestOffersData] = useState([]);
-  const [cardsSliderData, setCardsSliderData] = useState([]);
   const [reviewsData, setReviewsData] = useState([]);
   const [newsItems, setNewsItems] = useState([]);
   const [arrimg, setArrimg] = useState([]);
@@ -51,13 +50,12 @@ function Main() {
 
   useEffect(() => {
     const fetchData = async () => {
-      const [reviews, news, partners, slides, offers, cards] = await Promise.all([
+      const [reviews, news, partners, slides, offers] = await Promise.all([
         loadArray('reviewsCollection', 'reviews'),
         loadArray(NEWS_COLLECTION, 'items', 'news'),
         loadArray('partnersCollection', 'partners'),
         loadArray('slidersCollection', 'slides'),
         loadArray('bestOffersCollection', 'offers'),
-        loadArray('cardsSliderCollection', 'cards'),
       ]);
 
       setReviewsData(reviews);
@@ -66,7 +64,6 @@ function Main() {
       setArrimg(partners);
       setSlidesData(slides);
       setBestOffersData(offers);
-      setCardsSliderData(cards);
     };
 
     fetchData();
@@ -176,7 +173,7 @@ function Main() {
         </div>
       </HeroBackground>
 
-      <CardSlider cards={cardsSliderData} />
+      <CardSlider />
       <Calculators />
       <OnlineBanking />
       <PartnersSection partners={arrimg} />
