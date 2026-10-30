@@ -1,5 +1,5 @@
 import React from "react";
-
+import { Link } from "react-router-dom";
 const CATEGORY_COLORS = {
   "Մրցանակներ": "#FFE600",
   "Պրոդուկտներ": "#D400E0",
@@ -8,7 +8,7 @@ const CATEGORY_COLORS = {
   "Կենսակերպ": "#9DFF00",
 };
 
-export default function NewsCard({ item }) {
+export default function NewsCard({ item, collection }) {
   const barColor = CATEGORY_COLORS[item.category] || "#5B12D6";
 
   return (
@@ -31,7 +31,12 @@ export default function NewsCard({ item }) {
       </div>
 
       <h4 className="mt-4 text-[15px] font-semibold leading-snug text-black line-clamp-2">
-        {item.title}
+        <Link
+          to={`/news/${collection}/${item.id}`}
+          className="transition-colors hover:text-[#5B12D6] focus-visible:text-[#5B12D6]"
+        >
+          {item.title}
+        </Link>
       </h4>
 
       <p className="mt-6 text-[13px] text-gray-300">{item.date}</p>

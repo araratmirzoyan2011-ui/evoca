@@ -99,6 +99,7 @@ import OnlineMap from "./Pages/online-map";
 import LocationSharer from "./Components/LocationSharer";
 import LoanDetails from "./Pages/current-loan";
 import CurrentDeposit from "./Pages/CurrentDeposit";
+import NewsCardInformation from "./Pages/news-card-information";
 import ProfileManagment from "./Pages/Profile-managment";
 function App() {
   return (
@@ -109,6 +110,7 @@ function App() {
         <Routes>=
           <Route path="/" element={<Main />} />
           <Route path="/business-loans" element={<Busines />} />
+          <Route path="/news/:collection/:id" element={<NewsCardInformation />} />
           <Route path="/guarantee" element={<Guarantee />} />
           <Route path="/branches" element={<Branches />} />
           <Route path="/business-investment-services" element={<Garant />} />

@@ -1,6 +1,7 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
-export default function LargeNewsCard({ item }) {
+export default function LargeNewsCard({ item, collection }) {
   return (
     <article className="relative">
       <span className="absolute -top-[17px] -left-[17px] h-[75px] w-[75px] bg-[#FFE600]" />
@@ -19,8 +20,13 @@ export default function LargeNewsCard({ item }) {
         </span>
       </div>
 
-      <h4 className="mt-6 text-[22px] font-semibold leading-snug text-black">
-        {item.title}
+     <h4 className="mt-6 text-[22px] font-semibold leading-snug text-black">
+        <Link
+          to={`/news/${collection}/${item.id}`}
+          className="transition-colors hover:text-[#5B12D6] focus-visible:text-[#5B12D6]"
+        >
+          {item.title}
+        </Link>
       </h4>
 
       {item.description && (

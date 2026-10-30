@@ -52,46 +52,54 @@ function News() {
         ) : (
           <>
             {featured && (
-              <FeaturedNewsCard
-                category={featured.category}
-                title={featured.title}
-                description={featured.description}
-                date={featured.date}
-                image={featured.image}
-                reverse={false}
-              />
-            )}
+  <FeaturedNewsCard
+    id={featured.id}
+    collection="news"
+    category={featured.category}
+    title={featured.title}
+    description={featured.description}
+    date={featured.date}
+    image={featured.image}
+    reverse={false}
+  />
+)}
 
-            {big && (
-              <section className="mx-auto max-w-[1200px] px-6 pt-24 pb-20 grid gap-y-16 lg:grid-cols-[512px_1fr] lg:gap-x-[100px]">
-                <LargeNewsCard item={big} />
+{big && (
+  <section className="mx-auto max-w-[1200px] px-6 pt-24 pb-20 grid gap-y-16 lg:grid-cols-[512px_1fr] lg:gap-x-[100px]">
+    <LargeNewsCard item={big} collection="news" />
 
-                <div className="grid gap-x-[34px] gap-y-10 sm:grid-cols-2 content-start">
-                  {small.slice(0, 4).map((item) => (
-                    <NewsCard key={item.id} item={item} />
-                  ))}
-                </div>
-              </section>
-            )}
+    <div className="grid gap-x-[34px] gap-y-10 sm:grid-cols-2 content-start">
+      {small.slice(0, 4).map((item) => (
+        <NewsCard key={item.id} item={item} collection="news" />
+      ))}
+    </div>
+  </section>
+)}
 
-            {lom && (
-              <FeaturedNewsCard
-                category={lom.category}
-                title={lom.title}
-                description={lom.description}
-                date={lom.date}
-                image={lom.image}
-                reverse={true}
-              />
-            )}
+{lom && (
+  <FeaturedNewsCard
+    id={lom.id}
+    collection="newsFeatured"
+    category={lom.category}
+    title={lom.title}
+    description={lom.description}
+    date={lom.date}
+    image={lom.image}
+    reverse={true}
+  />
+)}
 
-            {bottomNews.length > 0 && (
-              <section className="mx-auto max-w-[1200px] px-6 pt-16 pb-16 grid gap-x-[45px] gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
-                {bottomNews.map((item) => (
-                  <NewsCard key={item.id} item={item} ratio="aspect-[4/3]" />
-                ))}
-              </section>
-            )}
+{bottomNews.length > 0 && (
+  <section className="mx-auto max-w-[1200px] px-6 pt-16 pb-16 grid gap-x-[45px] gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
+    {bottomNews.map((item) => (
+      <NewsCard
+        key={item.id}
+        item={item}
+        collection="newsBottom"
+      />
+    ))}
+  </section>
+)}
 
             <div className="border-t border-gray-100">
               <div className="mx-auto max-w-[1200px] px-6 py-4 text-right text-[11px] text-gray-500">

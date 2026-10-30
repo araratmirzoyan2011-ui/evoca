@@ -1,11 +1,15 @@
+import { Link } from "react-router-dom";
+
 const FeaturedNewsCard = ({
+  id,
+  collection,
   category,
   title,
   description,
   date,
   image,
   imageAlt = "",
-  reverse ,
+  reverse,
 }) => {
   return (
     <section className="relative bg-[#f4f4f4] rounded-bl-[100px] overflow-hidden py-14">
@@ -25,8 +29,13 @@ const FeaturedNewsCard = ({
           </div>
 
           <h2 className="text-3xl font-semibold leading-snug text-black max-w-[480px]">
-            {title}
-          </h2>
+        <Link
+          to={`/news/${collection}/${id}`}
+          className="transition-colors hover:text-[#5B12D6] focus-visible:text-[#5B12D6]"
+        >
+          {title}
+        </Link>
+      </h2>
 
           <p className="mt-6 text-[15px] leading-7 text-gray-800 max-w-[480px]">
             {description}
