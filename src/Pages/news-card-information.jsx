@@ -1,18 +1,47 @@
 import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { doc, getDoc, collection, getDocs } from "firebase/firestore";
+import { collection, getDocs } from "firebase/firestore";
 import { db } from "../firebase";
 import { Header } from "../Components/Header.jsx";
 import Footer from "../Components/Footer.jsx";
 import NewsCard from "../Components/NewsCard.jsx";
 
-// URL-ից եկած collection-ի անունը թույլատրում ենք միայն այս երեքը
-const ALLOWED_COLLECTIONS = ["news", "newsFeatured", "newsBottom"];
+// URL-ից եկած collection-ի անունը թույլատրում ենք միայն այս ցանկից
+const ALLOWED_COLLECTIONS = [
+  'news',
+  'newsFeatured',
+  'newsBottom',
+  'news1',
+  'newsFeautured2',
+  'newsBottom2',
+  'salaryNewsCollection',
+];
+
+// Այս collection-ների հոդվածները պատկանում են Blog-ին
+const BLOG_COLLECTIONS = ['news1', 'newsFeautured2', 'newsBottom2'];
 
 // "26.10.2026" -> timestamp (դասավորելու համար)
 const toTime = (s) => {
-  const [d, m, y] = String(s || "").split(".").map(Number);
+  const [d, m, y] = String(s || "").trim().split(".").map(Number);
   return y ? new Date(y, m - 1, d).getTime() : 0;
+};
+
+// Collection-ը -> նորությունների հարթ ցանկ։
+// Եթե փաստաթուղթը պարունակում է items զանգված (ինչպես salaryNewsCollection-ում),
+// ամեն items տարր դառնում է առանձին նորություն։
+const loadCollection = async (name) => {
+  const snap = await getDocs(collection(db, name));
+  return snap.docs.flatMap((d) => {
+    const data = d.data();
+    if (Array.isArray(data.items)) {
+      return data.items.map((it, idx) => ({
+        ...it,
+        id: String(it.id ?? idx),
+        collection: name,
+      }));
+    }
+    return [{ ...data, id: d.id, collection: name }];
+  });
 };
 
 // **թավ** և *շեղ* տեքստը՝ երկուսն էլ մանուշակագույն
@@ -38,7 +67,7 @@ const renderInline = (text) =>
 // content դաշտը -> բլոկներ՝ պարբերություն, "## ենթավերնագիր", "- ցուցակ"
 const renderContent = (content) => {
   const blocks = [];
-  content
+  String(content)
     .split(/\\n|\n/)
     .filter((l) => l.trim())
     .forEach((line) => {
@@ -155,6 +184,10 @@ export default function NewsCardInformation() {
   const [others, setOthers] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const isBlog = BLOG_COLLECTIONS.includes(collectionName);
+  const backTo = isBlog ? "/blog" : "/news";
+  const backLabel = isBlog ? "Վերադառնալ բլոգ" : "Վերադառնալ նորություններ";
+
   useEffect(() => {
     window.scrollTo(0, 0);
 
@@ -170,21 +203,19 @@ export default function NewsCardInformation() {
     const load = async () => {
       setLoading(true);
       try {
-        const [snap, ...lists] = await Promise.all([
-          getDoc(doc(db, collectionName, id)),
-          ...ALLOWED_COLLECTIONS.map((name) =>
-            getDocs(collection(db, name)).then((s) =>
-              s.docs.map((d) => ({ ...d.data(), id: d.id, collection: name }))
-            )
-          ),
-        ]);
+        const lists = await Promise.all(ALLOWED_COLLECTIONS.map(loadCollection));
         if (cancelled) return;
 
-        setItem(snap.exists() ? { id: snap.id, ...snap.data() } : null);
+        const own = lists[ALLOWED_COLLECTIONS.indexOf(collectionName)] || [];
+        setItem(own.find((o) => String(o.id) === String(id)) || null);
+
         setOthers(
           lists
             .flat()
-            .filter((o) => !(o.collection === collectionName && o.id === id))
+            .filter(
+              (o) =>
+                !(o.collection === collectionName && String(o.id) === String(id))
+            )
             .sort((a, b) => toTime(b.date) - toTime(a.date))
             .slice(0, 3)
         );
@@ -209,17 +240,17 @@ export default function NewsCardInformation() {
       <Header />
       <SocialIcons />
 
-      <main className="pt-24">
+      <main className="pt-12">
         {loading ? (
           <div className="py-40 text-center text-gray-500">Բեռնվում է...</div>
         ) : !item ? (
           <div className="py-40 text-center text-gray-500">
             <p>Նորությունը չի գտնվել։</p>
             <Link
-              to="/news"
+              to={backTo}
               className="mt-4 inline-block font-semibold text-[#5B12D6] underline"
             >
-              Վերադառնալ նորություններ
+              {backLabel}
             </Link>
           </div>
         ) : (

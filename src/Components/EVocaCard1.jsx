@@ -1,7 +1,12 @@
 import React from "react";
-export function EvocaNewsCard({ item }) {
+import { Link } from "react-router-dom";
+
+export function EvocaNewsCard({ item, collection = "salaryNewsCollection" }) {
   return (
-    <div className="w-full max-w-[380px] mx-auto lg:max-w-none rounded-2xl overflow-hidden shadow-lg bg-white border border-gray-100 flex flex-col transition-transform duration-300 hover:scale-[1.01]">
+    <Link
+      to={`/news/${collection}/${item.id}`}
+      className="block w-full max-w-[380px] mx-auto lg:max-w-none rounded-2xl overflow-hidden shadow-lg bg-white border border-gray-100 flex flex-col transition-transform duration-300 hover:scale-[1.01]"
+    >
       <div className="relative w-full h-64 sm:h-72 overflow-hidden bg-purple-600">
         {item.isCustomBanner ? (
           <div className="absolute inset-0 bg-gradient-to-br from-[#9333EA] to-[#7C3AED] flex flex-col justify-between p-4 sm:p-5 text-white">
@@ -30,10 +35,10 @@ export function EvocaNewsCard({ item }) {
             </div>
           </div>
         ) : (
-          <img 
-            src={item.image} 
-            alt={item.title} 
-            className="w-full h-full object-cover transition-transform duration-500 hover:scale-105" 
+          <img
+            src={item.image}
+            alt={item.title}
+            className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
           />
         )}
       </div>
@@ -57,6 +62,6 @@ export function EvocaNewsCard({ item }) {
           {item.date}
         </p>
       </div>
-    </div>
+    </Link>
   );
 }

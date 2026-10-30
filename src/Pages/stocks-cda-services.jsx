@@ -141,7 +141,7 @@ const CDAServices = () => {
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {salaryitems.map((item) => (
-                  <EvocaNewsCard key={item.id || item.title} item={item} />
+                   <EvocaNewsCard key={item.id} item={item} collection="salaryNewsCollection" />
                 ))}
               </div>
             </div>
