@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "../firebase";
 import { Header } from "../Components/Header";
@@ -10,8 +9,9 @@ import LoanTariff from "../Components/LoanTariff.jsx";
 import LoanConditions from "../Components/LoanConditions.jsx";
 import LoanDocuments from "../Components/LoanDocuments.jsx";
 import LoanSlider from "../Components/LoanSlider.jsx";
-import InfoBanner from '../Components/infoBanner.jsx';
-
+import InfoBanner from "../Components/infoBanner.jsx";
+import { useParams, useSearchParams } from "react-router-dom";
+import BusinessHeader from "../Components/Busines-Header.jsx";
 const tabs = [
   { key: "about", label: "Վարկի մասին" },
   { key: "conditions", label: "Պայմաններ" },
@@ -30,8 +30,24 @@ const renderHighlighted = (text = "") =>
     )
   );
 
+const fetchLoanById = async (id, isBusiness) => {
+  if (isBusiness) {
+    const snap = await getDoc(doc(db, "businessLoansCollection", "main"));
+    if (!snap.exists()) return null;
+    const found = (snap.data().loans || []).find(
+      (l) => String(l.id) === String(id)
+    );
+    return found ? { ...found, docId: String(found.id) } : null;
+  }
+
+  const snap = await getDoc(doc(db, "loans", id));
+  return snap.exists() ? { ...snap.data(), docId: snap.id } : null;
+};
+
 const LoanDetails = () => {
   const { id } = useParams();
+  const [searchParams] = useSearchParams();
+  const isBusiness = searchParams.get("type") === "business";
   const [loan, setLoan] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -47,15 +63,16 @@ const LoanDetails = () => {
       setActiveTab("about");
 
       try {
-        const snap = await getDoc(doc(db, "loans", id));
-        if (snap.exists()) {
-          setLoan({ ...snap.data(), docId: snap.id });
+        const data = await fetchLoanById(id, isBusiness);
+        if (data) {
+          setLoan(data);
         } else {
           setLoan(null);
           setError("Վարկը չի գտնվել");
         }
       } catch (e) {
         console.error(e);
+        setLoan(null);
         setError("Չհաջողվեց բեռնել տվյալները");
       } finally {
         setLoading(false);
@@ -63,11 +80,11 @@ const LoanDetails = () => {
     };
 
     fetchLoan();
-  }, [id]);
+  }, [id, isBusiness]);
 
   return (
     <>
-      <Header />
+      {isBusiness ? <BusinessHeader /> : <Header />}
 
       {loan && (
         <CardHero
@@ -135,8 +152,7 @@ const LoanDetails = () => {
             </div>
           </>
         )}
-      </div> 
-      {/* Container-ը փակվում է այստեղ */}
+      </div>
 
       {/* InfoBanner-ը աշխատում է 100% լայնությամբ */}
       {loan && activeTab === "about" && loan.bannersrc && (
@@ -145,11 +161,12 @@ const LoanDetails = () => {
 
       {loan && (
         <div className="container mx-auto px-4">
-          <LoanSlider currentId={id} />
+          <LoanSlider currentId={id} isBusiness={isBusiness} />
         </div>
       )}
 
-      <OnlineBanking />
+      {/* Եթե բիզնես էջում OnlineBanking պետք չէ, թող թաքնվի */}
+      {!isBusiness && <OnlineBanking />}
       <Footer />
     </>
   );

@@ -4,10 +4,13 @@ import BusinessHeader from '../Components/Busines-Header.jsx';
 import Footer from '../Components/Footer';
 import { db } from "../firebase.js";
 import { doc, getDoc } from 'firebase/firestore';
+import { useNavigate } from 'react-router-dom';
 
 const BusinessLoans = () => {
+  const navigate = useNavigate();
   const [loansData, setLoansData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchLoans = async () => {
@@ -22,6 +25,7 @@ const BusinessLoans = () => {
         }
       } catch (error) {
         console.error("Սխալ տվյալներ ստանալիս:", error);
+        setError("Չհաջողվեց բեռնել տվյալները");
       } finally {
         setLoading(false);
       }
@@ -30,24 +34,31 @@ const BusinessLoans = () => {
     fetchLoans();
   }, []);
 
-  const handleDetailsClick = (title) => {
-    console.log(`Սեղմվել է "${title}" վարկի մանրամասների կոճակը`);
-  };
+  const handleDetailsClick = (loanId) => {
+  navigate(`/current-loan/${loanId}?type=business`);
+};
 
   return (
     <>
       <BusinessHeader />
       
-      <div className="container mx-auto px-4 max-[400px]:px-2 ml-[-18%] max-[400px]:ml-0 mt-[80px] max-[400px]:mt-16">
-        <h1 className="text-3xl max-[400px]:text-2xl font-bold text-center mb-8 max-[400px]:mb-4">Բիզնես Վարկեր</h1>
-      </div>
+      {/* Քարտերի նույն լայնությունը՝ max-w-5xl, ուստի ձախ եզրը ընդհանուր է Loans էջի հետ */}
+      <main className="w-full max-w-5xl mx-auto px-4 md:px-0 pt-10 md:pt-16 pb-16">
+        <h1 className="text-left text-[28px] md:text-[34px] font-bold leading-tight mb-8 md:mb-10">
+          Բիզնես Վարկեր
+        </h1>
 
-      <div className="container mx-auto px-4">
-        {loading ? (
-          <div className="text-center py-20 text-gray-500 font-medium">Բեռնվում է...</div>
-        ) : loansData.length === 0 ? (
-          <div className="text-center py-20 text-gray-500">Վարկեր առայժմ առկա չեն</div>
-        ) : (
+        {loading && <p className="text-center py-10">Բեռնվում է...</p>}
+        {error && <p className="text-center text-red-600 py-10">{error}</p>}
+
+        {!loading && !error && loansData.length === 0 && (
+          <p className="text-center text-gray-500 py-10">
+            Վարկեր առայժմ առկա չեն
+          </p>
+        )}
+
+        {!loading &&
+          !error &&
           loansData.map((loan) => (
             <LoanCard 
               key={loan.id}
@@ -55,11 +66,10 @@ const BusinessLoans = () => {
               description={loan.description}
               imageSrc={loan.imageSrc}
               stats={loan.stats}
-              onDetailsClick={() => handleDetailsClick(loan.title)}
+              onDetailsClick={() => handleDetailsClick(loan.id)}
             />
-          ))
-        )}
-      </div>
+          ))}
+      </main>
 
       <Footer />
     </>
