@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
+import { useParams, useSearchParams } from "react-router-dom";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "../firebase";
 import { Header } from "../Components/Header";
+import BusinessHeader from "../Components/Busines-Header.jsx";
 import Footer from "../Components/Footer";
 import { OnlineBanking } from "../Components/OnlineBanking.jsx";
 import CardHero from "../Components/CardHero.jsx";
@@ -10,12 +12,15 @@ import LoanConditions from "../Components/LoanConditions.jsx";
 import LoanDocuments from "../Components/LoanDocuments.jsx";
 import LoanSlider from "../Components/LoanSlider.jsx";
 import InfoBanner from "../Components/infoBanner.jsx";
-import { useParams, useSearchParams } from "react-router-dom";
-import BusinessHeader from "../Components/Busines-Header.jsx";
+
 const tabs = [
   { key: "about", label: "Վարկի մասին" },
-  { key: "conditions", label: "Պայմաններ" },
-  { key: "documents", label: "Պահանջվող փաստաթղթերի ցանկ" },
+  { key: "conditions", label: "Պայմաններ",hideForBusiness: true, },
+  {
+    key: "documents",
+    label: "Պահանջվող փաստաթղթերի ցանկ",
+    hideForBusiness: true,
+  },
 ];
 
 // «Evocabank» բառը ընդգծում է մանուշակագույնով
@@ -30,8 +35,10 @@ const renderHighlighted = (text = "") =>
     )
   );
 
+// Տվյալների աղբյուրը ըստ տիպի
 const fetchLoanById = async (id, isBusiness) => {
   if (isBusiness) {
+    // Բիզնես վարկերը մեկ փաստաթղթում են՝ loans զանգվածով
     const snap = await getDoc(doc(db, "businessLoansCollection", "main"));
     if (!snap.exists()) return null;
     const found = (snap.data().loans || []).find(
@@ -40,6 +47,7 @@ const fetchLoanById = async (id, isBusiness) => {
     return found ? { ...found, docId: String(found.id) } : null;
   }
 
+  // Սովորական վարկեր՝ առանձին փաստաթուղթ loans կոլեկցիայում
   const snap = await getDoc(doc(db, "loans", id));
   return snap.exists() ? { ...snap.data(), docId: snap.id } : null;
 };
@@ -48,6 +56,7 @@ const LoanDetails = () => {
   const { id } = useParams();
   const [searchParams] = useSearchParams();
   const isBusiness = searchParams.get("type") === "business";
+
   const [loan, setLoan] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -55,6 +64,9 @@ const LoanDetails = () => {
 
   const stats = loan?.stats ?? [];
   const details = loan?.details ?? [];
+
+  // Բիզնես վարկերի համար «Փաստաթղթեր» tab-ը չի երևում
+  const visibleTabs = tabs.filter((tab) => !(isBusiness && tab.hideForBusiness));
 
   useEffect(() => {
     const fetchLoan = async () => {
@@ -102,7 +114,7 @@ const LoanDetails = () => {
           <>
             {/* Tab-երի տող */}
             <div className="flex gap-10 border-b border-gray-200 overflow-x-auto">
-              {tabs.map((tab) => (
+              {visibleTabs.map((tab) => (
                 <button
                   key={tab.key}
                   onClick={() => setActiveTab(tab.key)}
@@ -146,7 +158,7 @@ const LoanDetails = () => {
                 <LoanConditions conditions={loan.conditions} />
               )}
 
-              {activeTab === "documents" && (
+              {activeTab === "documents" && !isBusiness && (
                 <LoanDocuments documents={loan.documents} />
               )}
             </div>
@@ -165,7 +177,7 @@ const LoanDetails = () => {
         </div>
       )}
 
-      {/* Եթե բիզնես էջում OnlineBanking պետք չէ, թող թաքնվի */}
+      {/* Բիզնես էջում OnlineBanking-ը չի ցուցադրվում */}
       {!isBusiness && <OnlineBanking />}
       <Footer />
     </>
