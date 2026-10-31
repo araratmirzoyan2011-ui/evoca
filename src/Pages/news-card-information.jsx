@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs, doc, getDoc } from "firebase/firestore";
 import { db } from "../firebase";
 import { Header } from "../Components/Header.jsx";
 import Footer from "../Components/Footer.jsx";
 import NewsCard from "../Components/NewsCard.jsx";
 
-// URL-ից եկած collection-ի անունը թույլատրում ենք միայն այս ցանկից
 const ALLOWED_COLLECTIONS = [
   'news',
   'newsFeatured',
@@ -15,7 +14,14 @@ const ALLOWED_COLLECTIONS = [
   'newsFeautured2',
   'newsBottom2',
   'salaryNewsCollection',
+  'awards',
+  'DepartmentCardNews',
 ];
+
+// Firestore-ից բեռնվող ստանդարտ նորությունների collection-ներ
+const FIRESTORE_COLLECTIONS = ALLOWED_COLLECTIONS.filter(
+  (c) => c !== 'awards' && c !== 'DepartmentCardNews'
+);
 
 // Այս collection-ների հոդվածները պատկանում են Blog-ին
 const BLOG_COLLECTIONS = ['news1', 'newsFeautured2', 'newsBottom2'];
@@ -26,9 +32,7 @@ const toTime = (s) => {
   return y ? new Date(y, m - 1, d).getTime() : 0;
 };
 
-// Collection-ը -> նորությունների հարթ ցանկ։
-// Եթե փաստաթուղթը պարունակում է items զանգված (ինչպես salaryNewsCollection-ում),
-// ամեն items տարր դառնում է առանձին նորություն։
+// Collection-ը -> նորությունների հարթ ցանկ
 const loadCollection = async (name) => {
   const snap = await getDocs(collection(db, name));
   return snap.docs.flatMap((d) => {
@@ -46,7 +50,7 @@ const loadCollection = async (name) => {
 
 // **թավ** և *շեղ* տեքստը՝ երկուսն էլ մանուշակագույն
 const renderInline = (text) =>
-  text.split(/(\*\*[^*]+\*\*|\*[^*]+\*)/g).map((part, i) => {
+  String(text || "").split(/(\*\*[^*]+\*\*|\*[^*]+\*)/g).map((part, i) => {
     if (part.startsWith("**") && part.endsWith("**") && part.length > 4) {
       return (
         <strong key={i} className="font-bold text-[#5B12D6]">
@@ -67,7 +71,7 @@ const renderInline = (text) =>
 // content դաշտը -> բլոկներ՝ պարբերություն, "## ենթավերնագիր", "- ցուցակ"
 const renderContent = (content) => {
   const blocks = [];
-  String(content)
+  String(content || "")
     .split(/\\n|\n/)
     .filter((l) => l.trim())
     .forEach((line) => {
@@ -185,8 +189,15 @@ export default function NewsCardInformation() {
   const [loading, setLoading] = useState(true);
 
   const isBlog = BLOG_COLLECTIONS.includes(collectionName);
-  const backTo = isBlog ? "/blog" : "/news";
-  const backLabel = isBlog ? "Վերադառնալ բլոգ" : "Վերադառնալ նորություններ";
+  const isAwards = collectionName === "awards" || collectionName === "DepartmentCardNews";
+
+  const backTo = isAwards ? "/awards" : isBlog ? "/blog" : "/news";
+  const backLabel = isAwards
+    ? "Վերադառնալ մրցանակներ"
+    : isBlog
+    ? "Վերադառնալ բլոգ"
+    : "Վերադառնալ նորություններ";
+  const othersTitle = isAwards ? "Այլ մրցանակներ" : "Այլ նորություններ";
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -200,41 +211,70 @@ export default function NewsCardInformation() {
 
     let cancelled = false;
 
-    const load = async () => {
+    const loadData = async () => {
       setLoading(true);
       try {
-        const lists = await Promise.all(ALLOWED_COLLECTIONS.map(loadCollection));
-        if (cancelled) return;
+        // 1. ՄԻԱՅՆ ՄՐՑԱՆԱԿՆԵՐԻ (awards / DepartmentCardNews) ԴԵՊՔՈՒՄ
+        if (isAwards) {
+          const docRef = doc(db, "DepartmentCardNews", id);
+          const docSnap = await getDoc(docRef);
 
-        const own = lists[ALLOWED_COLLECTIONS.indexOf(collectionName)] || [];
-        setItem(own.find((o) => String(o.id) === String(id)) || null);
+          if (cancelled) return;
 
-        setOthers(
-          lists
-            .flat()
-            .filter(
-              (o) =>
-                !(o.collection === collectionName && String(o.id) === String(id))
-            )
-            .sort((a, b) => toTime(b.date) - toTime(a.date))
-            .slice(0, 3)
-        );
+          if (docSnap.exists()) {
+            setItem({ id: docSnap.id, ...docSnap.data() });
+          } else {
+            setItem(null);
+          }
+
+          // Բեռնում ենք մնացած մրցանակները որպես "Այլ մրցանակներ"
+          const querySnapshot = await getDocs(collection(db, "DepartmentCardNews"));
+          const allAwards = querySnapshot.docs.map((d) => ({
+            id: d.id,
+            ...d.data(),
+            collection: collectionName,
+          }));
+
+          setOthers(
+            allAwards
+              .filter((o) => String(o.id) !== String(id))
+              .slice(0, 3)
+              .map((o) => ({ ...o, image: o.image || o.logoUrl }))
+          );
+        } 
+        // 2. ՄՆԱՑԱԾ ԲՈԼՈՐ ՍՏԱՆԴԱՐՏ ՆՈՐՈՒԹՅՈՒՆՆԵՐԻ ԴԵՊՔՈՒՄ
+        else {
+          const lists = await Promise.all(FIRESTORE_COLLECTIONS.map(loadCollection));
+          if (cancelled) return;
+
+          const own = lists[FIRESTORE_COLLECTIONS.indexOf(collectionName)] || [];
+          setItem(own.find((o) => String(o.id) === String(id)) || null);
+
+          setOthers(
+            lists
+              .flat()
+              .filter(
+                (o) =>
+                  !(o.collection === collectionName && String(o.id) === String(id))
+              )
+              .sort((a, b) => toTime(b.date) - toTime(a.date))
+              .slice(0, 3)
+          );
+        }
       } catch (err) {
-        console.error("Error loading news item:", err);
+        console.error("Error loading item:", err);
         if (!cancelled) setItem(null);
       } finally {
         if (!cancelled) setLoading(false);
       }
     };
 
-    load();
+    loadData();
     return () => {
       cancelled = true;
     };
-  }, [collectionName, id]);
+  }, [collectionName, id, isAwards]);
 
-  // Firestore-ի փաստաթղթում ըստ ցանկության՝
-  // content (տեքստ, պարբերությունները բաժանված "\n"-ով) և articleLink
   return (
     <>
       <Header />
@@ -255,13 +295,13 @@ export default function NewsCardInformation() {
           </div>
         ) : (
           <>
-            {/* Վերևի բաժին՝ մանուշակագույն-սպիտակ վահանակ + մեծ նկար */}
+            {/* Վերևի բաժին */}
             <section className="mx-auto grid max-w-[1200px] items-start lg:grid-cols-[550px_1fr]">
               <div className="rounded-bl-[60px] bg-gradient-to-b from-white to-[#f1ecfa] px-6 py-10 lg:min-h-[400px] lg:rounded-bl-[100px] lg:pb-12 lg:pl-[58px] lg:pr-10 lg:pt-[46px]">
                 <div className="flex items-center gap-3">
                   <span className="block h-[14px] w-[30px] bg-[#5B12D6]" />
                   <span className="text-[14px] font-semibold text-[#2a0a4a]">
-                    {item.category}
+                    {item.category || "Մրցանակներ"}
                   </span>
                 </div>
 
@@ -275,14 +315,24 @@ export default function NewsCardInformation() {
                   </p>
                 )}
 
-                <p className="mt-10 text-[14px] text-gray-500">{item.date}</p>
+                <p className="mt-10 text-[14px] text-gray-500">
+                  {item.date || item.year}
+                </p>
               </div>
 
-              <img
-                src={item.image}
-                alt={item.title}
-                className="aspect-[650/463] w-full object-cover"
-              />
+              {item.image && (
+                <img
+                  src={item.image}
+                  alt={item.title}
+                  referrerPolicy="no-referrer"
+                  onError={(e) => {
+                    if (item.logoUrl && e.currentTarget.src !== item.logoUrl) {
+                      e.currentTarget.src = item.logoUrl;
+                    }
+                  }}
+                  className="aspect-[650/463] w-full object-cover"
+                />
+              )}
             </section>
 
             {/* Հոդվածի տեքստ */}
@@ -309,7 +359,7 @@ export default function NewsCardInformation() {
               {others.length > 0 && (
                 <>
                   <h3 className="mt-12 text-[18px] font-semibold text-black">
-                    Այլ նորություններ
+                    {othersTitle}
                   </h3>
 
                   <div className="mt-5 grid gap-x-[30px] gap-y-10 sm:grid-cols-3">
