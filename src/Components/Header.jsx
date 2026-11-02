@@ -2,67 +2,252 @@ import { Link, useNavigate } from 'react-router-dom';
 import { auth, db } from '../firebase';
 import { doc, getDoc } from 'firebase/firestore';
 import { useState, useRef, useEffect } from 'react';
+import i18n from 'i18next';
+import { initReactI18next, useTranslation } from 'react-i18next';
+
+const resources = {
+    hy: {
+        translation: {
+            header: {
+                personal: 'Անհատ',
+                business: 'Բիզնես',
+                instantPayments: 'Ակնթարթային վճարումներ',
+                about: 'Մեր մասին',
+                news: 'Նորություններ',
+                blog: 'Բլոգ',
+                career: 'Կարիերա',
+                onlineApps: 'Առցանց հայտեր',
+                smeLoan: 'ՖՄՁ վարկավորում',
+                contact: 'Հետադարձ կապ',
+                orderCall: 'Պատվիրել զանգ',
+                branches: 'Մասնաճյուղեր',
+                help: 'Օգնություն',
+                language: 'Լեզու',
+                search: 'Որոնում',
+                searchAria: 'Որոնել',
+                close: 'Փակել',
+                menu: 'Մենյու',
+                loans: 'Վարկեր',
+                cards: 'Քարտեր',
+                deposits: 'Ավանդներ',
+                accounts: 'Հաշիվներ',
+                transfers: 'Փոխանցումներ',
+                securities: 'Արժեթղթեր',
+                call: 'Զանգել՝',
+                checkError: 'Ստուգման սխալ:',
+            },
+        },
+    },
+    en: {
+        translation: {
+            header: {
+                personal: 'Personal',
+                business: 'Business',
+                instantPayments: 'Instant payments',
+                about: 'About us',
+                news: 'News',
+                blog: 'Blog',
+                career: 'Career',
+                onlineApps: 'Online applications',
+                smeLoan: 'SME lending',
+                contact: 'Contact us',
+                orderCall: 'Request a call',
+                branches: 'Branches',
+                help: 'Help',
+                language: 'Language',
+                search: 'Search',
+                searchAria: 'Search',
+                close: 'Close',
+                menu: 'Menu',
+                loans: 'Loans',
+                cards: 'Cards',
+                deposits: 'Deposits',
+                accounts: 'Accounts',
+                transfers: 'Transfers',
+                securities: 'Securities',
+                call: 'Call:',
+                checkError: 'Verification error:',
+            },
+        },
+    },
+    ru: {
+        translation: {
+            header: {
+                personal: 'Частным клиентам',
+                business: 'Бизнесу',
+                instantPayments: 'Мгновенные платежи',
+                about: 'О нас',
+                news: 'Новости',
+                blog: 'Блог',
+                career: 'Карьера',
+                onlineApps: 'Онлайн-заявки',
+                smeLoan: 'Кредитование МСП',
+                contact: 'Обратная связь',
+                orderCall: 'Заказать звонок',
+                branches: 'Филиалы',
+                help: 'Помощь',
+                language: 'Язык',
+                search: 'Поиск',
+                searchAria: 'Искать',
+                close: 'Закрыть',
+                menu: 'Меню',
+                loans: 'Кредиты',
+                cards: 'Карты',
+                deposits: 'Вклады',
+                accounts: 'Счета',
+                transfers: 'Переводы',
+                securities: 'Ценные бумаги',
+                call: 'Позвонить:',
+                checkError: 'Ошибка проверки:',
+            },
+        },
+    },
+};
+
+if (!i18n.isInitialized) {
+    i18n.use(initReactI18next).init({
+        resources,
+        lng: localStorage.getItem('lang') || 'hy',
+        fallbackLng: 'hy',
+        supportedLngs: ['hy', 'en', 'ru'],
+        interpolation: { escapeValue: false },
+    });
+
+    i18n.on('languageChanged', (lng) => {
+        localStorage.setItem('lang', lng);
+        document.documentElement.lang = lng;
+    });
+
+    document.documentElement.lang = i18n.language;
+}
+
+/* ===================== Տվյալներ ===================== */
+const LANGS = [
+    { code: 'hy', label: 'ՀԱՅ' },
+    { code: 'en', label: 'ENG' },
+    { code: 'ru', label: 'РУС' },
+];
+
+const topLinks = [
+    { to: '/loans', key: 'personal' },
+    { to: '/business-loans', key: 'business' },
+    { to: '/instant-payments', key: 'instantPayments' },
+    { to: '/about', key: 'about' },
+    { to: '/news', key: 'news' },
+    { to: '/blog', key: 'blog' },
+    { to: '/career', key: 'career' },
+];
+
+// key՝ թարգմանվում է, label՝ բրենդային անուն, մնում է նույնը
+const mainLinks = [
+    { to: '/loans', key: 'loans' },
+    { to: '/cards', key: 'cards' },
+    { to: '/depositsmain', key: 'deposits' },
+    { to: '/accounts', key: 'accounts' },
+    { to: '/transfers', key: 'transfers' },
+    { to: '/securities', key: 'securities' },
+    { to: '/evoca-salary', label: 'EvocaSALARY' },
+    { to: '/evoca-touch', label: 'EvocaTOUCH' },
+];
+
+const onlineApps = [
+    { to: '/online-applications/sme-loan', key: 'smeLoan' },
+    { to: '/online-applications/visa-infinite', label: 'Visa Infinite' },
+    { to: '/online-applications/mastercard-gold', label: 'MasterCard Gold' },
+    { to: '/online-applications/visa-gold', label: 'Visa Gold' },
+];
+
+const phones = [
+    { href: 'tel:+37410605555', text: '+374 10 605555' },
+    { href: 'tel:+37498205555', text: '+374 98 205555' },
+    { href: 'tel:+37499605555', text: '+374 99 605555' },
+];
+
+/* ===================== Header ===================== */
 export function Header() {
-    
-const [isSearchOpen, setIsSearchOpen] = useState(false);
-const [searchQuery, setSearchQuery] = useState('');
+    const { t } = useTranslation();
+    const lang = i18n.resolvedLanguage || i18n.language;
+
+    const [isSearchOpen, setIsSearchOpen] = useState(false);
+    const [searchQuery, setSearchQuery] = useState('');
     const [isOnlineAppsOpen, setIsOnlineAppsOpen] = useState(false);
     const [isContactOpen, setIsContactOpen] = useState(false);
     const [isLangOpen, setIsLangOpen] = useState(false);
-    const [lang, setLang] = useState('hy');
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const navigate = useNavigate();
     const dropdownsRef = useRef(null);
 
     useEffect(() => {
-        const handleClickOutside = (e) => {
-            if (dropdownsRef.current && !dropdownsRef.current.contains(e.target)) {
-                setIsOnlineAppsOpen(false);
-                setIsContactOpen(false);
-                setIsLangOpen(false);
-            }
-        };
-        document.addEventListener('mousedown', handleClickOutside);
-        return () => document.removeEventListener('mousedown', handleClickOutside);
+const alreadyInit = i18n.isInitialized || Array.isArray(i18n.options?.supportedLngs);
+
+if (!alreadyInit) {
+    i18n.use(initReactI18next).init({
+        resources: {},
+        lng: localStorage.getItem('lang') || 'hy',
+        fallbackLng: 'hy',
+        supportedLngs: ['hy', 'en', 'ru'],
+        interpolation: { escapeValue: false },
+        initImmediate: false, // i18next v23-
+        initAsync: false,     // i18next v24+
+    });
+
+    i18n.on('languageChanged', (lng) => {
+        localStorage.setItem('lang', lng);
+        document.documentElement.lang = lng;
+    });
+
+    document.documentElement.lang = i18n.language;
+}
+
+Object.entries(resources).forEach(([lng, tr]) => {
+    i18n.addResourceBundle(lng, 'translation', tr.translation, true, true);
+});
     }, []);
+
     useEffect(() => {
-    const handleEsc = (e) => {
-        if (e.key === 'Escape') setIsSearchOpen(false);
-    };
-    document.addEventListener('keydown', handleEsc);
-    return () => document.removeEventListener('keydown', handleEsc);
-}, []);
+        const handleEsc = (e) => {
+            if (e.key === 'Escape') setIsSearchOpen(false);
+        };
+        document.addEventListener('keydown', handleEsc);
+        return () => document.removeEventListener('keydown', handleEsc);
+    }, []);
+
     const handleEvocaOnlineClick = async () => {
         const currentUser = auth.currentUser;
-
         if (currentUser) {
             try {
-                const docRef = doc(db, "Users", currentUser.uid);
-                const docSnap = await getDoc(docRef);
+                const docSnap = await getDoc(doc(db, 'Users', currentUser.uid));
                 if (docSnap.exists() && docSnap.data().fullName) {
-                    navigate("/user");
+                    navigate('/user');
                     return;
                 }
             } catch (err) {
-                console.error("Ստուգման սխալ:", err);
+                console.error(t('header.checkError'), err);
             }
         }
-
-        navigate("/login");
+        navigate('/login');
     };
+
+    const submitSearch = () => {
+        if (searchQuery.trim()) {
+            navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+            setIsSearchOpen(false);
+            setSearchQuery('');
+        }
+    };
+
+    const dropdownItem = 'block px-2 py-2 text-sm hover:bg-purple-50 hover:text-purple-700';
 
     return (
         <header className="w-full bg-white border-b border-gray-200 font-sans relative z-50">
             {/* Վերին տող */}
             <div className="hidden md:flex relative z-[60] max-w-7xl mx-auto px-4 h-12 items-center justify-between text-sm border-b border-gray-100">
                 <nav className="flex items-center space-x-4 lg:space-x-6 overflow-x-auto">
-                    <Link to="/loans" className="text-gray-700 hover:text-purple-700 whitespace-nowrap">Անհատ</Link>
-                    <Link to="/business-loans" className="text-gray-700 hover:text-purple-700 whitespace-nowrap">Բիզնես</Link>
-                    <Link to="/instant-payments" className="text-gray-700 hover:text-purple-700 whitespace-nowrap">Ակնթարթային վճարումներ</Link>
-                    <Link to="/about" className="text-gray-700 hover:text-purple-700 whitespace-nowrap">Մեր մասին</Link>
-                    <Link to="/news" className="text-gray-700 hover:text-purple-700 whitespace-nowrap">Նորություններ</Link>
-                    <Link to="/blog" className="text-gray-700 hover:text-purple-700 whitespace-nowrap">Բլոգ</Link>
-                    <Link to="/career" className="text-gray-700 hover:text-purple-700 whitespace-nowrap">Կարիերա</Link>
+                    {topLinks.map((l) => (
+                        <Link key={l.key} to={l.to} className="text-gray-700 hover:text-purple-700 whitespace-nowrap">
+                            {t(`header.${l.key}`)}
+                        </Link>
+                    ))}
                 </nav>
 
                 <div ref={dropdownsRef} className="flex items-center space-x-4 lg:space-x-6 relative flex-shrink-0">
@@ -76,7 +261,7 @@ const [searchQuery, setSearchQuery] = useState('');
                             }}
                             className="flex items-center space-x-1 text-purple-700 font-medium cursor-pointer select-none py-2 whitespace-nowrap"
                         >
-                            <span>Առցանց հայտեր</span>
+                            <span>{t('header.onlineApps')}</span>
                             <svg className={`w-4 h-4 transform transition-transform ${isOnlineAppsOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
                             </svg>
@@ -84,10 +269,11 @@ const [searchQuery, setSearchQuery] = useState('');
 
                         {isOnlineAppsOpen && (
                             <div className="absolute left-0 w-full mt-1 bg-white border border-gray-100 rounded-lg shadow-xl py-2 z-[70] text-gray-800 text-center whitespace-nowrap">
-                                <Link to="/online-applications/sme-loan" className="block px-2 py-2 text-sm hover:bg-purple-50 hover:text-purple-700 font-medium">ՖՄՁ վարկավորում</Link>
-                                <Link to="/online-applications/visa-infinite" className="block px-2 py-2 text-sm hover:bg-purple-50 hover:text-purple-700 font-medium">Visa Infinite</Link>
-                                <Link to="/online-applications/mastercard-gold" className="block px-2 py-2 text-sm hover:bg-purple-50 hover:text-purple-700 font-medium">MasterCard Gold</Link>
-                                <Link to="/online-applications/visa-gold" className="block px-2 py-2 text-sm hover:bg-purple-50 hover:text-purple-700 font-medium">Visa Gold</Link>
+                                {onlineApps.map((a) => (
+                                    <Link key={a.to} to={a.to} className={`${dropdownItem} font-medium`}>
+                                        {a.key ? t(`header.${a.key}`) : a.label}
+                                    </Link>
+                                ))}
                             </div>
                         )}
                     </div>
@@ -102,7 +288,7 @@ const [searchQuery, setSearchQuery] = useState('');
                             }}
                             className="flex items-center space-x-1 text-purple-700 font-medium cursor-pointer select-none py-2 whitespace-nowrap"
                         >
-                            <span>Հետադարձ կապ</span>
+                            <span>{t('header.contact')}</span>
                             <svg className={`w-4 h-4 transform transition-transform ${isContactOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
                             </svg>
@@ -110,25 +296,27 @@ const [searchQuery, setSearchQuery] = useState('');
 
                         {isContactOpen && (
                             <div className="absolute left-0 w-full mt-1 bg-white border border-gray-100 rounded-lg shadow-xl py-2 z-[70] text-gray-800 text-center whitespace-nowrap">
-                                <a href="tel:+37410605555" className="block px-2 py-2 text-sm hover:bg-purple-50 hover:text-purple-700 font-bold">+374 10 605555</a>
-                                <a href="tel:+37498205555" className="block px-2 py-2 text-sm hover:bg-purple-50 hover:text-purple-700 font-bold">+374 98 205555</a>
-                                <a href="tel:+37499605555" className="block px-2 py-2 text-sm hover:bg-purple-50 hover:text-purple-700 font-bold">+374 99 605555</a>
+                                {phones.map((p) => (
+                                    <a key={p.href} href={p.href} className={`${dropdownItem} font-bold`}>{p.text}</a>
+                                ))}
                                 <a href="tel:8444" className="block px-2 py-2 hover:bg-purple-50 hover:text-purple-700 font-bold text-lg">8444</a>
                                 <div className="border-t border-gray-100 my-1"></div>
-                                <a href="#" className="block px-2 py-2 text-sm text-purple-700 font-semibold hover:bg-purple-50">Պատվիրել զանգ</a>
+                                <a href="#" className="block px-2 py-2 text-sm text-purple-700 font-semibold hover:bg-purple-50">
+                                    {t('header.orderCall')}
+                                </a>
                             </div>
                         )}
                     </div>
 
                     {/* Icons */}
                     <div className="flex items-center space-x-3 lg:space-x-4 text-gray-700">
-                        <Link to="/branches" className="hover:text-purple-700 transition" title="Մասնաճյուղեր">
+                        <Link to="/branches" className="hover:text-purple-700 transition" title={t('header.branches')}>
                             <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                             </svg>
                         </Link>
-                        <Link to="/faq" className="hover:text-purple-700 transition" title="Օգնություն">
+                        <Link to="/faq" className="hover:text-purple-700 transition" title={t('header.help')}>
                             <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
@@ -143,7 +331,7 @@ const [searchQuery, setSearchQuery] = useState('');
                                     setIsContactOpen(false);
                                 }}
                                 className="hover:text-purple-700 transition"
-                                title="Լեզու"
+                                title={t('header.language')}
                             >
                                 <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
@@ -151,43 +339,39 @@ const [searchQuery, setSearchQuery] = useState('');
                             </button>
 
                             {isLangOpen && (
-    <div className="absolute left-1/2 -translate-x-1/2 top-full mt-2 w-16 bg-white rounded-md shadow-xl z-[70] py-1">
-        {[
-            { code: 'hy', label: 'ՀԱՅ' },
-            { code: 'en', label: 'ENG' },
-            { code: 'ru', label: 'РУС' },
-        ].map((item, i) => (
-            <button
-                key={item.code}
-                onClick={() => {
-                    setLang(item.code);
-                    setIsLangOpen(false);
-                }}
-                className={`block w-full py-2 text-xs text-center hover:text-purple-700 transition ${
-                    i !== 0 ? 'border-t border-purple-600' : ''
-                } ${lang === item.code ? 'font-extrabold text-black' : 'font-semibold text-gray-700'}`}
-            >
-                {item.label}
-            </button>
-        ))}
-    </div>
-)}
+                                <div className="absolute left-1/2 -translate-x-1/2 top-full mt-2 w-16 bg-white rounded-md shadow-xl z-[70] py-1">
+                                    {LANGS.map((item, i) => (
+                                        <button
+                                            key={item.code}
+                                            onClick={() => {
+                                                i18n.changeLanguage(item.code);
+                                                setIsLangOpen(false);
+                                            }}
+                                            className={`block w-full py-2 text-xs text-center hover:text-purple-700 transition ${
+                                                i !== 0 ? 'border-t border-purple-600' : ''
+                                            } ${lang === item.code ? 'font-extrabold text-black' : 'font-semibold text-gray-700'}`}
+                                        >
+                                            {item.label}
+                                        </button>
+                                    ))}
+                                </div>
+                            )}
                         </div>
 
                         <button
-    onClick={() => {
-        setIsSearchOpen(true);
-        setIsOnlineAppsOpen(false);
-        setIsContactOpen(false);
-        setIsLangOpen(false);
-    }}
-    className="hover:text-purple-700 transition"
-    title="Որոնում"
->
-    <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-    </svg>
-</button>
+                            onClick={() => {
+                                setIsSearchOpen(true);
+                                setIsOnlineAppsOpen(false);
+                                setIsContactOpen(false);
+                                setIsLangOpen(false);
+                            }}
+                            className="hover:text-purple-700 transition"
+                            title={t('header.search')}
+                        >
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                            </svg>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -203,14 +387,11 @@ const [searchQuery, setSearchQuery] = useState('');
 
                     {/* Desktop navigation */}
                     <nav className="hidden lg:flex items-center space-x-6 text-gray-800 font-medium">
-                        <Link to="/loans" className="hover:text-purple-700 whitespace-nowrap">Վարկեր</Link>
-                        <Link to="/cards" className="hover:text-purple-700 whitespace-nowrap">Քարտեր</Link>
-                        <Link to="/depositsmain" className="hover:text-purple-700 whitespace-nowrap">Ավանդներ</Link>
-                        <Link to="/accounts" className="hover:text-purple-700 whitespace-nowrap">Հաշիվներ</Link>
-                        <Link to="/transfers" className="hover:text-purple-700 whitespace-nowrap">Փոխանցումներ</Link>
-                        <Link to="/securities" className="hover:text-purple-700 whitespace-nowrap">Արժեթղթեր</Link>
-                        <Link to="/evoca-salary" className="hover:text-purple-700 whitespace-nowrap">EvocaSALARY</Link>
-                        <Link to="/evoca-touch" className="hover:text-purple-700 whitespace-nowrap">EvocaTOUCH</Link>
+                        {mainLinks.map((l) => (
+                            <Link key={l.to} to={l.to} className="hover:text-purple-700 whitespace-nowrap">
+                                {l.key ? t(`header.${l.key}`) : l.label}
+                            </Link>
+                        ))}
                     </nav>
 
                     {/* Right side buttons */}
@@ -225,7 +406,7 @@ const [searchQuery, setSearchQuery] = useState('');
                         <button
                             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                             className="lg:hidden p-2 text-gray-700 hover:text-purple-700 transition"
-                            title="Մենյու"
+                            title={t('header.menu')}
                         >
                             <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                                 {isMobileMenuOpen ? (
@@ -242,19 +423,31 @@ const [searchQuery, setSearchQuery] = useState('');
             {/* Mobile Menu */}
             {isMobileMenuOpen && (
                 <div className="lg:hidden bg-white border-t border-gray-100 shadow-lg px-4 py-3 space-y-1">
-                    <Link to="/loans" className="block py-2 text-gray-800 font-medium hover:text-purple-700">Վարկեր</Link>
-                    <Link to="/cards" className="block py-2 text-gray-800 font-medium hover:text-purple-700">Քարտեր</Link>
-                    <Link to="/depositsmain" className="block py-2 text-gray-800 font-medium hover:text-purple-700">Ավանդներ</Link>
-                    <Link to="/accounts" className="block py-2 text-gray-800 font-medium hover:text-purple-700">Հաշիվներ</Link>
-                    <Link to="/transfers" className="block py-2 text-gray-800 font-medium hover:text-purple-700">Փոխանցումներ</Link>
-                    <Link to="/securities" className="block py-2 text-gray-800 font-medium hover:text-purple-700">Արժեթղթեր</Link>
-                    <Link to="/evoca-salary" className="block py-2 text-gray-800 font-medium hover:text-purple-700">EvocaSALARY</Link>
-                    <Link to="/evoca-touch" className="block py-2 text-gray-800 font-medium hover:text-purple-700">EvocaTOUCH</Link>
+                    {mainLinks.map((l) => (
+                        <Link key={l.to} to={l.to} className="block py-2 text-gray-800 font-medium hover:text-purple-700">
+                            {l.key ? t(`header.${l.key}`) : l.label}
+                        </Link>
+                    ))}
                     <div className="border-t border-gray-100 my-2"></div>
-                    <Link to="/" className="block py-2 text-gray-800 font-medium hover:text-purple-700">Անհատ</Link>
-                    <Link to="/business-loans" className="block py-2 text-gray-800 font-medium hover:text-purple-700">Բիզնես</Link>
-                    <Link to="/about" className="block py-2 text-gray-800 font-medium hover:text-purple-700">Մեր մասին</Link>
-                    <a href="tel:8444" className="block py-2 text-purple-700 font-bold">Զանգել՝ 8444</a>
+                    <Link to="/" className="block py-2 text-gray-800 font-medium hover:text-purple-700">{t('header.personal')}</Link>
+                    <Link to="/business-loans" className="block py-2 text-gray-800 font-medium hover:text-purple-700">{t('header.business')}</Link>
+                    <Link to="/about" className="block py-2 text-gray-800 font-medium hover:text-purple-700">{t('header.about')}</Link>
+                    <a href="tel:8444" className="block py-2 text-purple-700 font-bold">{t('header.call')} 8444</a>
+
+                    {/* Լեզու (mobile) */}
+                    <div className="flex gap-2 py-2">
+                        {LANGS.map((item) => (
+                            <button
+                                key={item.code}
+                                onClick={() => i18n.changeLanguage(item.code)}
+                                className={`px-3 py-1 text-xs rounded-full border ${
+                                    lang === item.code ? 'bg-purple-700 text-white border-purple-700' : 'border-gray-300 text-gray-700'
+                                }`}
+                            >
+                                {item.label}
+                            </button>
+                        ))}
+                    </div>
 
                     <div className="pt-2 flex flex-col gap-2">
                         <button
@@ -266,64 +459,43 @@ const [searchQuery, setSearchQuery] = useState('');
                     </div>
                 </div>
             )}
+
+            {/* Search overlay */}
             {isSearchOpen && (
-    <>
-        {/* Մգացած ֆոն */}
-        <div
-            onClick={() => setIsSearchOpen(false)}
-            className="fixed inset-0 bg-black/50 z-[80]"
-        />
+                <>
+                    {/* Մգացած ֆոն */}
+                    <div onClick={() => setIsSearchOpen(false)} className="fixed inset-0 bg-black/50 z-[80]" />
 
-        {/* Վահանակ */}
-        <div className="fixed top-0 left-0 w-full bg-white z-[90] shadow-md">
-            <div className="max-w-7xl mx-auto px-4 h-[94px] flex items-center gap-6">
-                <span className="text-lg font-semibold text-gray-900 shrink-0 md:ml-24">Որոնում</span>
+                    {/* Վահանակ */}
+                    <div className="fixed top-0 left-0 w-full bg-white z-[90] shadow-md">
+                        <div className="max-w-7xl mx-auto px-4 h-[94px] flex items-center gap-6">
+                            <span className="text-lg font-semibold text-gray-900 shrink-0 md:ml-24">{t('header.search')}</span>
 
-                <div className="flex-1 flex items-center border border-gray-200 rounded-md px-3 h-11 bg-white">
-                    <input
-                        autoFocus
-                        type="text"
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        onKeyDown={(e) => {
-                            if (e.key === 'Enter' && searchQuery.trim()) {
-                                navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
-                                setIsSearchOpen(false);
-                                setSearchQuery('');
-                            }
-                        }}
-                        className="flex-1 outline-none text-gray-900 bg-transparent"
-                    />
-                    <button
-                        onClick={() => {
-                            if (searchQuery.trim()) {
-                                navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
-                                setIsSearchOpen(false);
-                                setSearchQuery('');
-                            }
-                        }}
-                        className="text-gray-900 hover:text-purple-700 transition"
-                        aria-label="Որոնել"
-                    >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                        </svg>
-                    </button>
-                </div>
+                            <div className="flex-1 flex items-center border border-gray-200 rounded-md px-3 h-11 bg-white">
+                                <input
+                                    autoFocus
+                                    type="text"
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    onKeyDown={(e) => e.key === 'Enter' && submitSearch()}
+                                    className="flex-1 outline-none text-gray-900 bg-transparent"
+                                />
+                                <button onClick={submitSearch} className="text-gray-900 hover:text-purple-700 transition" aria-label={t('header.searchAria')}>
+                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                    </svg>
+                                </button>
+                            </div>
 
-                <button
-                    onClick={() => setIsSearchOpen(false)}
-                    className="text-gray-300 hover:text-gray-500 transition shrink-0"
-                    aria-label="Փակել"
-                >
-                    <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                </button>
-            </div>
-        </div>
-    </>
-)}
+                            <button onClick={() => setIsSearchOpen(false)} className="text-gray-300 hover:text-gray-500 transition shrink-0" aria-label={t('header.close')}>
+                                <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </>
+            )}
         </header>
     );
 }
