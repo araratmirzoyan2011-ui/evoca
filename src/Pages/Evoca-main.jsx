@@ -11,6 +11,7 @@ import { Calculators } from '../Components/Calculators.jsx';
 import { db } from "../firebase.js";
 import { collection, getDocs, setDoc, doc } from 'firebase/firestore';
 import { OnlineBanking } from '../Components/OnlineBanking.jsx';
+import { useLocalized } from '../hooks/useLocalized.js';
 import 'swiper/css';
 import 'swiper/css/pagination';
 import 'swiper/css/navigation';
@@ -19,11 +20,53 @@ import { CurrencySection } from '../Components/CurrencySection.jsx';
 import { EvocaNewsCard } from '../Components/EVocaCard1.jsx';
 import { EvocaReviewCard } from '../Components/EvocaReviewCard.jsx';
 import Footer from '../Components/Footer.jsx';
+import i18n from 'i18next';
+import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
-
 const NEWS_COLLECTION = 'salaryNewsCollection';
+const mainResources = {
+  hy: {
+    main: {
+      biometricTitle: 'Դարձիր Evocabank-ի հաճախորդ բիոմետրիկ նույնականացմամբ',
+      biometricText: 'Սկանավորիր QR կոդը, ներբեռնիր EvocaTOUCH հարմարավետ հավելվածը, ստեղծիր քո հաշիվը և ստացիր քարտ',
+      qrAlt: 'QR կոդ',
+      learnMore: 'Իմանալ ավելին',
+      bestTitle: 'Լավագույնը Evocabank-ից',
+      latestNews: 'Վերջին նորությունները',
+      allNews: 'Բոլոր նորությունները',
+      goToSlide: 'Անցնել սլայդ {{n}}',
+    },
+  },
+  en: {
+    main: {
+      biometricTitle: 'Become an Evocabank customer with biometric identification',
+      biometricText: 'Scan the QR code, download the convenient EvocaTOUCH app, create your account and get a card',
+      qrAlt: 'QR code',
+      learnMore: 'Learn more',
+      bestTitle: 'The best of Evocabank',
+      latestNews: 'Latest news',
+      allNews: 'All news',
+      goToSlide: 'Go to slide {{n}}',
+    },
+  },
+  ru: {
+    main: {
+      biometricTitle: 'Стань клиентом Evocabank с биометрической идентификацией',
+      biometricText: 'Отсканируй QR-код, скачай удобное приложение EvocaTOUCH, создай свой счёт и получи карту',
+      qrAlt: 'QR-код',
+      learnMore: 'Узнать больше',
+      bestTitle: 'Лучшее от Evocabank',
+      latestNews: 'Последние новости',
+      allNews: 'Все новости',
+      goToSlide: 'Перейти к слайду {{n}}',
+    },
+  },
+};
 
-// Collection-ի առաջին փաստաթղթից վերցնում է զանգվածը՝ նշված դաշտերից առաջին գոյություն ունեցողով
+Object.entries(mainResources).forEach(([lng, tr]) => {
+  i18n.addResourceBundle(lng, 'translation', tr, true, true);
+});
+
 const loadArray = async (name, ...fields) => {
   try {
     const snap = await getDocs(collection(db, name));
@@ -41,6 +84,8 @@ const loadArray = async (name, ...fields) => {
 
 function Main() {
   const navigate = useNavigate();
+  const l = useLocalized();
+  const { t } = useTranslation();
   const [slidesData, setSlidesData] = useState([]);
   const [bestOffersData, setBestOffersData] = useState([]);
   const [reviewsData, setReviewsData] = useState([]);
@@ -97,6 +142,7 @@ function Main() {
   return (
     <>
       <Header />
+       {/* <button onClick={migrateCards} className="m-4 px-4 py-2 bg-red-600 text-white rounded">Migrate cards</button> */}
       <div className="w-full relative">
         <Swiper
           key={slidesData.length}
@@ -109,10 +155,10 @@ function Main() {
           navigation={{ nextEl: '.custom-next', prevEl: '.custom-prev' }}
         >
           {slidesData.map((item) => (
-            <SwiperSlide key={item.id}>
-              {slidecard1(item.bgcol, item.h1, item.p, item.butp, item.butc, item.img)}
-            </SwiperSlide>
-          ))}
+  <SwiperSlide key={item.id}>
+    {slidecard1(item.bgcol, l(item.h1), l(item.p), l(item.butp), item.butc, item.img)}
+  </SwiperSlide>
+))}
         </Swiper>
 
         <div className="absolute bottom-4 sm:bottom-6 !left-1/2 !-translate-x-1/2 !w-auto flex items-center gap-4 sm:gap-8 z-20 pointer-events-auto">
@@ -135,24 +181,24 @@ function Main() {
 
         <div className="max-w-lg space-y-4 sm:space-y-6 text-center md:text-left">
           <h2 className="text-2xl sm:text-3xl md:text-5xl font-extrabold leading-tight">
-            Դարձիր Evocabank-ի հաճախորդ բիոմետրիկ նույնականացմամբ
-          </h2>
-          <p className="text-sm sm:text-base md:text-lg opacity-80">
-            Սկանավորիր QR կոդը, ներբեռնիր EvocaTOUCH հարմարավետ հավելվածը, ստեղծիր քո հաշիվը և ստացիր քարտ
-          </p>
-          <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6">
-            <img
-              src="https://www.evoca.am/img/biometric-section-QR-Code.png"
-              alt="QR code"
-              className="w-[130px] h-[130px] sm:w-[180px] sm:h-[180px]"
-            />
-            <button
-              onClick={() => navigate('/evoca-touch')}
-              className="w-full sm:w-auto bg-[#6600cc] text-white font-semibold px-6 py-2.5 sm:px-8 sm:py-3 text-sm sm:text-base rounded-full hover:bg-[#5500aa] transition-all cursor-pointer"
-            >
-              Իմանալ ավելին
-            </button>
-          </div>
+  {t('main.biometricTitle')}
+</h2>
+<p className="text-sm sm:text-base md:text-lg opacity-80">
+  {t('main.biometricText')}
+</p>
+<div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6">
+  <img
+    src="https://www.evoca.am/img/biometric-section-QR-Code.png"
+    alt={t('main.qrAlt')}
+    className="w-[130px] h-[130px] sm:w-[180px] sm:h-[180px]"
+  />
+  <button
+    onClick={() => navigate('/evoca-touch')}
+    className="w-full sm:w-auto bg-[#6600cc] text-white font-semibold px-6 py-2.5 sm:px-8 sm:py-3 text-sm sm:text-base rounded-full hover:bg-[#5500aa] transition-all cursor-pointer"
+  >
+    {t('main.learnMore')}
+  </button>
+</div>
         </div>
       </div>
 
@@ -160,8 +206,8 @@ function Main() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 sm:pt-12 pb-6 sm:pb-8 flex flex-col sm:flex-row items-center gap-4 sm:gap-8 text-center sm:text-left">
           <img src="/statue.png" alt="" className="w-[140px] sm:w-[280px] md:w-[380px]" />
           <h1 className="text-2xl sm:text-3xl md:text-5xl font-extrabold">
-            Լավագույնը Evocabank-ից
-          </h1>
+  {t('main.bestTitle')}
+</h1>
         </div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-10 sm:pb-16">
@@ -182,15 +228,15 @@ function Main() {
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
           <Link to="/news" className="hover:opacity-80 transition-opacity">
             <h2 className="text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight cursor-pointer">
-              Վերջին նորությունները
-            </h2>
+  {t('main.latestNews')}
+</h2>
           </Link>
 
           <Link
             to="/news"
             className="flex items-center space-x-2 bg-purple-100/70 hover:bg-purple-200/80 text-purple-700 px-4 py-2.5 rounded-full font-semibold text-sm transition-colors duration-200 group cursor-pointer"
           >
-            <span>Բոլոր նորությունները</span>
+            <span>{t('main.allNews')}</span>
             <svg
               className="w-4 h-4 transform group-hover:translate-x-0.5 transition-transform"
               fill="none"
@@ -233,7 +279,7 @@ function Main() {
                   ? 'w-6 h-2.5 bg-purple-600'
                   : 'w-2.5 h-2.5 bg-gray-300 hover:bg-gray-400'
               }`}
-              aria-label={`Go to slide ${index + 1}`}
+              aria-label={t('main.goToSlide', { n: index + 1 })}
             />
           ))}
         </div>

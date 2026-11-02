@@ -1,10 +1,24 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { collection, getDocs } from 'firebase/firestore';
+import i18n from 'i18next';
+import { useTranslation } from 'react-i18next';
 import { db } from '../firebase.js';
+import { useLocalized } from '../hooks/useLocalized.js';
 
 const VISIBLE = 3;        // միաժամանակ քանի thumbnail է երևում
 const ITEM_HEIGHT = 74;   // 64px (h-16) + 10px (gap)
+
+/* ===================== i18n ===================== */
+const sliderResources = {
+  hy: { cardSlider: { details: 'Մանրամասն', up: 'Վերև', down: 'Ներքև', noImage: 'Նկար չկա' } },
+  en: { cardSlider: { details: 'Details', up: 'Up', down: 'Down', noImage: 'No image' } },
+  ru: { cardSlider: { details: 'Подробнее', up: 'Вверх', down: 'Вниз', noImage: 'Нет изображения' } },
+};
+
+Object.entries(sliderResources).forEach(([lng, tr]) => {
+  i18n.addResourceBundle(lng, 'translation', tr, true, true);
+});
 
 // **տեքստ** -> մանուշակագույն թավ տեքստ
 const renderHighlighted = (text) =>
@@ -76,6 +90,8 @@ function TiltCard({ src, alt }) {
 
 export function CardSlider() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
+  const l = useLocalized();
   const [cards, setCards] = useState([]);
   const [activeCardIndex, setActiveCardIndex] = useState(0);
   const [offsetIndex, setOffsetIndex] = useState(0);
@@ -104,6 +120,7 @@ export function CardSlider() {
   const arrowClass =
     'text-purple-700 hover:bg-purple-100 rounded-full transition-all cursor-pointer p-1 z-10 ' +
     'disabled:opacity-30 disabled:cursor-default disabled:hover:bg-transparent max-[400px]:hidden';
+console.log(cards);
 
   return (
     <section className="relative w-full overflow-hidden my-12 border-y border-purple-100/70 bg-gradient-to-br from-[#faf5ff] via-white to-[#f1e4ff]">
@@ -116,7 +133,7 @@ export function CardSlider() {
 
         {/* Thumbnail-ներ */}
         <div className="relative flex flex-col items-center gap-2 w-full lg:w-auto">
-          <button onClick={handlePrev} disabled={offsetIndex === 0} className={arrowClass} aria-label="Վերև">
+          <button onClick={handlePrev} disabled={offsetIndex === 0} className={arrowClass} aria-label={t('cardSlider.up')}>
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <polyline points="18 15 12 9 6 15"></polyline>
             </svg>
@@ -154,7 +171,7 @@ export function CardSlider() {
             </div>
           </div>
 
-          <button onClick={handleNext} disabled={offsetIndex === maxOffset} className={arrowClass} aria-label="Ներքև">
+          <button onClick={handleNext} disabled={offsetIndex === maxOffset} className={arrowClass} aria-label={t('cardSlider.down')}>
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <polyline points="6 9 12 15 18 9"></polyline>
             </svg>
@@ -173,7 +190,7 @@ export function CardSlider() {
               <TiltCard src={getImg(activeCard)} alt={getTitle(activeCard)} />
             ) : (
               <div className="w-full h-full bg-gray-200 rounded-2xl flex items-center justify-center text-gray-500">
-                Նկար չկա
+                {t('cardSlider.noImage')}
               </div>
             )}
           </div>
@@ -192,14 +209,14 @@ export function CardSlider() {
           </h2>
           {activeCard.description && (
             <p className="text-sm sm:text-base text-gray-600 leading-relaxed line-clamp-3 max-w-md">
-              {renderHighlighted(activeCard.description)}
+              {renderHighlighted(l(activeCard.description))}
             </p>
           )}
           <button
             onClick={() => navigate(`/current-card/${activeCard.id}`)}
             className="group mt-1 flex items-center gap-2 bg-[#6600cc] text-white font-semibold px-8 py-3 rounded-full hover:bg-[#5500aa] hover:shadow-lg hover:shadow-purple-300 hover:-translate-y-0.5 transition-all cursor-pointer"
           >
-            Մանրամասն
+            {t('cardSlider.details')}
             <svg className="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
             </svg>
