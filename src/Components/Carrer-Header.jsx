@@ -1,56 +1,11 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { auth, db } from '../firebase';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc, collection, getDocs } from 'firebase/firestore';
 import i18n from 'i18next';
 import { initReactI18next, useTranslation } from 'react-i18next';
 
-/* ===================== i18n ===================== */
-const resources = {
-    hy: {
-        header: {
-            personal: 'Անհատ', business: 'Բիզնես', instantPayments: 'Ակնթարթային վճարումներ',
-            about: 'Մեր մասին', news: 'Նորություններ', blog: 'Բլոգ', career: 'Կարիերա',
-            onlineApps: 'Առցանց հայտեր', smeLoan: 'ՖՄՁ վարկավորում', contact: 'Հետադարձ կապ',
-            orderCall: 'Պատվիրել զանգ', branches: 'Մասնաճյուղեր', help: 'Օգնություն',
-            language: 'Լեզու', search: 'Որոնում', searchAria: 'Որոնել', close: 'Փակել',
-            menu: 'Մենյու', call: 'Զանգել՝', checkError: 'Ստուգման սխալ:',
-        },
-        careerNav: {
-            life: 'Evoca Լայֆ',
-            work: 'Աշխատանք և պրակտիկա',
-        },
-    },
-    en: {
-        header: {
-            personal: 'Personal', business: 'Business', instantPayments: 'Instant payments',
-            about: 'About us', news: 'News', blog: 'Blog', career: 'Career',
-            onlineApps: 'Online applications', smeLoan: 'SME lending', contact: 'Contact us',
-            orderCall: 'Request a call', branches: 'Branches', help: 'Help',
-            language: 'Language', search: 'Search', searchAria: 'Search', close: 'Close',
-            menu: 'Menu', call: 'Call:', checkError: 'Verification error:',
-        },
-        careerNav: {
-            life: 'Evoca Life',
-            work: 'Jobs and internships',
-        },
-    },
-    ru: {
-        header: {
-            personal: 'Частным клиентам', business: 'Бизнесу', instantPayments: 'Мгновенные платежи',
-            about: 'О нас', news: 'Новости', blog: 'Блог', career: 'Карьера',
-            onlineApps: 'Онлайн-заявки', smeLoan: 'Кредитование МСП', contact: 'Обратная связь',
-            orderCall: 'Заказать звонок', branches: 'Филиалы', help: 'Помощь',
-            language: 'Язык', search: 'Поиск', searchAria: 'Искать', close: 'Закрыть',
-            menu: 'Меню', call: 'Позвонить:', checkError: 'Ошибка проверки:',
-        },
-        careerNav: {
-            life: 'Evoca Лайф',
-            work: 'Работа и стажировка',
-        },
-    },
-};
-
+/* ===================== i18n Սկզբնավորում ===================== */
 const alreadyInit = i18n.isInitialized || Array.isArray(i18n.options?.supportedLngs);
 
 if (!alreadyInit) {
@@ -72,45 +27,6 @@ if (!alreadyInit) {
     document.documentElement.lang = i18n.language;
 }
 
-Object.entries(resources).forEach(([lng, tr]) => {
-    i18n.addResourceBundle(lng, 'translation', tr, true, true);
-});
-
-/* ===================== Տվյալներ ===================== */
-const LANGS = [
-    { code: 'hy', label: 'ՀԱՅ' },
-    { code: 'en', label: 'ENG' },
-    { code: 'ru', label: 'РУС' },
-];
-
-const topLinks = [
-    { to: '/loans', key: 'personal' },
-    { to: '/business-loans', key: 'business' },
-    { to: '/instant-payments', key: 'instantPayments' },
-    { to: '/about', key: 'about' },
-    { to: '/news', key: 'news' },
-    { to: '/blog', key: 'blog' },
-    { to: '/career', key: 'career' },
-];
-
-const mainNavItems = [
-    { path: '/career', key: 'life' },
-    { path: '/evokawork2', key: 'work' },
-];
-
-const onlineApps = [
-    { to: '/online-applications/sme-loan', key: 'smeLoan' },
-    { to: '/online-applications/visa-infinite', label: 'Visa Infinite' },
-    { to: '/online-applications/mastercard-gold', label: 'MasterCard Gold' },
-    { to: '/online-applications/visa-gold', label: 'Visa Gold' },
-];
-
-const phones = [
-    { href: 'tel:+37410605555', text: '+374 10 605555' },
-    { href: 'tel:+37498205555', text: '+374 98 205555' },
-    { href: 'tel:+37499605555', text: '+374 99 605555' },
-];
-
 /* ===================== Header ===================== */
 export default function Header() {
     const { t } = useTranslation();
@@ -123,9 +39,60 @@ export default function Header() {
     const [searchQuery, setSearchQuery] = useState('');
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
+    // Տվյալների պահպանման state-եր՝ բացառապես Firebase-ից ստացվող տվյալների համար
+    const [topLinksState, setTopLinksState] = useState([]);
+    const [mainNavItemsState, setMainNavItemsState] = useState([]);
+    const [onlineAppsState, setOnlineAppsState] = useState([]);
+    const [phonesState, setPhonesState] = useState([]);
+    const [langsState, setLangsState] = useState([]);
+
+    const [, setLoaded] = useState(false);
+
     const navigate = useNavigate();
     const { pathname } = useLocation();
     const dropdownsRef = useRef(null);
+
+    // Տվյալների բեռնումը Firebase-ից «Կարիերա» հավաքածուներից բաղադրիչը բացվելիս (mount)
+    useEffect(() => {
+        const fetchFirebaseData = async () => {
+            try {
+                // 1. Թարգմանություններ (Կարիերա_resources)
+                const resDoc = await getDoc(doc(db, 'Կարիերա_resources', 'translations'));
+                if (resDoc.exists()) {
+                    const fetchedResources = resDoc.data();
+                    Object.keys(fetchedResources).forEach((lng) => {
+                        i18n.addResourceBundle(lng, 'translation', fetchedResources[lng], true, true);
+                    });
+                    setLoaded(prev => !prev);
+                }
+
+                // 2. Կարիերա_topLinks
+                const topLinksSnapshot = await getDocs(collection(db, 'Կարիերա_topLinks'));
+                setTopLinksState(topLinksSnapshot.docs.map(doc => doc.data()));
+
+                // 3. Կարիերա_mainNavItems
+                const mainNavSnapshot = await getDocs(collection(db, 'Կարիերա_mainNavItems'));
+                setMainNavItemsState(mainNavSnapshot.docs.map(doc => doc.data()));
+
+                // 4. Կարիերա_onlineApps
+                const onlineAppsSnapshot = await getDocs(collection(db, 'Կարիերա_onlineApps'));
+                setOnlineAppsState(onlineAppsSnapshot.docs.map(doc => doc.data()));
+
+                // 5. Կարիերա_phones
+                const phonesSnapshot = await getDocs(collection(db, 'Կարիերա_phones'));
+                setPhonesState(phonesSnapshot.docs.map(doc => doc.data()));
+
+                // 6. Կարիերա_LANGS
+                const langsSnapshot = await getDocs(collection(db, 'Կարիերա_LANGS'));
+                setLangsState(langsSnapshot.docs.map(doc => doc.data()));
+
+            } catch (error) {
+                console.error('Սխալ Firebase-ից տվյալներ բեռնելիս:', error);
+            }
+        };
+
+        fetchFirebaseData();
+    }, []);
 
     useEffect(() => {
         const handleClickOutside = (e) => {
@@ -178,8 +145,8 @@ export default function Header() {
             {/* Վերին տող */}
             <div className="hidden md:flex relative z-[60] max-w-7xl mx-auto px-4 h-12 items-center justify-between text-sm border-b border-gray-100">
                 <nav className="flex items-center space-x-4 lg:space-x-6 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-                    {topLinks.map((l) => (
-                        <Link key={l.key} to={l.to} className="text-gray-700 hover:text-purple-700 whitespace-nowrap">
+                    {topLinksState.map((l, index) => (
+                        <Link key={index} to={l.to} className="text-gray-700 hover:text-purple-700 whitespace-nowrap">
                             {t(`header.${l.key}`)}
                         </Link>
                     ))}
@@ -204,8 +171,8 @@ export default function Header() {
 
                         {isOnlineAppsOpen && (
                             <div className="absolute left-0 w-full mt-1 bg-white border border-gray-100 rounded-lg shadow-xl py-2 z-[70] text-gray-800 text-center whitespace-nowrap">
-                                {onlineApps.map((a) => (
-                                    <Link key={a.to} to={a.to} className={`${dropdownItem} font-medium`}>
+                                {onlineAppsState.map((a, index) => (
+                                    <Link key={index} to={a.to} className={`${dropdownItem} font-medium`}>
                                         {a.key ? t(`header.${a.key}`) : a.label}
                                     </Link>
                                 ))}
@@ -231,8 +198,8 @@ export default function Header() {
 
                         {isContactOpen && (
                             <div className="absolute left-0 w-full mt-1 bg-white border border-gray-100 rounded-lg shadow-xl py-2 z-[70] text-gray-800 text-center whitespace-nowrap">
-                                {phones.map((p) => (
-                                    <a key={p.href} href={p.href} className={`${dropdownItem} font-bold`}>{p.text}</a>
+                                {phonesState.map((p, index) => (
+                                    <a key={index} href={p.href} className={`${dropdownItem} font-bold`}>{p.text}</a>
                                 ))}
                                 <a href="tel:8444" className="block px-2 py-2 hover:bg-purple-50 hover:text-purple-700 font-bold text-lg">8444</a>
                                 <div className="border-t border-gray-100 my-1"></div>
@@ -275,7 +242,7 @@ export default function Header() {
 
                             {isLangOpen && (
                                 <div className="absolute left-1/2 -translate-x-1/2 top-full mt-2 w-16 bg-white rounded-md shadow-xl z-[70] py-1">
-                                    {LANGS.map((item, i) => (
+                                    {langsState.map((item, i) => (
                                         <button
                                             key={item.code}
                                             onClick={() => {
@@ -312,7 +279,7 @@ export default function Header() {
                 </div>
             </div>
 
-            {/* Հիմնական տող՝ Լոգո + Մենյուի լինկերը միասին ձախ կողմում */}
+            {/* Հիմնական տող */}
             <div className="sticky top-0 z-50 bg-white shadow-md w-full">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 sm:h-20 flex items-center justify-between">
                     <div className="flex items-center space-x-8 lg:space-x-12">
@@ -322,17 +289,17 @@ export default function Header() {
                         </Link>
 
                         <nav className="hidden lg:flex items-center space-x-6 lg:space-x-8 text-sm sm:text-base font-bold">
-                            {mainNavItems.map((item) => {
+                            {mainNavItemsState.map((item, index) => {
                                 const isActive = pathname === item.path;
                                 return (
                                     <Link
-                                        key={item.path}
+                                        key={index}
                                         to={item.path}
                                         className={`whitespace-nowrap transition-colors ${
                                             isActive ? 'text-purple-700 font-extrabold' : 'text-gray-900 hover:text-purple-700'
                                         }`}
                                     >
-                                        {t(`careerNav.${item.key}`)}
+                                        {item.key ? t(`careerNav.${item.key}`) : item.label}
                                     </Link>
                                 );
                             })}
@@ -367,14 +334,14 @@ export default function Header() {
             {/* Mobile Menu */}
             {isMobileMenuOpen && (
                 <div className="lg:hidden bg-white border-t border-gray-100 shadow-lg px-4 py-3 space-y-1">
-                    {mainNavItems.map((item) => (
+                    {mainNavItemsState.map((item, index) => (
                         <Link
-                            key={item.path}
+                            key={index}
                             to={item.path}
                             onClick={() => setIsMobileMenuOpen(false)}
                             className="block py-2 text-gray-800 font-medium hover:text-purple-700"
                         >
-                            {t(`careerNav.${item.key}`)}
+                            {item.key ? t(`careerNav.${item.key}`) : item.label}
                         </Link>
                     ))}
                     <div className="border-t border-gray-100 my-2"></div>
@@ -382,7 +349,7 @@ export default function Header() {
 
                     {/* Լեզու (mobile) */}
                     <div className="flex gap-2 py-2">
-                        {LANGS.map((item) => (
+                        {langsState.map((item) => (
                             <button
                                 key={item.code}
                                 onClick={() => i18n.changeLanguage(item.code)}

@@ -1,59 +1,11 @@
-import { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { auth, db } from '../firebase';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc, collection, getDocs } from 'firebase/firestore';
+import { useState, useRef, useEffect } from 'react';
 import i18n from 'i18next';
 import { initReactI18next, useTranslation } from 'react-i18next';
 
-/* ===================== i18n ===================== */
-const resources = {
-    hy: {
-        header: {
-            personal: 'Անհատ', business: 'Բիզնես', instantPayments: 'Ակնթարթային վճարումներ',
-            about: 'Մեր մասին', news: 'Նորություններ', blog: 'Բլոգ', career: 'Կարիերա',
-            onlineApps: 'Առցանց հայտեր', smeLoan: 'ՖՄՁ վարկավորում', contact: 'Հետադարձ կապ',
-            orderCall: 'Պատվիրել զանգ', branches: 'Մասնաճյուղեր', help: 'Օգնություն',
-            language: 'Լեզու', search: 'Որոնում', searchAria: 'Որոնել', close: 'Փակել',
-            menu: 'Մենյու', call: 'Զանգել՝', checkError: 'Ստուգման սխալ:',
-        },
-        businessNav: {
-            loans: 'Վարկեր', leasing: 'Լիզինգ', accounts: 'Հաշիվներ', deposits: 'Ավանդներ',
-            securitiesMarket: 'Արժեթղթերի շուկա', tradeFinance: 'Առևտրի ֆինանսավորում',
-            digital: 'Դիջիթայլ', other: 'Այլ',
-        },
-    },
-    en: {
-        header: {
-            personal: 'Personal', business: 'Business', instantPayments: 'Instant payments',
-            about: 'About us', news: 'News', blog: 'Blog', career: 'Career',
-            onlineApps: 'Online applications', smeLoan: 'SME lending', contact: 'Contact us',
-            orderCall: 'Request a call', branches: 'Branches', help: 'Help',
-            language: 'Language', search: 'Search', searchAria: 'Search', close: 'Close',
-            menu: 'Menu', call: 'Call:', checkError: 'Verification error:',
-        },
-        businessNav: {
-            loans: 'Loans', leasing: 'Leasing', accounts: 'Accounts', deposits: 'Deposits',
-            securitiesMarket: 'Securities market', tradeFinance: 'Trade finance',
-            digital: 'Digital', other: 'Other',
-        },
-    },
-    ru: {
-        header: {
-            personal: 'Частным клиентам', business: 'Бизнесу', instantPayments: 'Мгновенные платежи',
-            about: 'О нас', news: 'Новости', blog: 'Блог', career: 'Карьера',
-            onlineApps: 'Онлайн-заявки', smeLoan: 'Кредитование МСП', contact: 'Обратная связь',
-            orderCall: 'Заказать звонок', branches: 'Филиалы', help: 'Помощь',
-            language: 'Язык', search: 'Поиск', searchAria: 'Искать', close: 'Закрыть',
-            menu: 'Меню', call: 'Позвонить:', checkError: 'Ошибка проверки:',
-        },
-        businessNav: {
-            loans: 'Кредиты', leasing: 'Лизинг', accounts: 'Счета', deposits: 'Вклады',
-            securitiesMarket: 'Рынок ценных бумаг', tradeFinance: 'Торговое финансирование',
-            digital: 'Диджитал', other: 'Другое',
-        },
-    },
-};
-
+/* ===================== i18n Սկզբնավորում ===================== */
 const alreadyInit = i18n.isInitialized || Array.isArray(i18n.options?.supportedLngs);
 
 if (!alreadyInit) {
@@ -75,64 +27,71 @@ if (!alreadyInit) {
     document.documentElement.lang = i18n.language;
 }
 
-Object.entries(resources).forEach(([lng, tr]) => {
-    i18n.addResourceBundle(lng, 'translation', tr, true, true);
-});
-
-/* ===================== Տվյալներ ===================== */
-const LANGS = [
-    { code: 'hy', label: 'ՀԱՅ' },
-    { code: 'en', label: 'ENG' },
-    { code: 'ru', label: 'РУС' },
-];
-
-const topLinks = [
-    { to: '/loans', key: 'personal' },
-    { to: '/business-loans', key: 'business' },
-    { to: '/instant-payments', key: 'instantPayments' },
-    { to: '/about', key: 'about' },
-    { to: '/news', key: 'news' },
-    { to: '/blog', key: 'blog' },
-    { to: '/career', key: 'career' },
-];
-
-const mainLinks = [
-    { to: '/business-loans', key: 'loans' },
-    { to: '/leasing', key: 'leasing' },
-    { to: '/business-account-opening-and-services', key: 'accounts' },
-    { to: '/business-classical-deposit', key: 'deposits' },
-    { to: '/guarantee', key: 'securitiesMarket' },
-    { to: '/business-investment-services', key: 'tradeFinance' },
-    { to: '/v-pos-terminal', key: 'digital' },
-    { to: '/boxes', key: 'other' },
-];
-
-const onlineApps = [
-    { to: '/online-applications/sme-loan', key: 'smeLoan' },
-    { to: '/online-applications/visa-infinite', label: 'Visa Infinite' },
-    { to: '/online-applications/mastercard-gold', label: 'MasterCard Gold' },
-    { to: '/online-applications/visa-gold', label: 'Visa Gold' },
-];
-
-const phones = [
-    { href: 'tel:+37410605555', text: '+374 10 605555' },
-    { href: 'tel:+37498205555', text: '+374 98 205555' },
-    { href: 'tel:+37499605555', text: '+374 99 605555' },
-];
-
-/* ===================== Header ===================== */
 export default function BusinessHeader() {
     const { t } = useTranslation();
     const lang = i18n.resolvedLanguage || i18n.language;
 
+    const [isSearchOpen, setIsSearchOpen] = useState(false);
+    const [searchQuery, setSearchQuery] = useState('');
     const [isOnlineAppsOpen, setIsOnlineAppsOpen] = useState(false);
     const [isContactOpen, setIsContactOpen] = useState(false);
     const [isLangOpen, setIsLangOpen] = useState(false);
-    const [isSearchOpen, setIsSearchOpen] = useState(false);
-    const [searchQuery, setSearchQuery] = useState('');
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+    // Տվյալների պահպանման վիճակներ (state-եր) Firebase-ից բեռնելու համար
+    const [topLinksState, setTopLinksState] = useState([]);
+    const [mainLinksState, setMainLinksState] = useState([]);
+    const [onlineAppsState, setOnlineAppsState] = useState([]);
+    const [phonesState, setPhonesState] = useState([]);
+    const [langsState, setLangsState] = useState([]);
+    
+    // Ստեյթ՝ բաղադրիչը վերաթարմացնելու համար, երբ թարգմանությունները բեռնվեն
+    const [, setLoaded] = useState(false);
+
     const navigate = useNavigate();
     const dropdownsRef = useRef(null);
+
+    // Տվյալների բեռնումը Firebase-ից «Բիզնես» հավաքածուներից բաղադրիչը բացվելիս (mount)
+    useEffect(() => {
+        const fetchFirebaseData = async () => {
+            try {
+                // 1. Բեռնել թարգմանությունները Firebase-ից (Բիզնես_resources)
+                const resDoc = await getDoc(doc(db, 'Բիզնես_resources', 'translations'));
+                if (resDoc.exists()) {
+                    const fetchedResources = resDoc.data();
+                    Object.keys(fetchedResources).forEach((lng) => {
+                        i18n.addResourceBundle(lng, 'translation', fetchedResources[lng], true, true);
+                    });
+                    setLoaded(prev => !prev);
+                }
+
+                // 2. Բեռնել Բիզնես_topLinks կոլեկցիան
+                const topLinksSnapshot = await getDocs(collection(db, 'Բիզնես_topLinks'));
+                setTopLinksState(topLinksSnapshot.docs.map(doc => doc.data()));
+
+                // 3. Բեռնել Բիզնես_mainLinks կոլեկցիան
+                const mainLinksSnapshot = await getDocs(collection(db, 'Բիզնես_mainLinks'));
+                setMainLinksState(mainLinksSnapshot.docs.map(doc => doc.data()));
+
+                // 4. Բեռնել Բիզնես_onlineApps կոլեկցիան
+                const onlineAppsSnapshot = await getDocs(collection(db, 'Բիզնես_onlineApps'));
+                setOnlineAppsState(onlineAppsSnapshot.docs.map(doc => doc.data()));
+
+                // 5. Բեռնել Բիզնես_phones կոլեկցիան
+                const phonesSnapshot = await getDocs(collection(db, 'Բիզնես_phones'));
+                setPhonesState(phonesSnapshot.docs.map(doc => doc.data()));
+
+                // 6. Բեռնել Բիզնես_LANGS կոլեկցիան
+                const langsSnapshot = await getDocs(collection(db, 'Բիզնես_LANGS'));
+                setLangsState(langsSnapshot.docs.map(doc => doc.data()));
+
+            } catch (error) {
+                console.error('Սխալ Firebase-ից տվյալներ բեռնելիս:', error);
+            }
+        };
+
+        fetchFirebaseData();
+    }, []);
 
     useEffect(() => {
         const handleClickOutside = (e) => {
@@ -170,7 +129,7 @@ export default function BusinessHeader() {
         navigate('/login');
     };
 
-    const handleSearch = () => {
+    const submitSearch = () => {
         if (searchQuery.trim()) {
             navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
             setIsSearchOpen(false);
@@ -185,8 +144,8 @@ export default function BusinessHeader() {
             {/* Վերին տող */}
             <div className="hidden md:flex relative z-[60] max-w-7xl mx-auto px-4 h-12 items-center justify-between text-sm border-b border-gray-100">
                 <nav className="flex items-center space-x-4 lg:space-x-6 overflow-x-auto">
-                    {topLinks.map((l) => (
-                        <Link key={l.key} to={l.to} className="text-gray-700 hover:text-purple-700 whitespace-nowrap">
+                    {topLinksState.map((l, index) => (
+                        <Link key={index} to={l.to} className="text-gray-700 hover:text-purple-700 whitespace-nowrap">
                             {t(`header.${l.key}`)}
                         </Link>
                     ))}
@@ -211,8 +170,8 @@ export default function BusinessHeader() {
 
                         {isOnlineAppsOpen && (
                             <div className="absolute left-0 w-full mt-1 bg-white border border-gray-100 rounded-lg shadow-xl py-2 z-[70] text-gray-800 text-center whitespace-nowrap">
-                                {onlineApps.map((a) => (
-                                    <Link key={a.to} to={a.to} className={`${dropdownItem} font-medium`}>
+                                {onlineAppsState.map((a, index) => (
+                                    <Link key={index} to={a.to} className={`${dropdownItem} font-medium`}>
                                         {a.key ? t(`header.${a.key}`) : a.label}
                                     </Link>
                                 ))}
@@ -238,8 +197,8 @@ export default function BusinessHeader() {
 
                         {isContactOpen && (
                             <div className="absolute left-0 w-full mt-1 bg-white border border-gray-100 rounded-lg shadow-xl py-2 z-[70] text-gray-800 text-center whitespace-nowrap">
-                                {phones.map((p) => (
-                                    <a key={p.href} href={p.href} className={`${dropdownItem} font-bold`}>{p.text}</a>
+                                {phonesState.map((p, index) => (
+                                    <a key={index} href={p.href} className={`${dropdownItem} font-bold`}>{p.text}</a>
                                 ))}
                                 <a href="tel:8444" className="block px-2 py-2 hover:bg-purple-50 hover:text-purple-700 font-bold text-lg">8444</a>
                                 <div className="border-t border-gray-100 my-1"></div>
@@ -282,7 +241,7 @@ export default function BusinessHeader() {
 
                             {isLangOpen && (
                                 <div className="absolute left-1/2 -translate-x-1/2 top-full mt-2 w-16 bg-white rounded-md shadow-xl z-[70] py-1">
-                                    {LANGS.map((item, i) => (
+                                    {langsState.map((item, i) => (
                                         <button
                                             key={item.code}
                                             onClick={() => {
@@ -300,7 +259,6 @@ export default function BusinessHeader() {
                             )}
                         </div>
 
-                        {/* Որոնում */}
                         <button
                             onClick={() => {
                                 setIsSearchOpen(true);
@@ -319,22 +277,25 @@ export default function BusinessHeader() {
                 </div>
             </div>
 
-            {/* Հիմնական տող */}
+            {/* Main Row */}
             <div className="sticky top-0 z-50 bg-white shadow-md w-full">
                 <div className="max-w-7xl mx-auto px-3 sm:px-4 h-16 sm:h-20 flex items-center justify-between">
+                    {/* Logo */}
                     <Link to="/" className="flex items-center space-x-1 cursor-pointer flex-shrink-0">
                         <span className="text-xl sm:text-2xl lg:text-3xl font-black tracking-wider text-gray-700">evoca</span>
                         <span className="w-2 h-2 sm:w-2.5 sm:h-2.5 bg-purple-600 rounded-full inline-block mt-1 sm:mt-2"></span>
                     </Link>
 
+                    {/* Desktop navigation - ՈՒՂՂՎԱԾ Է businessNav ԹԱՐԳՄԱՆՈՒԹՅԱՆ ԲԱՆԱԼԻՆԵՐՈՎ */}
                     <nav className="hidden lg:flex items-center space-x-6 text-gray-800 font-medium">
-                        {mainLinks.map((l) => (
-                            <Link key={l.to} to={l.to} className="hover:text-purple-700 whitespace-nowrap">
-                                {t(`businessNav.${l.key}`)}
+                        {mainLinksState.map((l, index) => (
+                            <Link key={index} to={l.to} className="hover:text-purple-700 whitespace-nowrap">
+                                {l.key ? t(`businessNav.${l.key}`) : l.label}
                             </Link>
                         ))}
                     </nav>
 
+                    {/* Right side buttons */}
                     <div className="flex items-center space-x-2 sm:space-x-3 flex-shrink-0">
                         <button
                             onClick={handleEvocaOnlineClick}
@@ -360,28 +321,23 @@ export default function BusinessHeader() {
                 </div>
             </div>
 
-            {/* Mobile Menu */}
+            {/* Mobile Menu - ՈՒՂՂՎԱԾ Է businessNav ԹԱՐԳՄԱՆՈՒԹՅԱՆ ԲԱՆԱԼԻՆԵՐՈՎ */}
             {isMobileMenuOpen && (
                 <div className="lg:hidden bg-white border-t border-gray-100 shadow-lg px-4 py-3 space-y-1">
-                    {mainLinks.map((l) => (
-                        <Link
-                            key={l.to}
-                            to={l.to}
-                            onClick={() => setIsMobileMenuOpen(false)}
-                            className="block py-2 text-gray-800 font-medium hover:text-purple-700"
-                        >
-                            {t(`businessNav.${l.key}`)}
+                    {mainLinksState.map((l, index) => (
+                        <Link key={index} to={l.to} className="block py-2 text-gray-800 font-medium hover:text-purple-700">
+                            {l.key ? t(`businessNav.${l.key}`) : l.label}
                         </Link>
                     ))}
                     <div className="border-t border-gray-100 my-2"></div>
-                    <Link to="/" onClick={() => setIsMobileMenuOpen(false)} className="block py-2 text-gray-800 font-medium hover:text-purple-700">{t('header.personal')}</Link>
-                    <Link to="/business-loans" onClick={() => setIsMobileMenuOpen(false)} className="block py-2 text-gray-800 font-medium hover:text-purple-700">{t('header.business')}</Link>
-                    <Link to="/about" onClick={() => setIsMobileMenuOpen(false)} className="block py-2 text-gray-800 font-medium hover:text-purple-700">{t('header.about')}</Link>
+                    <Link to="/" className="block py-2 text-gray-800 font-medium hover:text-purple-700">{t('header.personal')}</Link>
+                    <Link to="/business-loans" className="block py-2 text-gray-800 font-medium hover:text-purple-700">{t('header.business')}</Link>
+                    <Link to="/about" className="block py-2 text-gray-800 font-medium hover:text-purple-700">{t('header.about')}</Link>
                     <a href="tel:8444" className="block py-2 text-purple-700 font-bold">{t('header.call')} 8444</a>
 
                     {/* Լեզու (mobile) */}
                     <div className="flex gap-2 py-2">
-                        {LANGS.map((item) => (
+                        {langsState.map((item) => (
                             <button
                                 key={item.code}
                                 onClick={() => i18n.changeLanguage(item.code)}
@@ -394,7 +350,7 @@ export default function BusinessHeader() {
                         ))}
                     </div>
 
-                    <div className="pt-2">
+                    <div className="pt-2 flex flex-col gap-2">
                         <button
                             onClick={handleEvocaOnlineClick}
                             className="w-full sm:hidden text-center bg-purple-700 hover:bg-purple-800 text-white font-medium px-6 py-2.5 rounded-full shadow-md transition duration-200 cursor-pointer"
@@ -405,7 +361,7 @@ export default function BusinessHeader() {
                 </div>
             )}
 
-            {/* Որոնման վահանակ */}
+            {/* Search overlay */}
             {isSearchOpen && (
                 <>
                     <div onClick={() => setIsSearchOpen(false)} className="fixed inset-0 bg-black/50 z-[80]" />
@@ -420,10 +376,10 @@ export default function BusinessHeader() {
                                     type="text"
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
-                                    onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                                    onKeyDown={(e) => e.key === 'Enter' && submitSearch()}
                                     className="flex-1 outline-none text-gray-900 bg-transparent"
                                 />
-                                <button onClick={handleSearch} className="text-gray-900 hover:text-purple-700 transition" aria-label={t('header.searchAria')}>
+                                <button onClick={submitSearch} className="text-gray-900 hover:text-purple-700 transition" aria-label={t('header.searchAria')}>
                                     <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                                     </svg>

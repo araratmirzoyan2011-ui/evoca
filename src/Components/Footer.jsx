@@ -1,74 +1,141 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import ChatModal from './ChatModal'; // Ներմուծում ենք չատի կոմպոնենտը
+import ChatModal from './ChatModal';
+import i18n from 'i18next';
+import { initReactI18next, useTranslation } from 'react-i18next';
 
+// Ներմուծեք Firebase-ի ձեր db ինստանսը (ճշգրտեք ուղին ըստ ձեր նախագծի)
+import { db } from '../firebase'; 
+import { collection, getDocs } from 'firebase/firestore';
+
+/* ===================== i18n Սկզբնավորում ===================== */
+const alreadyInit = i18n.isInitialized || Array.isArray(i18n.options?.supportedLngs);
+
+if (!alreadyInit) {
+  i18n.use(initReactI18next).init({
+    resources: {},
+    lng: localStorage.getItem('lang') || 'hy',
+    fallbackLng: 'hy',
+    supportedLngs: ['hy', 'en', 'ru'],
+    interpolation: { escapeValue: false },
+    initImmediate: false,
+    initAsync: false,
+  });
+
+  i18n.on('languageChanged', (lng) => {
+    localStorage.setItem('lang', lng);
+    document.documentElement.lang = lng;
+  });
+
+  document.documentElement.lang = i18n.language;
+}
+
+/* ===================== Footer Component ===================== */
 export default function Footer() {
+  const { t } = useTranslation();
+  const [loading, setLoading] = useState(true);
+
+  // Տվյալների ներբեռնումը բացառապես Firebase-ից
+  useEffect(() => {
+    const fetchTranslationsFromFirebase = async () => {
+      try {
+        const languages = ['hy', 'en', 'ru'];
+        
+        for (const langKey of languages) {
+          const colRef = collection(db, `${langKey}_footer`);
+          const snapshot = await getDocs(colRef);
+          
+          snapshot.forEach((docSnap) => {
+            if (docSnap.exists()) {
+              const langData = docSnap.data();
+              // Ավելացնում ենք i18n բառարանին
+              i18n.addResourceBundle(langKey, 'translation', langData, true, true);
+            }
+          });
+        }
+      } catch (error) {
+        console.error('Սխալ Firebase-ից տվյալներ կարդալիս:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTranslationsFromFirebase();
+  }, []);
+
+  if (loading) {
+    return <div className="py-10 text-center text-gray-500 text-xs">Բեռնվում է տվյալները Firebase-ից...</div>;
+  }
+
   return (
     <footer className="bg-white text-gray-800 border-t border-gray-200 py-10 px-5 font-sans relative">
       <div className="max-w-7xl mx-auto flex flex-wrap justify-between gap-8 max-[400px]:flex-col max-[400px]:items-center max-[400px]:text-center">
         
+        {/* Բլոկ 1. Լոգո և հասցե */}
         <div className="flex-1 min-w-[200px] max-[400px]:w-full max-[400px]:flex max-[400px]:flex-col max-[400px]:items-center">
           <div className="text-2xl font-bold text-gray-900 mb-5 flex items-center gap-1">
             <Link to="/">
               evoca<span className="text-purple-700">BANK</span>
             </Link>
           </div>
-          <p className="text-xs text-gray-600 leading-relaxed mb-4">
-            ք. Երևան, 0010,<br />Հանրապետության 44/2
+          <p className="text-xs text-gray-600 leading-relaxed mb-4 whitespace-pre-line">
+            {t('footer.address')}
           </p>
-          <p className="text-[11px] text-gray-500 leading-relaxed mb-4">
-            Evocabank-ը վերահսկվում է<br />
-            Հայաստանի Հանրապետության<br />
-            Կենտրոնական բանկի կողմից
+          <p className="text-[11px] text-gray-500 leading-relaxed mb-4 whitespace-pre-line">
+            {t('footer.controlledBy')}
           </p>
           <p className="text-[10px] text-gray-400">
-            1990 - 2026, © ԲՈԼՈՐ ԻՐԱՎՈՒՆՔՆԵՐԸ ՊԱՇՏՊԱՆՎԱԾ ԵՆ
+            {t('footer.rightsReserved')}
           </p>
         </div>
 
+        {/* Բլոկ 2. Բանկի մասին */}
         <div className="flex-1 min-w-[180px] max-[400px]:w-full">
-          <h3 className="text-sm font-bold text-gray-900 mb-4">Բանկի մասին</h3>
+          <h3 className="text-sm font-bold text-gray-900 mb-4">{t('footer.aboutTitle')}</h3>
           <ul className="space-y-2.5 text-xs">
-            <li><Link to="/about" className="text-gray-600 hover:text-purple-700 transition">Մեր մասին</Link></li>
-            <li><Link to="/management" className="text-gray-600 hover:text-purple-700 transition">Ղեկավարություն</Link></li>
-            <li><Link to="/shareholders" className="text-gray-600 hover:text-purple-700 transition">Բաժնետերեր</Link></li>
-            <li><Link to="/reports" className="text-gray-600 hover:text-purple-700 transition">Հաշվետվություններ</Link></li>
-            <li><Link to="/laws" className="text-gray-600 hover:text-purple-700 transition">Իրավական ակտեր</Link></li>
-            <li><Link to="/tariffs" className="text-gray-600 hover:text-purple-700 transition">Սակագներ</Link></li>
-            <li><Link to="/property" className="text-gray-600 hover:text-purple-700 transition">Օտարվող գույք</Link></li>
-            <li><Link to="/builders" className="text-gray-600 hover:text-purple-700 transition">Կառուցապատողներ</Link></li>
-            <li><Link to="/dealers" className="text-gray-600 hover:text-purple-700 transition">Գործընկեր ավտոսրահներ</Link></li>
-            <li><Link to="/archive" className="text-gray-600 hover:text-purple-700 transition">Սակագների արխիվ</Link></li>
+            <li><Link to="/about" className="text-gray-600 hover:text-purple-700 transition">{t('footer.aboutUs')}</Link></li>
+            <li><Link to="/management" className="text-gray-600 hover:text-purple-700 transition">{t('footer.management')}</Link></li>
+            <li><Link to="/shareholders" className="text-gray-600 hover:text-purple-700 transition">{t('footer.shareholders')}</Link></li>
+            <li><Link to="/reports" className="text-gray-600 hover:text-purple-700 transition">{t('footer.reports')}</Link></li>
+            <li><Link to="/laws" className="text-gray-600 hover:text-purple-700 transition">{t('footer.laws')}</Link></li>
+            <li><Link to="/tariffs" className="text-gray-600 hover:text-purple-700 transition">{t('footer.tariffs')}</Link></li>
+            <li><Link to="/property" className="text-gray-600 hover:text-purple-700 transition">{t('footer.property')}</Link></li>
+            <li><Link to="/builders" className="text-gray-600 hover:text-purple-700 transition">{t('footer.builders')}</Link></li>
+            <li><Link to="/dealers" className="text-gray-600 hover:text-purple-700 transition">{t('footer.dealers')}</Link></li>
+            <li><Link to="/archive" className="text-gray-600 hover:text-purple-700 transition">{t('footer.archive')}</Link></li>
           </ul>
         </div>
 
+        {/* Բլոկ 3. Օգտակար հղումներ */}
         <div className="flex-1 min-w-[180px] max-[400px]:w-full">
-          <h3 className="text-sm font-bold text-gray-900 mb-4">Օգտակար հղումներ</h3>
+          <h3 className="text-sm font-bold text-gray-900 mb-4">{t('footer.usefulTitle')}</h3>
           <ul className="space-y-2.5 text-xs">
-            <li><Link to="/rights" className="text-gray-600 hover:text-purple-700 transition">Հաճախորդի իրավունքները<br />(Բողոքի ներկայացման<br />կանոններ)</Link></li>
-            <li><Link to="/criteria" className="text-gray-600 hover:text-purple-700 transition">Հաճախորդի<br />ռեզիդենտության<br />չափանիշներ</Link></li>
-            <li><Link to="/regulation" className="text-gray-600 hover:text-purple-700 transition">Կարգավորում</Link></li>
-            <li><Link to="/privacy" className="text-gray-600 hover:text-purple-700 transition">Գաղտնիության<br />քաղաքականություն</Link></li>
-            <li><Link to="/ombudsman" className="text-gray-600 hover:text-purple-700 transition">Ֆին. հաշտարար</Link></li>
-            <li><Link to="/security" className="text-gray-600 hover:text-purple-700 transition">Ֆինանսական<br />հանցագործությունների<br />կանխարգելում</Link></li>
-            <li><Link to="/cardholders" className="text-gray-600 hover:text-purple-700 transition">Հղումներ Բանկի<br />քարտապանների համար</Link></li>
+            <li><Link to="/rights" className="text-gray-600 hover:text-purple-700 transition whitespace-pre-line">{t('footer.rights')}</Link></li>
+            <li><Link to="/criteria" className="text-gray-600 hover:text-purple-700 transition whitespace-pre-line">{t('footer.criteria')}</Link></li>
+            <li><Link to="/regulation" className="text-gray-600 hover:text-purple-700 transition">{t('footer.regulation')}</Link></li>
+            <li><Link to="/privacy" className="text-gray-600 hover:text-purple-700 transition whitespace-pre-line">{t('footer.privacy')}</Link></li>
+            <li><Link to="/ombudsman" className="text-gray-600 hover:text-purple-700 transition">{t('footer.ombudsman')}</Link></li>
+            <li><Link to="/security" className="text-gray-600 hover:text-purple-700 transition whitespace-pre-line">{t('footer.security')}</Link></li>
+            <li><Link to="/cardholders" className="text-gray-600 hover:text-purple-700 transition whitespace-pre-line">{t('footer.cardholders')}</Link></li>
           </ul>
         </div>
 
+        {/* Բլոկ 4. Այլ հղումներ */}
         <div className="flex-1 min-w-[180px] max-[400px]:w-full">
-          <h3 className="text-sm font-bold text-gray-900 mb-4">Այլ հղումներ</h3>
+          <h3 className="text-sm font-bold text-gray-900 mb-4">{t('footer.otherTitle')}</h3>
           <ul className="space-y-2.5 text-xs">
-            <li><Link to="/online" className="text-gray-600 hover:text-purple-700 transition">EvocaONLINE</Link></li>
-            <li><Link to="/boxes" className="text-gray-600 hover:text-purple-700 transition">Պահատուփեր</Link></li>
-            <li><Link to="/faq" className="text-gray-600 hover:text-purple-700 transition">Հաճախ տրվող հարցեր</Link></li>
-            <li><Link to="/announcements" className="text-gray-600 hover:text-purple-700 transition">Հայտարարություններ</Link></li>
-            <li><Link to="/dibrary" className="text-gray-600 hover:text-purple-700 transition">Dibrary</Link></li>
-            <li><Link to="/bulletins" className="text-gray-600 hover:text-purple-700 transition">Բուլետեններ</Link></li>
-            <li><Link to="/contact" className="text-gray-600 hover:text-purple-700 transition">Հետադարձ կապ</Link></li>
-            <li><Link to="/map" className="text-gray-600 hover:text-purple-700 transition">Կայքի քարտեզ</Link></li>
+            <li><Link to="/online" className="text-gray-600 hover:text-purple-700 transition">{t('footer.online')}</Link></li>
+            <li><Link to="/boxes" className="text-gray-600 hover:text-purple-700 transition">{t('footer.boxes')}</Link></li>
+            <li><Link to="/faq" className="text-gray-600 hover:text-purple-700 transition">{t('footer.faq')}</Link></li>
+            <li><Link to="/announcements" className="text-gray-600 hover:text-purple-700 transition">{t('footer.announcements')}</Link></li>
+            <li><Link to="/dibrary" className="text-gray-600 hover:text-purple-700 transition">{t('footer.dibrary')}</Link></li>
+            <li><Link to="/bulletins" className="text-gray-600 hover:text-purple-700 transition">{t('footer.bulletins')}</Link></li>
+            <li><Link to="/contact" className="text-gray-600 hover:text-purple-700 transition">{t('footer.contact')}</Link></li>
+            <li><Link to="/map" className="text-gray-600 hover:text-purple-700 transition">{t('footer.map')}</Link></li>
           </ul>
         </div>
 
+        {/* Բլոկ 5. Սոց. ցանցեր, հավելվածներ և կապ */}
         <div className="flex-1 min-w-[180px] flex flex-col gap-4 max-[400px]:w-full max-[400px]:items-center">
 
           <div className="flex items-center gap-3 text-gray-500 mb-1 max-[400px]:justify-center">
@@ -104,17 +171,18 @@ export default function Footer() {
           </div>
 
           <ul className="space-y-2.5 text-xs">
-            <li><Link to="/addresses" className="text-purple-700 font-medium hover:underline">Բանկի հասցեները և<br />աշխատաժամերը</Link></li>
-            <li><Link to="/reach-us" className="text-purple-700 font-medium hover:underline">Կապ մեզ հետ</Link></li>
+            <li><Link to="/addresses" className="text-purple-700 font-medium hover:underline whitespace-pre-line">{t('footer.addressesAndHours')}</Link></li>
+            <li><Link to="/reach-us" className="text-purple-700 font-medium hover:underline">{t('footer.reachUs')}</Link></li>
             <li><a href="tel:+37410605555" className="text-gray-800 font-semibold hover:text-purple-700 transition">+374 10 605555</a></li>
             <li><a href="tel:8444" className="text-gray-800 font-semibold hover:text-purple-700 transition">8444</a></li>
           </ul>
         </div>
 
       </div>
+
       <Link
         to="/online-map"
-        title="Live քարտեզ"
+        title={t('footer.liveMap')}
         className="fixed bottom-6 right-24 z-50 w-14 h-14 rounded-full bg-purple-700 text-white flex items-center justify-center shadow-lg hover:bg-purple-800 transition"
       >
         <svg className="w-6 h-6 fill-current" viewBox="0 0 24 24">

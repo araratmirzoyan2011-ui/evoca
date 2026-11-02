@@ -1,112 +1,14 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { auth, db } from '../firebase';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc, collection, getDocs } from 'firebase/firestore';
 import { useState, useRef, useEffect } from 'react';
 import i18n from 'i18next';
 import { initReactI18next, useTranslation } from 'react-i18next';
 
-const resources = {
-    hy: {
-        translation: {
-            header: {
-                personal: 'Անհատ',
-                business: 'Բիզնես',
-                instantPayments: 'Ակնթարթային վճարումներ',
-                about: 'Մեր մասին',
-                news: 'Նորություններ',
-                blog: 'Բլոգ',
-                career: 'Կարիերա',
-                onlineApps: 'Առցանց հայտեր',
-                smeLoan: 'ՖՄՁ վարկավորում',
-                contact: 'Հետադարձ կապ',
-                orderCall: 'Պատվիրել զանգ',
-                branches: 'Մասնաճյուղեր',
-                help: 'Օգնություն',
-                language: 'Լեզու',
-                search: 'Որոնում',
-                searchAria: 'Որոնել',
-                close: 'Փակել',
-                menu: 'Մենյու',
-                loans: 'Վարկեր',
-                cards: 'Քարտեր',
-                deposits: 'Ավանդներ',
-                accounts: 'Հաշիվներ',
-                transfers: 'Փոխանցումներ',
-                securities: 'Արժեթղթեր',
-                call: 'Զանգել՝',
-                checkError: 'Ստուգման սխալ:',
-            },
-        },
-    },
-    en: {
-        translation: {
-            header: {
-                personal: 'Personal',
-                business: 'Business',
-                instantPayments: 'Instant payments',
-                about: 'About us',
-                news: 'News',
-                blog: 'Blog',
-                career: 'Career',
-                onlineApps: 'Online applications',
-                smeLoan: 'SME lending',
-                contact: 'Contact us',
-                orderCall: 'Request a call',
-                branches: 'Branches',
-                help: 'Help',
-                language: 'Language',
-                search: 'Search',
-                searchAria: 'Search',
-                close: 'Close',
-                menu: 'Menu',
-                loans: 'Loans',
-                cards: 'Cards',
-                deposits: 'Deposits',
-                accounts: 'Accounts',
-                transfers: 'Transfers',
-                securities: 'Securities',
-                call: 'Call:',
-                checkError: 'Verification error:',
-            },
-        },
-    },
-    ru: {
-        translation: {
-            header: {
-                personal: 'Частным клиентам',
-                business: 'Бизнесу',
-                instantPayments: 'Мгновенные платежи',
-                about: 'О нас',
-                news: 'Новости',
-                blog: 'Блог',
-                career: 'Карьера',
-                onlineApps: 'Онлайн-заявки',
-                smeLoan: 'Кредитование МСП',
-                contact: 'Обратная связь',
-                orderCall: 'Заказать звонок',
-                branches: 'Филиалы',
-                help: 'Помощь',
-                language: 'Язык',
-                search: 'Поиск',
-                searchAria: 'Искать',
-                close: 'Закрыть',
-                menu: 'Меню',
-                loans: 'Кредиты',
-                cards: 'Карты',
-                deposits: 'Вклады',
-                accounts: 'Счета',
-                transfers: 'Переводы',
-                securities: 'Ценные бумаги',
-                call: 'Позвонить:',
-                checkError: 'Ошибка проверки:',
-            },
-        },
-    },
-};
-
+// Սկզբնավորում ենք i18n-ը միանգամից, որպեսզի t() ֆունկցիան միանշանակ աշխատի
 if (!i18n.isInitialized) {
     i18n.use(initReactI18next).init({
-        resources,
+        resources: {},
         lng: localStorage.getItem('lang') || 'hy',
         fallbackLng: 'hy',
         supportedLngs: ['hy', 'en', 'ru'],
@@ -121,49 +23,6 @@ if (!i18n.isInitialized) {
     document.documentElement.lang = i18n.language;
 }
 
-/* ===================== Տվյալներ ===================== */
-const LANGS = [
-    { code: 'hy', label: 'ՀԱՅ' },
-    { code: 'en', label: 'ENG' },
-    { code: 'ru', label: 'РУС' },
-];
-
-const topLinks = [
-    { to: '/loans', key: 'personal' },
-    { to: '/business-loans', key: 'business' },
-    { to: '/instant-payments', key: 'instantPayments' },
-    { to: '/about', key: 'about' },
-    { to: '/news', key: 'news' },
-    { to: '/blog', key: 'blog' },
-    { to: '/career', key: 'career' },
-];
-
-// key՝ թարգմանվում է, label՝ բրենդային անուն, մնում է նույնը
-const mainLinks = [
-    { to: '/loans', key: 'loans' },
-    { to: '/cards', key: 'cards' },
-    { to: '/depositsmain', key: 'deposits' },
-    { to: '/accounts', key: 'accounts' },
-    { to: '/transfers', key: 'transfers' },
-    { to: '/securities', key: 'securities' },
-    { to: '/evoca-salary', label: 'EvocaSALARY' },
-    { to: '/evoca-touch', label: 'EvocaTOUCH' },
-];
-
-const onlineApps = [
-    { to: '/online-applications/sme-loan', key: 'smeLoan' },
-    { to: '/online-applications/visa-infinite', label: 'Visa Infinite' },
-    { to: '/online-applications/mastercard-gold', label: 'MasterCard Gold' },
-    { to: '/online-applications/visa-gold', label: 'Visa Gold' },
-];
-
-const phones = [
-    { href: 'tel:+37410605555', text: '+374 10 605555' },
-    { href: 'tel:+37498205555', text: '+374 98 205555' },
-    { href: 'tel:+37499605555', text: '+374 99 605555' },
-];
-
-/* ===================== Header ===================== */
 export function Header() {
     const { t } = useTranslation();
     const lang = i18n.resolvedLanguage || i18n.language;
@@ -174,34 +33,76 @@ export function Header() {
     const [isContactOpen, setIsContactOpen] = useState(false);
     const [isLangOpen, setIsLangOpen] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+    // Տվյալների պահպանման վիճակներ (state-եր) Firebase-ից բեռնելու համար
+    const [topLinks, setTopLinks] = useState([]);
+    const [mainLinks, setMainLinks] = useState([]);
+    const [onlineApps, setOnlineApps] = useState([]);
+    const [phones, setPhones] = useState([]);
+    const [langs, setLangs] = useState([]);
+    
+    // Ստեյթ՝ React-ին ստիպելու վերաֆրեյմ (re-render) անել թարգմանությունները բեռնվելուց հետո
+    const [, setLoaded] = useState(false);
+
     const navigate = useNavigate();
     const dropdownsRef = useRef(null);
 
+    // Տվյալների բեռնումը Firebase-ից բաղադրիչի բացվելիս (mount)
     useEffect(() => {
-const alreadyInit = i18n.isInitialized || Array.isArray(i18n.options?.supportedLngs);
+        const fetchFirebaseData = async () => {
+            try {
+                // 1. Բեռնել Resources (թարգմանությունները) Firebase-ից
+                const resDoc = await getDoc(doc(db, 'resources', 'translations'));
+                if (resDoc.exists()) {
+                    const fetchedResources = resDoc.data();
+                    
+                    // Ավելացնում ենք թարգմանությունները i18n-ին
+                    Object.keys(fetchedResources).forEach((lng) => {
+                        i18n.addResourceBundle(lng, 'translation', fetchedResources[lng].translation, true, true);
+                    });
+                    
+                    // Ստիպում ենք բաղադրիչին վերաթարմացվել, որ տեքստերը թարգմանվեն
+                    setLoaded(prev => !prev);
+                }
 
-if (!alreadyInit) {
-    i18n.use(initReactI18next).init({
-        resources: {},
-        lng: localStorage.getItem('lang') || 'hy',
-        fallbackLng: 'hy',
-        supportedLngs: ['hy', 'en', 'ru'],
-        interpolation: { escapeValue: false },
-        initImmediate: false, // i18next v23-
-        initAsync: false,     // i18next v24+
-    });
+                // 2. Բեռնել topLinks կոլեկցիան
+                const topLinksSnapshot = await getDocs(collection(db, 'topLinks'));
+                setTopLinks(topLinksSnapshot.docs.map(doc => doc.data()));
 
-    i18n.on('languageChanged', (lng) => {
-        localStorage.setItem('lang', lng);
-        document.documentElement.lang = lng;
-    });
+                // 3. Բեռնել mainLinks կոլեկցիան
+                const mainLinksSnapshot = await getDocs(collection(db, 'mainLinks'));
+                setMainLinks(mainLinksSnapshot.docs.map(doc => doc.data()));
 
-    document.documentElement.lang = i18n.language;
-}
+                // 4. Բեռնել onlineApps կոլեկցիան
+                const onlineAppsSnapshot = await getDocs(collection(db, 'onlineApps'));
+                setOnlineApps(onlineAppsSnapshot.docs.map(doc => doc.data()));
 
-Object.entries(resources).forEach(([lng, tr]) => {
-    i18n.addResourceBundle(lng, 'translation', tr.translation, true, true);
-});
+                // 5. Բեռնել phones կոլեկցիան
+                const phonesSnapshot = await getDocs(collection(db, 'phones'));
+                setPhones(phonesSnapshot.docs.map(doc => doc.data()));
+
+                // 6. Բեռնել LANGS կոլեկցիան
+                const langsSnapshot = await getDocs(collection(db, 'LANGS'));
+                setLangs(langsSnapshot.docs.map(doc => doc.data()));
+
+            } catch (error) {
+                console.error('Սխալ Firebase-ից տվյալներ բեռնելիս:', error);
+            }
+        };
+
+        fetchFirebaseData();
+    }, []);
+
+    useEffect(() => {
+        const handleClickOutside = (e) => {
+            if (dropdownsRef.current && !dropdownsRef.current.contains(e.target)) {
+                setIsOnlineAppsOpen(false);
+                setIsContactOpen(false);
+                setIsLangOpen(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
     useEffect(() => {
@@ -243,8 +144,8 @@ Object.entries(resources).forEach(([lng, tr]) => {
             {/* Վերին տող */}
             <div className="hidden md:flex relative z-[60] max-w-7xl mx-auto px-4 h-12 items-center justify-between text-sm border-b border-gray-100">
                 <nav className="flex items-center space-x-4 lg:space-x-6 overflow-x-auto">
-                    {topLinks.map((l) => (
-                        <Link key={l.key} to={l.to} className="text-gray-700 hover:text-purple-700 whitespace-nowrap">
+                    {topLinks.map((l, index) => (
+                        <Link key={index} to={l.to} className="text-gray-700 hover:text-purple-700 whitespace-nowrap">
                             {t(`header.${l.key}`)}
                         </Link>
                     ))}
@@ -269,8 +170,8 @@ Object.entries(resources).forEach(([lng, tr]) => {
 
                         {isOnlineAppsOpen && (
                             <div className="absolute left-0 w-full mt-1 bg-white border border-gray-100 rounded-lg shadow-xl py-2 z-[70] text-gray-800 text-center whitespace-nowrap">
-                                {onlineApps.map((a) => (
-                                    <Link key={a.to} to={a.to} className={`${dropdownItem} font-medium`}>
+                                {onlineApps.map((a, index) => (
+                                    <Link key={index} to={a.to} className={`${dropdownItem} font-medium`}>
                                         {a.key ? t(`header.${a.key}`) : a.label}
                                     </Link>
                                 ))}
@@ -296,8 +197,8 @@ Object.entries(resources).forEach(([lng, tr]) => {
 
                         {isContactOpen && (
                             <div className="absolute left-0 w-full mt-1 bg-white border border-gray-100 rounded-lg shadow-xl py-2 z-[70] text-gray-800 text-center whitespace-nowrap">
-                                {phones.map((p) => (
-                                    <a key={p.href} href={p.href} className={`${dropdownItem} font-bold`}>{p.text}</a>
+                                {phones.map((p, index) => (
+                                    <a key={index} href={p.href} className={`${dropdownItem} font-bold`}>{p.text}</a>
                                 ))}
                                 <a href="tel:8444" className="block px-2 py-2 hover:bg-purple-50 hover:text-purple-700 font-bold text-lg">8444</a>
                                 <div className="border-t border-gray-100 my-1"></div>
@@ -340,7 +241,7 @@ Object.entries(resources).forEach(([lng, tr]) => {
 
                             {isLangOpen && (
                                 <div className="absolute left-1/2 -translate-x-1/2 top-full mt-2 w-16 bg-white rounded-md shadow-xl z-[70] py-1">
-                                    {LANGS.map((item, i) => (
+                                    {langs.map((item, i) => (
                                         <button
                                             key={item.code}
                                             onClick={() => {
@@ -387,8 +288,8 @@ Object.entries(resources).forEach(([lng, tr]) => {
 
                     {/* Desktop navigation */}
                     <nav className="hidden lg:flex items-center space-x-6 text-gray-800 font-medium">
-                        {mainLinks.map((l) => (
-                            <Link key={l.to} to={l.to} className="hover:text-purple-700 whitespace-nowrap">
+                        {mainLinks.map((l, index) => (
+                            <Link key={index} to={l.to} className="hover:text-purple-700 whitespace-nowrap">
                                 {l.key ? t(`header.${l.key}`) : l.label}
                             </Link>
                         ))}
@@ -423,8 +324,8 @@ Object.entries(resources).forEach(([lng, tr]) => {
             {/* Mobile Menu */}
             {isMobileMenuOpen && (
                 <div className="lg:hidden bg-white border-t border-gray-100 shadow-lg px-4 py-3 space-y-1">
-                    {mainLinks.map((l) => (
-                        <Link key={l.to} to={l.to} className="block py-2 text-gray-800 font-medium hover:text-purple-700">
+                    {mainLinks.map((l, index) => (
+                        <Link key={index} to={l.to} className="block py-2 text-gray-800 font-medium hover:text-purple-700">
                             {l.key ? t(`header.${l.key}`) : l.label}
                         </Link>
                     ))}
@@ -436,7 +337,7 @@ Object.entries(resources).forEach(([lng, tr]) => {
 
                     {/* Լեզու (mobile) */}
                     <div className="flex gap-2 py-2">
-                        {LANGS.map((item) => (
+                        {langs.map((item) => (
                             <button
                                 key={item.code}
                                 onClick={() => i18n.changeLanguage(item.code)}
