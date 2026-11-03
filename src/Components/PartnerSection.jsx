@@ -1,5 +1,54 @@
-import { useRef } from "react";
+import React, { useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import i18n from "i18next";
+import { useTranslation } from "react-i18next";
+
+/* ===================== i18n Resources for Partners Section ===================== */
+const partnersResources = {
+  hy: {
+    partners: {
+      title: "Գործընկերներ",
+      description:
+        "Դարձեք Evocabank-ի Գործընկեր և եկեք միասին գնանք դեպի նոր իրականություն։ Դառնալով Evoca ընտանիքի անդամ՝ Դուք մուտք կգործեք ժամանակակից և յուրահատուկ աշխարհ։ Մենք մշտապես բաց ենք հետաքրքիր առաջարկների ու համագործակցությունների համար։",
+      allPartners: "Բոլոր գործընկերները",
+      handLabel: "ձեռքի նշան",
+      prevLabel: "Նախորդը",
+      nextLabel: "Հաջորդը",
+      viewAllLabel: "Տեսնել բոլոր գործընկերներին",
+      partnerLogoAlt: "գործընկերոջ լոգո",
+    },
+  },
+  en: {
+    partners: {
+      title: "Partners",
+      description:
+        "Become a partner of Evocabank and let's move towards a new reality together. By becoming a member of the Evoca family, you will enter a modern and unique world. We are always open to interesting offers and collaborations.",
+      allPartners: "All partners",
+      handLabel: "hand sign",
+      prevLabel: "Previous",
+      nextLabel: "Next",
+      viewAllLabel: "View all partners",
+      partnerLogoAlt: "partner logo",
+    },
+  },
+  ru: {
+    partners: {
+      title: "Партнеры",
+      description:
+        "Станьте партнером Evocabank и давайте вместе двигаться к новой реальности. Став членом семьи Evoca, вы попадете в современный и уникальный мир. Мы всегда открыты для интересных предложений и сотрудничества.",
+      allPartners: "Все партнеры",
+      handLabel: "знак руки",
+      prevLabel: "Предыдущий",
+      nextLabel: "Следующий",
+      viewAllLabel: "Посмотреть всех партнеров",
+      partnerLogoAlt: "логотип партнера",
+    },
+  },
+};
+
+Object.entries(partnersResources).forEach(([lng, tr]) => {
+  i18n.addResourceBundle(lng, "translation", tr, true, true);
+});
 
 // Ֆոլբեք զանգված, եթե partners prop-ը դրսից չի փոխանցվել
 const defaultPartners = [
@@ -10,15 +59,15 @@ const defaultPartners = [
 ];
 
 function PartnerLogo({ partner }) {
-  // Աջակցում ենք և string URL-ի, և { name, src } օբյեկտի ֆորմատին
+  const { t } = useTranslation();
   const src = typeof partner === "string" ? partner : partner.src;
-  const name = typeof partner === "string" ? "partner logo" : partner.name;
+  const name = typeof partner === "string" ? partner : partner.name;
 
   if (src) {
     return (
       <img
         src={src}
-        alt={name || "partner logo"}
+        alt={name || t("partners.partnerLogoAlt")}
         className="max-h-10 w-auto object-contain grayscale transition hover:grayscale-0"
       />
     );
@@ -67,6 +116,7 @@ function PartnerLogo({ partner }) {
 }
 
 export default function PartnersSection({ partners = defaultPartners }) {
+  const { t } = useTranslation();
   const trackRef = useRef(null);
   const navigate = useNavigate();
 
@@ -84,19 +134,16 @@ export default function PartnersSection({ partners = defaultPartners }) {
         {/* Left: text */}
         <div>
           <h2 className="text-3xl font-extrabold text-zinc-900 md:text-4xl max-[400px]:text-2xl">
-            Գործընկերներ
+            {t("partners.title")}
           </h2>
           <p className="mt-5 max-w-md text-[15px] leading-relaxed text-zinc-500 max-[400px]:mt-3 max-[400px]:text-sm">
-            Դարձեք Evocabank-ի Գործընկեր և ևկեք միասին գնանք դեպի գունել նոր
-            իրավանություն։ Դառնալով Evoca ընտանիքի անդամ՝ Դուք մուտք կգործեք
-            ժամանակակից և յուրահատուկ աշխարհ։ Մենք մշտապես բաց ենք
-            հետաքրքրիր առաջարկների ու համագործակցությունների համար։
+            {t("partners.description")}
           </p>
           <button
             onClick={goToPartners}
             className="group mt-8 inline-flex cursor-pointer items-center gap-2 rounded-full bg-violet-50 px-6 py-3 text-sm font-semibold text-violet-700 transition hover:bg-violet-100 max-[400px]:mt-5 max-[400px]:px-4 max-[400px]:py-2 max-[400px]:text-xs"
           >
-            Բոլոր գործընկերները
+            {t("partners.allPartners")}
             <svg
               width="16"
               height="16"
@@ -139,7 +186,11 @@ export default function PartnersSection({ partners = defaultPartners }) {
             </svg>
 
             {/* hand / peace sign */}
-            <div className="relative z-10 text-7xl md:text-8xl max-[400px]:text-5xl" role="img" aria-label="hand sign">
+            <div
+              className="relative z-10 text-7xl md:text-8xl max-[400px]:text-5xl"
+              role="img"
+              aria-label={t("partners.handLabel")}
+            >
               ✌🏻
             </div>
           </div>
@@ -148,7 +199,7 @@ export default function PartnersSection({ partners = defaultPartners }) {
           <div className="relative mt-6 flex items-center rounded-2xl bg-zinc-50/80 py-6 shadow-sm max-[400px]:mt-4 max-[400px]:py-4">
             <button
               onClick={() => scrollByCard(-1)}
-              aria-label="Նախորդը"
+              aria-label={t("partners.prevLabel")}
               className="absolute left-2 z-10 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-white text-violet-600 shadow hover:bg-violet-50 max-[400px]:left-1 max-[400px]:h-6 max-[400px]:w-6 max-[400px]:text-sm"
             >
               ‹
@@ -168,7 +219,7 @@ export default function PartnersSection({ partners = defaultPartners }) {
                   <button
                     type="button"
                     onClick={goToPartners}
-                    aria-label="Տեսնել բոլոր գործընկերներին"
+                    aria-label={t("partners.viewAllLabel")}
                     className="flex cursor-pointer items-center justify-center rounded-lg p-1 transition-transform duration-200 hover:scale-105 focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-400"
                   >
                     <PartnerLogo partner={p} />
@@ -179,7 +230,7 @@ export default function PartnersSection({ partners = defaultPartners }) {
 
             <button
               onClick={() => scrollByCard(1)}
-              aria-label="Հաջորդը"
+              aria-label={t("partners.nextLabel")}
               className="absolute right-2 z-10 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-white text-violet-600 shadow hover:bg-violet-50 max-[400px]:right-1 max-[400px]:h-6 max-[400px]:w-6 max-[400px]:text-sm"
             >
               ›

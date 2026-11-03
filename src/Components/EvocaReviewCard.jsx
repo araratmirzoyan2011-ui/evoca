@@ -1,6 +1,9 @@
 import React from 'react';
+import { useLocalized } from '../hooks/useLocalized.js';
 
 export function EvocaReviewCard({ quote, author, title }) {
+  const l = useLocalized();
+
   return (
     <div className="relative max-w-3xl mx-auto px-4 py-8 sm:px-6 sm:py-10 flex flex-col items-center text-center bg-white rounded-2xl shadow-xl shadow-slate-100/80 border border-slate-100 transition-all duration-300 hover:shadow-2xl">
       
@@ -20,16 +23,16 @@ export function EvocaReviewCard({ quote, author, title }) {
 
       {/* Տեքստ / Կարծիք (Quote) */}
       <p className="text-slate-700 text-[15px] sm:text-lg md:text-xl leading-relaxed mb-6 sm:mb-8 relative z-10 px-2 max-w-2xl">
-        &ldquo;{quote}&rdquo;
+        &ldquo;{l(quote)}&rdquo;
       </p>
 
       {/* Հեղինակի բլոկ */}
       <div className="relative z-10 flex flex-col items-center">
         <h4 className="text-slate-900 font-bold text-base md:text-lg tracking-tight mb-0.5">
-          {author}
+          {l(author)}
         </h4>
         <p className="text-slate-400 text-xs sm:text-sm font-medium">
-          {title}
+          {l(title)}
         </p>
       </div>
 

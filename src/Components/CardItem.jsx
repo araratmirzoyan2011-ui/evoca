@@ -1,10 +1,20 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import i18n from "i18next";
 import useCartStore from "./useCarStore";
 
-// Օգնական ֆունկցիա՝ Markdown-ի ** տեքստերը գեղեցկացնելու կամ մաքրելու համար
-const renderHighlighted = (text) =>
-  (text || "").split(/(\*\*[^*]+\*\*)/g).map((part, i) =>
+// Օգնական ֆունկցիա՝ անվտանգ ստուգումով և բազմալեզու օբյեկտների աջակցությամբ
+const renderHighlighted = (text) => {
+  // Եթե տեքստը օբյեկտ է (օրինակ՝ { hy: "...", en: "...", ru: "..." })
+  if (text && typeof text === "object") {
+    const currentLang = i18n.language || "hy";
+    text = text[currentLang] || text.hy || text.en || text.ru || "";
+  }
+
+  // Եթե վերջնական արդյունքը տող (string) չէ, վերադարձնում ենք դատարկ տող
+  if (typeof text !== "string") return text || "";
+
+  return text.split(/(\*\*[^*]+\*\*)/g).map((part, i) =>
     part.startsWith("**") ? (
       <span key={i} className="text-[#6a00d8] font-semibold">
         {part.slice(2, -2)}
@@ -13,24 +23,33 @@ const renderHighlighted = (text) =>
       <React.Fragment key={i}>{part}</React.Fragment>
     )
   );
+};
 
 const CardItem = ({ card }) => {
   const { title, title2, image, id, stats = [], link = "#" } = card;
 
   const toggleItem = useCartStore((s) => s.toggleItem);
-  const liked = useCartStore((s) => s.items.some((i) => i.title === title));
+  
+  // Անվտանգ ստուգում liked-ի համար, եթե title-ը օբյեկտ է կամ տող
+  const liked = useCartStore((s) =>
+    s.items.some((i) => {
+      const itemTitle = typeof i.title === "object" ? i.title.hy || i.title.en : i.title;
+      const cardTitle = typeof title === "object" ? title.hy || title.en : title;
+      return itemTitle === cardTitle;
+    })
+  );
 
   return (
     <div className="w-full border-b border-gray-200 py-10">
       <div className="max-w-[1310px] mx-auto px-4 flex flex-col md:flex-row gap-10 md:gap-16 items-start">
         
         <div className="w-full md:w-[390px] shrink-0 relative">
-          <img src={image} alt={title} className="w-full rounded-xl object-cover" />
+          <img src={image} alt="card image" className="w-full rounded-xl object-cover" />
 
           <button
             onClick={() => toggleItem(card)}
             aria-label="Հավանել"
-            className="absolute top-3 right-3 flex h-10 w-10 items-center justify-center rounded-full bg-white/90 shadow transition hover:scale-110"
+            className="absolute top-3 right-3 flex h-10 w-10 items-center justify-center rounded-full bg-white/90 shadow transition hover:scale-110 cursor-pointer"
           >
             <svg
               width="22"
@@ -50,8 +69,7 @@ const CardItem = ({ card }) => {
         </div>
 
         <div className="flex-1">
-          {/* Այստեղ կարող եք փոխել title-ը, եթե Firebase-ում անունը գրված է որպես id */}
-          <h2 className="text-[28px] font-bold text-black">{title}</h2>
+          <h2 className="text-[28px] font-bold text-black">{renderHighlighted(title)}</h2>
 
           <p className="mt-5 max-w-[560px] text-[15px] leading-6 text-gray-800">
             {renderHighlighted(title2)}
@@ -61,13 +79,13 @@ const CardItem = ({ card }) => {
             {stats.map((item, index) => (
               <div key={index}>
                 <p className="min-h-[18px] text-[13px] text-gray-800">
-                  {item.title}
+                  {renderHighlighted(item.title)}
                 </p>
                 <p className="text-[32px] font-semibold leading-tight text-[#6a00d8]">
-                  {item.value}
+                  {renderHighlighted(item.value)}
                 </p>
                 <p className="mt-3 max-w-[170px] text-[13px] leading-5 text-gray-800">
-                  {item.text}
+                  {renderHighlighted(item.text)}
                 </p>
               </div>
             ))}

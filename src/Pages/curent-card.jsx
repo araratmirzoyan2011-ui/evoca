@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
+import i18n from "i18next";
 import { Header } from "../Components/Header";
 import Footer from "../Components/Footer";
 import CardHero from "../Components/CardHero";
@@ -9,6 +10,7 @@ import { db } from "../firebase";
 import { AdvantageCard } from "../Components/AdvantageCard";
 import CardSlider from "../Components/CardSlider2";
 import { OnlineBanking } from '../Components/OnlineBanking.jsx';
+
 const ICONS = {
   wallet: '<path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/>',
   banknote: '<rect width="20" height="12" x="2" y="6" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01M18 12h.01"/>',
@@ -50,8 +52,20 @@ const ICON_RULES = [
   [/միջազգային|արտասահման|երկր|ցանց|կիրառություն|ընդունելիություն/i, "globe"],
 ];
 
+// Օգնական ֆունկցիա բազմալեզու օբյեկտները տեքստի վերածելու համար
+const getLocalizedText = (field) => {
+  if (!field) return "";
+  if (typeof field === "object") {
+    const currentLang = i18n.language || "hy";
+    return field[currentLang] || field.hy || field.en || field.ru || "";
+  }
+  return field;
+};
+
 const getAdvantageIcon = ({ title = "", text = "" }) => {
-  const source = `${title} ${text}`;
+  const resolvedTitle = getLocalizedText(title);
+  const resolvedText = getLocalizedText(text);
+  const source = `${resolvedTitle} ${resolvedText}`;
   const match = ICON_RULES.find(([regex]) => regex.test(source));
   const body = ICONS[match ? match[1] : "card"];
 
@@ -64,8 +78,11 @@ const getAdvantageIcon = ({ title = "", text = "" }) => {
   return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
 };
 
-const renderHighlighted = (text) =>
-  (text || "").split(/(\*\*[^*]+\*\*)/g).map((part, i) =>
+const renderHighlighted = (text) => {
+  const resolved = getLocalizedText(text);
+  if (typeof resolved !== "string") return resolved || "";
+
+  return resolved.split(/(\*\*[^*]+\*\*)/g).map((part, i) =>
     part.startsWith("**") ? (
       <span key={i} className="text-[#6a00d8] font-semibold">
         {part.slice(2, -2)}
@@ -74,6 +91,7 @@ const renderHighlighted = (text) =>
       <React.Fragment key={i}>{part}</React.Fragment>
     )
   );
+};
 
 const tabs = [
   { id: "about", label: "Քարտի մասին" },
@@ -118,7 +136,6 @@ const CardDetails = () => {
 
   const {
     title,
-    description,
     image,
     title2,
     details = [],
@@ -127,10 +144,22 @@ const CardDetails = () => {
     advantages = [],
   } = currentCard;
 
+  // Անվտանգ լոկալիզացնում ենք stats զանգվածը նախքան CardTariffs փոխանցելը
+  const localizedStats = stats.map((item) => ({
+    ...item,
+    title: getLocalizedText(item.title),
+    value: getLocalizedText(item.value),
+    text: getLocalizedText(item.text),
+  }));
+
   return (
     <>
       <Header />
-      <CardHero title={title} description={title2} image={image} />
+      <CardHero
+        title={getLocalizedText(title)}
+        description={getLocalizedText(title2)}
+        image={image}
+      />
 
       <section className="mx-auto w-full max-w-[1310px] px-4 py-10">
         <div className="flex gap-10 border-b border-gray-200">
@@ -156,14 +185,14 @@ const CardDetails = () => {
           <div className="mt-12 space-y-12">
             <div
               className={`grid items-start gap-10 ${
-                stats.length > 0
+                localizedStats.length > 0
                   ? "lg:grid-cols-[minmax(0,570px)_minmax(0,657px)] lg:justify-between"
                   : "flex justify-center"
               }`}
             >
               <div
                 className={`space-y-6 text-[18px] leading-[26px] text-gray-950 ${
-                  stats.length === 0 ? "max-w-[700px] mx-auto w-full text-center" : ""
+                  localizedStats.length === 0 ? "max-w-[700px] mx-auto w-full text-center" : ""
                 }`}
               >
                 {details.map((paragraph, index) => (
@@ -171,7 +200,7 @@ const CardDetails = () => {
                 ))}
               </div>
 
-              {stats.length > 0 && <CardTariffs stats={stats} />}
+              {localizedStats.length > 0 && <CardTariffs stats={localizedStats} />}
             </div>
 
             {advantages.length > 0 && (
@@ -184,8 +213,8 @@ const CardDetails = () => {
                     <AdvantageCard
                       key={adv.id || index}
                       img={adv.img || getAdvantageIcon(adv)}
-                      title={adv.title}
-                      text={adv.text}
+                      title={getLocalizedText(adv.title)}
+                      text={getLocalizedText(adv.text)}
                     />
                   ))}
                 </div>
@@ -208,10 +237,10 @@ const CardDetails = () => {
                         } hover:bg-[#f6f0fe] transition-colors`}
                       >
                         <td className="w-1/2 py-4 px-6 text-[15px] font-medium text-gray-800 leading-snug">
-                          {item.label}
+                          {getLocalizedText(item.label)}
                         </td>
                         <td className="w-1/2 py-4 px-6 text-[15px] text-gray-900 font-normal leading-snug">
-                          {item.value}
+                          {getLocalizedText(item.value)}
                         </td>
                       </tr>
                     ))}

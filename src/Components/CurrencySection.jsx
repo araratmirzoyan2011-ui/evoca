@@ -1,7 +1,72 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import i18n from 'i18next';
+import { useTranslation } from 'react-i18next';
+
+/* ===================== i18n Resources for Currency Section ===================== */
+const currencyResources = {
+  hy: {
+    currencySec: {
+      notice: '20,000 ԱՄՆ դոլարից ավել կամ դրան համարժեք այլ արտարժույթի փոխարկման դեպքում գործարքը հաստատվում է Բանկի հայեցողությամբ և Բանկի կողմից որոշված փոխարժեքով։ 100,000 դրամ կամ դրան համարժեք արտարժույթից ավելի փոխանակման գործարքների իրականացման համար անհրաժեշտ է ներկայացնել անձը հաստատող փաստաթուղթ։',
+      tabCash: 'Կանխիկ',
+      tabCashless: 'Անկանխիկ',
+      tabGold: 'Ոսկու փոխարժեք',
+      tabRuble: 'Ռուբլու կանխիկ մուտք',
+      tableCurrency: 'Արտարժույթ',
+      tableBuy: 'Առք',
+      tableSell: 'Վաճառք',
+      updatedAt: 'Թարմացվել է` 25.09.2026',
+      haveLabel: 'Ունեմ (AMD)',
+      wantLabel: 'Կստանամ',
+      branchesTitle: 'Մեր հասցեները',
+      branchesDesc: 'Բանկի հասցեները, աշխատաժամերը, բանկոմատները',
+      viewMap: 'Դիտել քարտեզը',
+    },
+  },
+  en: {
+    currencySec: {
+      notice: 'For currency exchange exceeding $20,000 USD or equivalent in other currencies, the transaction is subject to the Bank\'s discretion and exchange rate. For exchange transactions exceeding 100,000 AMD or equivalent, an identity document must be provided.',
+      tabCash: 'Cash',
+      tabCashless: 'Cashless',
+      tabGold: 'Gold Rate',
+      tabRuble: 'RUB Cash Deposit',
+      tableCurrency: 'Currency',
+      tableBuy: 'Buy',
+      tableSell: 'Sell',
+      updatedAt: 'Updated: 25.09.2026',
+      haveLabel: 'I have (AMD)',
+      wantLabel: 'I will get',
+      branchesTitle: 'Our Addresses',
+      branchesDesc: 'Bank addresses, working hours, ATMs',
+      viewMap: 'View map',
+    },
+  },
+  ru: {
+    currencySec: {
+      notice: 'При обмене валюты на сумму свыше 20 000 долларов США или эквивалента в другой валюте сделка утверждается по усмотрению Банка и по установленному Банком курсу. Для совершения обменных операций на сумму свыше 100 000 драмов или эквивалента необходимо предоставить документ, удостоверяющий личность.',
+      tabCash: 'Наличные',
+      tabCashless: 'Безналичные',
+      tabGold: 'Курс золота',
+      tabRuble: 'Ввод наличных рублей',
+      tableCurrency: 'Валюта',
+      tableBuy: 'Покупка',
+      tableSell: 'Продажа',
+      updatedAt: 'Обновлено: 25.09.2026',
+      haveLabel: 'У меня есть (AMD)',
+      wantLabel: 'Я получу',
+      branchesTitle: 'Наши адреса',
+      branchesDesc: 'Адреса банка, часы работы, банкоматы',
+      viewMap: 'Посмотреть карту',
+    },
+  },
+};
+
+Object.entries(currencyResources).forEach(([lng, tr]) => {
+  i18n.addResourceBundle(lng, 'translation', tr, true, true);
+});
 
 export function CurrencySection() {
+  const { t } = useTranslation();
   const navigate = useNavigate(); // React Router-ի երթուղավորման հուկը
   
   const [activeTab, setActiveTab] = useState('cash'); 
@@ -69,7 +134,7 @@ export function CurrencySection() {
         <div className="lg:col-span-2 bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-8 shadow-sm border border-gray-100">
           
           <p className="text-[11px] sm:text-sm text-gray-700 leading-relaxed mb-6">
-            20,000 ԱՄՆ դոլարից ավել կամ դրան համարժեք այլ արտարժույթի փոխարկման դեպքում գործարքը հաստատվում է Բանկի հայեցողությամբ և Բանկի կողմից որոշված փոխարժեքով։ 100,000 դրամ կամ դրան համարժեք արտարժույթից ավելի փոխանակման գործարքների իրականացման համար անհրաժեշտ է ներկայացնել անձը հաստատող փաստաթուղթ։
+            {t('currencySec.notice')}
           </p>
 
           {/* Թաբեր (Tabs) */}
@@ -80,7 +145,7 @@ export function CurrencySection() {
                 activeTab === 'cash' ? 'text-purple-600 border-b-2 border-purple-600 -mb-[5px]' : 'text-gray-400 hover:text-gray-600'
               }`}
             >
-              Կանխիկ
+              {t('currencySec.tabCash')}
             </button>
             <button 
               onClick={() => setActiveTab('cashless')}
@@ -88,7 +153,7 @@ export function CurrencySection() {
                 activeTab === 'cashless' ? 'text-purple-600 border-b-2 border-purple-600 -mb-[5px]' : 'text-gray-400 hover:text-gray-600'
               }`}
             >
-              Անկանխիկ
+              {t('currencySec.tabCashless')}
             </button>
             <button 
               onClick={() => setActiveTab('gold')}
@@ -96,7 +161,7 @@ export function CurrencySection() {
                 activeTab === 'gold' ? 'text-purple-600 border-b-2 border-purple-600 -mb-[5px]' : 'text-gray-400 hover:text-gray-600'
               }`}
             >
-              Ոսկու փոխարժեք
+              {t('currencySec.tabGold')}
             </button>
             <button 
               onClick={() => setActiveTab('ruble')}
@@ -104,7 +169,7 @@ export function CurrencySection() {
                 activeTab === 'ruble' ? 'text-purple-600 border-b-2 border-purple-600 -mb-[5px]' : 'text-gray-400 hover:text-gray-600'
               }`}
             >
-              Ռուբլու կանխիկ մուտք
+              {t('currencySec.tabRuble')}
             </button>
           </div>
 
@@ -114,9 +179,9 @@ export function CurrencySection() {
               <table className="w-full text-left border-collapse min-w-[240px]">
                 <thead>
                   <tr className="border-b border-gray-100 text-[11px] sm:text-xs text-gray-400 uppercase">
-                    <th className="pb-3 font-medium">Արտարժույթ</th>
-                    <th className="pb-3 font-medium text-right">Առք</th>
-                    <th className="pb-3 font-medium text-right">Վաճառք</th>
+                    <th className="pb-3 font-medium">{t('currencySec.tableCurrency')}</th>
+                    <th className="pb-3 font-medium text-right">{t('currencySec.tableBuy')}</th>
+                    <th className="pb-3 font-medium text-right">{t('currencySec.tableSell')}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-50">
@@ -138,7 +203,7 @@ export function CurrencySection() {
               </table>
 
               <p className="text-[10px] sm:text-[11px] text-gray-400 mt-4">
-                Թարմացվել է` 25.09.2026
+                {t('currencySec.updatedAt')}
               </p>
             </div>
 
@@ -147,7 +212,7 @@ export function CurrencySection() {
               <div className="space-y-3.5 sm:space-y-4">
                 {/* Ունեմ */}
                 <div>
-                  <label className="block text-[11px] sm:text-xs font-medium text-gray-500 mb-1">Ունեմ (AMD)</label>
+                  <label className="block text-[11px] sm:text-xs font-medium text-gray-500 mb-1">{t('currencySec.haveLabel')}</label>
                   <div className="relative bg-white border border-gray-200 rounded-xl px-2.5 sm:px-3 py-2 flex items-center justify-between shadow-sm focus-within:border-purple-500">
                     <input 
                       type="number" 
@@ -164,7 +229,7 @@ export function CurrencySection() {
 
                 {/* Կստանամ */}
                 <div className="relative">
-                  <label className="block text-[11px] sm:text-xs font-medium text-gray-500 mb-1">Կստանամ</label>
+                  <label className="block text-[11px] sm:text-xs font-medium text-gray-500 mb-1">{t('currencySec.wantLabel')}</label>
                   <div className="relative bg-white border border-gray-200 rounded-xl px-2.5 sm:px-3 py-2 flex items-center justify-between shadow-sm focus-within:border-purple-500">
                     <input 
                       type="text" 
@@ -213,10 +278,10 @@ export function CurrencySection() {
         <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-8 shadow-sm border border-gray-100 flex flex-col justify-between h-full">
           <div>
             <h3 className="text-base sm:text-xl font-extrabold text-gray-900 mb-1">
-              Մեր հասցեները
+              {t('currencySec.branchesTitle')}
             </h3>
             <p className="text-[11px] sm:text-sm text-gray-500 mb-5 sm:mb-6">
-              Բանկի հասցեները, աշխատաժամերը, բանկոմատները
+              {t('currencySec.branchesDesc')}
             </p>
 
             <div className="relative w-full h-40 sm:h-48 bg-purple-50/30 rounded-2xl overflow-hidden flex items-center justify-center border border-purple-100/60 mb-5 sm:mb-6 group">
@@ -235,7 +300,7 @@ export function CurrencySection() {
             onClick={() => navigate('/branches')}
             className="w-full bg-purple-50 hover:bg-purple-100 text-purple-700 py-3 sm:py-3.5 rounded-full font-bold text-xs sm:text-sm transition-colors flex items-center justify-center space-x-2 group cursor-pointer shadow-sm"
           >
-            <span>Դիտել քարտեզը</span>
+            <span>{t('currencySec.viewMap')}</span>
             <svg className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
             </svg>

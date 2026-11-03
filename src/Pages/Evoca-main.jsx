@@ -138,11 +138,12 @@ function Main() {
       alert('Սխալ տեղի ունեցավ, տես console-ը');
     }
   };
-
+  console.log(reviewsData);
+  
   return (
     <>
       <Header />
-       {/* <button onClick={migrateCards} className="m-4 px-4 py-2 bg-red-600 text-white rounded">Migrate cards</button> */}
+      
       <div className="w-full relative">
         <Swiper
           key={slidesData.length}

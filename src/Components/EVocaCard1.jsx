@@ -1,7 +1,48 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import i18n from "i18next";
+import { useTranslation } from "react-i18next";
+import { useLocalized } from "../hooks/useLocalized.js";
+
+/* ===================== i18n ===================== */
+const newsCardResources = {
+  hy: {
+    newsCard: {
+      bannerTitleLine1: "Արի Evoca",
+      bannerTitleLine2: "տաղավար",
+      month: "Սեպտեմբերի",
+      venueLine1: "Կարեն Դեմիրճյանի անվան",
+      venueLine2: "մարզահամերգային համալիր",
+    },
+  },
+  en: {
+    newsCard: {
+      bannerTitleLine1: "Visit the Evoca",
+      bannerTitleLine2: "pavilion",
+      month: "September",
+      venueLine1: "Karen Demirchyan",
+      venueLine2: "Sports and Concert Complex",
+    },
+  },
+  ru: {
+    newsCard: {
+      bannerTitleLine1: "Приходи на",
+      bannerTitleLine2: "павильон Evoca",
+      month: "Сентября",
+      venueLine1: "Спортивно-концертный комплекс",
+      venueLine2: "имени Карена Демирчяна",
+    },
+  },
+};
+
+Object.entries(newsCardResources).forEach(([lng, tr]) => {
+  i18n.addResourceBundle(lng, "translation", tr, true, true);
+});
 
 export function EvocaNewsCard({ item, collection = "salaryNewsCollection" }) {
+  const { t } = useTranslation();
+  const l = useLocalized();
+
   return (
     <Link
       to={`/news/${collection}/${item.id}`}
@@ -19,25 +60,25 @@ export function EvocaNewsCard({ item, collection = "salaryNewsCollection" }) {
             </div>
             <div className="my-auto">
               <h3 className="text-xl sm:text-2xl font-extrabold leading-tight">
-                Արի Evoca <br /> տաղավար
+                {t("newsCard.bannerTitleLine1")} <br /> {t("newsCard.bannerTitleLine2")}
               </h3>
             </div>
             <div className="flex items-center space-x-2 sm:space-x-3 text-[11px] sm:text-xs text-purple-100 pt-2 border-t border-purple-400/40">
               <div>
-                <p>Սեպտեմբերի</p>
+                <p>{t("newsCard.month")}</p>
                 <p className="font-bold text-white">25, 26, 27</p>
               </div>
               <div className="h-6 w-[1px] bg-purple-400/50"></div>
               <div>
-                <p>Կարեն Դեմիրճյանի անվան</p>
-                <p className="font-bold text-white">մարզահամերգային համալիր</p>
+                <p>{t("newsCard.venueLine1")}</p>
+                <p className="font-bold text-white">{t("newsCard.venueLine2")}</p>
               </div>
             </div>
           </div>
         ) : (
           <img
             src={item.image}
-            alt={item.title}
+            alt={l(item.title)}
             className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
           />
         )}
@@ -48,12 +89,12 @@ export function EvocaNewsCard({ item, collection = "salaryNewsCollection" }) {
           <div className="flex items-center space-x-2 mb-2 sm:mb-3">
             <div className="w-1 h-3.5 sm:h-4 bg-[#D946EF] rounded-full"></div>
             <span className="text-[11px] sm:text-xs font-semibold text-gray-900 tracking-wide uppercase">
-              {item.category}
+              {l(item.category)}
             </span>
           </div>
 
           <h4 className="text-sm sm:text-base font-bold text-gray-900 leading-snug mb-4">
-            {item.title}
+            {l(item.title)}
           </h4>
         </div>
 
