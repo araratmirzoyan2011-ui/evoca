@@ -8,7 +8,8 @@ import { collection, getDocs, query, orderBy } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom';
 import i18n from 'i18next';
 import { useTranslation } from 'react-i18next';
-// import { migrateLoans } from '../migrateLoans.js';
+import { useLocalized } from '../hooks/useLocalized.js'; // Ներմուծում ենք useLocalized հուկը
+
 const loansResources = {
   hy: {
     loansPage: {
@@ -71,10 +72,12 @@ const FILTER_KEYS = ['all', 'secured', 'unsecured', 'mortgage', 'auto', 'install
 const Loans = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const l = useLocalized(); // Ակտիվացնում ենք լեզվական ֆունկցիան
+  
   const [loansData, setLoansData] = useState([]);
   const [menuItems, setMenuItems] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null); // բանալի, ոչ տեքստ
+  const [error, setError] = useState(null);
   const [activeFilter, setActiveFilter] = useState('all');
 
   useEffect(() => {
@@ -96,6 +99,29 @@ const Loans = () => {
     fetchData();
   }, []);
 
+  const localizedMenuItems = useMemo(() => {
+  const currentLang = i18n.language || 'hy';
+
+  return menuItems.map((item) => {
+    let titleText = '';
+
+    if (Array.isArray(item.label)) {
+      const found = item.label.find((obj) => obj[currentLang]);
+      titleText = found ? found[currentLang] : item.label[0]?.hy || item.label[0]?.en || '';
+    } else {
+      // Եթե սովորական օբյեկտ է կամ string
+      titleText = l(item.label) || l(item.title) || l(item.name);
+    }
+
+    return {
+      ...item,
+      title: titleText,
+      name: titleText,
+      label: titleText,
+    };
+  });
+}, [menuItems, l, i18n.language]);
+
   const filteredLoans = useMemo(() => {
     if (activeFilter === 'all') return loansData;
     return loansData.filter((loan) => loan.categories?.includes(activeFilter));
@@ -104,13 +130,13 @@ const Loans = () => {
   const handleDetailsClick = (docId) => {
     navigate(`/current-loan/${docId}`);
   };
-filteredLoans.forEach(loan => console.log(loan.bannertitle));
 
   return (
     <>
       <Header />
-      <Navbar items={menuItems} />
-       {/* <button onClick={migrateLoans} className="m-4 px-4 py-2 bg-red-600 text-white rounded">Migrate loans</button> */}
+      {/* Փոխանցում ենք լեզվափոխված մենյուի տարրերը Navbar-ին */}
+      <Navbar items={localizedMenuItems} />
+      
       <main className="w-full max-w-5xl mx-auto px-4 md:px-0 pt-10 md:pt-16 pb-16">
         <h1 className="text-left text-[28px] md:text-[34px] font-bold leading-tight mb-8 md:mb-10">
           {t('loansPage.title')}

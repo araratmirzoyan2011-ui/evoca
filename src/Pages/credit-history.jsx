@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { Header } from "../Components/Header.jsx";
 import Footer from "../Components/Footer.jsx";
 import { db } from "../firebase.js";
@@ -6,12 +6,15 @@ import { collection, getDocs, query, orderBy } from "firebase/firestore";
 import SocialIcons from "../Components/SocialIcons.jsx";
 import { DocumentCard } from "../Components/DocumentCard.jsx";
 import Navbar from "../Components/Menuall.jsx";
+import { useLocalized } from "../hooks/useLocalized.js";
+import i18n from "i18next";
 
 function CreditLoans() {
   const [menuItems, setMenuItems] = useState([]);
   const [creditBlocks, setCreditBlocks] = useState([]);
   const [creditdata, setCreditdata] = useState([]);
   const [loading, setLoading] = useState(true);
+  const l = useLocalized();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -38,6 +41,29 @@ function CreditLoans() {
     fetchData();
   }, []);
 
+  // Մենյուի կետերի թարգմանությունն ըստ ընտրված լեզվի
+  const localizedMenuItems = useMemo(() => {
+    const currentLang = i18n.language || "hy";
+
+    return menuItems.map((item) => {
+      let titleText = "";
+
+      if (Array.isArray(item.label)) {
+        const found = item.label.find((obj) => obj[currentLang]);
+        titleText = found ? found[currentLang] : item.label[0]?.hy || item.label[0]?.en || "";
+      } else {
+        titleText = l(item.label) || l(item.title) || l(item.name);
+      }
+
+      return {
+        ...item,
+        title: titleText,
+        name: titleText,
+        label: titleText,
+      };
+    });
+  }, [menuItems, l, i18n.language]);
+
   if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
@@ -50,7 +76,7 @@ function CreditLoans() {
     <>
       <Header />
 
-      <Navbar items={menuItems} />
+      <Navbar items={localizedMenuItems} />
 
       <main className="relative w-full bg-white">
         <div className="mx-auto flex max-w-[1240px] gap-8 px-4 py-10">
