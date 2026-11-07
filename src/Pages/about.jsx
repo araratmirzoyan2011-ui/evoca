@@ -1,50 +1,54 @@
 import React, { useState, useEffect } from 'react';
+import i18n from 'i18next';
+import { useTranslation } from 'react-i18next';
 import Header from '../Components/About-us-Header.jsx';
 import Footer from '../Components/Footer.jsx';
 import { db } from "../firebase.js";
-import { collection, getDocs, query, orderBy } from 'firebase/firestore';
+import { collection, getDocs, query, orderBy, doc, getDoc } from 'firebase/firestore';
 import Navbar from '../Components/Menu.jsx';
 import HistorySlider from '../Components/HystorySlider.jsx';
 import HumanFirstComponent from '../Components/X1.jsx';
+import { useLocalized } from '../hooks/useLocalized.js';
 
-const csrItems = [
-  "Նորագույն տեխնոլոգիաների զարգացում, նորարար նախաձեռնություններ, startup-եր,",
-  "Երիտասարդության կրթական, գիտական և մշակութային նախաձեռնություններ,",
-  "Հասարակական կարևոր նշանակություն ունեցող նախաձեռնություններ,",
-  "Հասարակության առավել խոցելի խմբեր, մասնավորապես՝ ծնողազուրկ կամ հատուկ խնամքի տակ գտնվող երեխաներ։",
-];
-
-const LOGO_SRC = '/evoca-logo.png';     
-const BRANDBOOK_URL = '#';            
-const YOUTUBE_ID = 'YOUR_VIDEO_ID'; 
-const brandColors = [
-  { text: "Սպիտակը խորհրդանշում է նորը։", dot: "bg-white border border-gray-300" },
-  { text: "Մոխրագույնը խորհրդանշում է նորագույն տեխնոլոգիաների կիրառումը։", dot: "bg-gray-500" },
-  { text: "Մանուշակագույնը երիտասարդության, ստեղծարարության և նորարարության գույնն է։", dot: "bg-[#6400dc]" },
-];
+const BRANDBOOK_URL = '#';
 
 function About() {
+  const { t } = useTranslation();
+  const l = useLocalized();
+
   const [values, setValues] = useState([]);
   const [history, setHistory] = useState([]);
+  const [paragraphs, setParagraphs] = useState([]);
+  const [csrItems, setCsrItems] = useState([]);
+  const [brandColors, setBrandColors] = useState([]);
   const [loading, setLoading] = useState(true);
-
-  const paragraphs = [
-    "Evocabank-ը արագ, պարզ և նորարար ծառայություններ մատուցող բանկ է, որն առանձնանում է տեղեկատվական նորագույն տեխնոլոգիաների ակտիվ կիրառմամբ:",
-    "Մենք հատուկ ուշադրություն ենք դարձնում մոբայլ ծառայությունների զարգացմանը:",
-    "Մենք աշխատում ենք mobile-first ֆորմատով՝ յուրաքանչյուր նոր ծառայություն նախագծելիս՝ նախևառաջ հաշվի ենք առնում դրա՝ հավելվածով օգտագործման հարմարավետությունը:",
-    "Աշխարհը թվային է դառնում, և մենք պատրաստ ենք դրան:",
-  ];
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [valuesSnap, historySnap] = await Promise.all([
+        // 1. i18n ռեսուրսների բեռնում Firebase-ից
+        const resourcesDoc = await getDoc(doc(db, 'settings', 'i18n_about'));
+        if (resourcesDoc.exists()) {
+          const aboutResources = resourcesDoc.data();
+          Object.entries(aboutResources).forEach(([lng, tr]) => {
+            i18n.addResourceBundle(lng, 'translation', tr, true, true);
+          });
+        }
+
+        // 2. Բոլոր collection-ների բեռնում
+        const [valuesSnap, historySnap, paragraphsSnap, csrSnap, colorsSnap] = await Promise.all([
           getDocs(query(collection(db, 'values'), orderBy('order'))),
           getDocs(query(collection(db, 'history'), orderBy('year', 'desc'))),
+          getDocs(query(collection(db, 'paragraphs'), orderBy('order'))),
+          getDocs(query(collection(db, 'csr'), orderBy('order'))),
+          getDocs(query(collection(db, 'colors'), orderBy('order'))),
         ]);
 
         setValues(valuesSnap.docs.map((d) => ({ id: d.id, ...d.data() })));
         setHistory(historySnap.docs.map((d) => ({ id: d.id, ...d.data() })));
+        setParagraphs(paragraphsSnap.docs.map((d) => ({ id: d.id, ...d.data() })));
+        setCsrItems(csrSnap.docs.map((d) => ({ id: d.id, ...d.data() })));
+        setBrandColors(colorsSnap.docs.map((d) => ({ id: d.id, ...d.data() })));
       } catch (err) {
         console.error('Firebase error:', err);
       } finally {
@@ -55,6 +59,8 @@ function About() {
     fetchData();
   }, []);
 
+  const localizedHistory = history.map((h) => ({ ...h, text: l(h.text) }));
+
   return (
     <>
       <Header />
@@ -62,7 +68,7 @@ function About() {
 
       <div className="w-full mt-[80px] px-4">
         <h1 className="text-3xl max-[400px]:text-2xl font-bold text-center mb-8 max-[400px]:mb-4">
-          Ընդհանուր տեղեկատվություն
+          {t('about.title')}
         </h1>
       </div>
 
@@ -72,14 +78,18 @@ function About() {
                      max-[400px]:grid-cols-1 max-[400px]:gap-8 max-[400px]:px-4"
         >
           <div className="flex flex-col gap-5 max-[400px]:order-2 max-[400px]:gap-4">
-            {paragraphs.map((text, i) => (
-              <p
-                key={i}
-                className="text-[15px] leading-relaxed text-gray-600 max-[400px]:text-[13px] max-[400px]:leading-relaxed"
-              >
-                {text}
-              </p>
-            ))}
+            {loading ? (
+              <p className="text-gray-500">{t('about.loading')}</p>
+            ) : (
+              paragraphs.map((p) => (
+                <p
+                  key={p.id}
+                  className="text-[15px] leading-relaxed text-gray-600 max-[400px]:text-[13px] max-[400px]:leading-relaxed"
+                >
+                  {l(p.text)}
+                </p>
+              ))
+            )}
           </div>
 
           <div className="max-[400px]:order-1">
@@ -96,15 +106,13 @@ function About() {
       <section className="w-full bg-[#6400dc] text-white py-14 max-[400px]:py-8">
         <div className="max-w-6xl mx-auto px-6 max-[400px]:px-4 flex flex-col items-center text-center">
           <h2 className="text-3xl font-bold mb-8 max-[400px]:text-xl max-[400px]:mb-5">
-            Մեր տեսլականը
+            {t('about.visionTitle')}
           </h2>
 
           <span className="h-[2px] w-10 bg-white mb-6 max-[400px]:w-6 max-[400px]:mb-4" />
 
           <p className="text-[15px] leading-relaxed text-purple-100 max-w-2xl max-[400px]:text-[13px]">
-            Դառնալ գլոբալ ֆինտեխ գործընկեր, որը միավորում է լավագույն փորձն ու
-            տեխնոլոգիական նորարարությունները հարմարավետ և ճկուն ծառայություններ
-            ապահովելու համար։
+            {t('about.visionText')}
           </p>
         </div>
       </section>
@@ -112,7 +120,7 @@ function About() {
       <section className="w-full py-16 max-[400px]:py-10">
         <div className="max-w-6xl mx-auto px-6 max-[400px]:px-4">
           <h2 className="text-3xl font-bold mb-8 max-[400px]:text-2xl max-[400px]:mb-5 ml-[35%]">
-            Մեր առաքելությունը
+            {t('about.missionTitle')}
           </h2>
 
           <div className="relative mb-24 max-[400px]:mb-0">
@@ -132,32 +140,30 @@ function About() {
                          max-[400px]:text-center max-[400px]:p-5"
             >
               <p className="text-[15px] leading-relaxed text-gray-700 max-[400px]:text-[13px]">
-                Որպես human-first և խելացի ֆինտեխ ընկերություն` մենք հնարավորություն ենք
-                տալիս մարդկանց երազելու ավելի համարձակ, բիզնեսներին` բացահայտելու նոր
-                հորիզոններ, և հասարակությանը` կառուցելու ավելի լավ ապագա:
+                {t('about.missionText')}
               </p>
             </div>
           </div>
         </div>
       </section>
 
-      {history.length > 0 && <HistorySlider data={history} />}
+      {localizedHistory.length > 0 && <HistorySlider data={localizedHistory} />}
 
       <section className="w-full py-12 max-[400px]:py-8">
         <div className="max-w-6xl mx-auto px-6 max-[400px]:px-4">
           <h1 className="text-3xl font-bold mb-10 max-[400px]:text-2xl max-[400px]:mb-6 max-[400px]:text-center">
-            Արժեքներ և առաջնայնություններ
+            {t('about.valuesTitle')}
           </h1>
 
           {loading ? (
-            <p className="text-center text-gray-500">Բեռնվում է...</p>
+            <p className="text-center text-gray-500">{t('about.loading')}</p>
           ) : (
             <div className="grid grid-cols-3 gap-12 max-[400px]:grid-cols-1 max-[400px]:gap-8">
               {values.map((item) => (
                 <HumanFirstComponent
                   key={item.id}
-                  title={item.title}
-                  description={item.text}
+                  title={l(item.title)}
+                  description={l(item.text)}
                 />
               ))}
             </div>
@@ -168,55 +174,53 @@ function About() {
       <section className="w-full bg-gradient-to-b from-[#f2f2f2] to-[#f7f1fc] py-16 max-[400px]:py-10">
         <div className="max-w-6xl mx-auto px-6 max-[400px]:px-4">
           <h2 className="text-3xl font-bold leading-snug max-w-xl mb-8 max-[400px]:text-xl max-[400px]:mb-5 max-[400px]:text-center">
-            Կորպորատիվ սոցիալական պատասխանատվություն
+            {t('about.csrTitle')}
           </h2>
 
           <p className="text-[16px] leading-relaxed text-gray-800 max-w-3xl mb-10 max-[400px]:text-[13px] max-[400px]:mb-6 max-[400px]:text-center">
-            Բանկը շարունակաբար աջակցություն է ցուցաբերում հանրության տարբեր խմբերին և
-            հասարակական նախաձեռնություններին հետևյալ ոլորտներում՝
+            {t('about.csrIntro')}
           </p>
 
-          <div className="grid grid-cols-2 gap-x-12 gap-y-8 max-w-4xl max-[400px]:grid-cols-1 max-[400px]:gap-y-5">
-            {csrItems.map((text, i) => (
-              <div key={i} className="flex items-start gap-4 max-[400px]:gap-3">
-                <span className="mt-3 h-[3px] w-10 shrink-0 bg-[#6400dc] max-[400px]:mt-2.5 max-[400px]:w-6" />
-                <p className="text-[16px] leading-relaxed text-gray-800 max-[400px]:text-[13px]">
-                  {text}
-                </p>
-              </div>
-            ))}
-          </div>
+          {loading ? (
+            <p className="text-gray-500">{t('about.loading')}</p>
+          ) : (
+            <div className="grid grid-cols-2 gap-x-12 gap-y-8 max-w-4xl max-[400px]:grid-cols-1 max-[400px]:gap-y-5">
+              {csrItems.map((item) => (
+                <div key={item.id} className="flex items-start gap-4 max-[400px]:gap-3">
+                  <span className="mt-3 h-[3px] w-10 shrink-0 bg-[#6400dc] max-[400px]:mt-2.5 max-[400px]:w-6" />
+                  <p className="text-[16px] leading-relaxed text-gray-800 max-[400px]:text-[13px]">
+                    {l(item.text)}
+                  </p>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
       <section className="w-full bg-white py-12 max-[400px]:py-8">
         <div className="max-w-3xl mx-auto px-6 max-[400px]:px-4">
           <h2 className="text-2xl font-bold mb-6 max-[400px]:text-lg max-[400px]:mb-4">
-            Բանկի լոգոտիպը
+            {t('about.logoTitle')}
           </h2>
           <p className="text-[15px] leading-relaxed text-gray-800 mb-8 max-[400px]:text-[13px] max-[400px]:mb-5">
-            Բանկի լոգոն կազմված է evolution՝ էվոլյուցիա բառի արմատից և նմանեցված է
-            evoke՝ զարթեցնել բառին։ Բառի երկրորդ տառը՝ V-ն, պատկերված է կլորացված
-            անկյուններով հավասարակողմ եռանկյան տեսքով և նմանեցված է դեպի աջ և վեր
-            ուղղված սլաքի տեսքով՝ խորհրդանշելով Բանկի ձգտումը դեպի առաջընթաց։
+            {t('about.logoText')}
           </p>
           <div className="flex justify-center mb-12 max-[400px]:mb-8">
             <img
               src="https://www.evoca.am/file_manager/icons/logo.png"
-              alt="Evocabank logo"
+              alt={t('about.logoAlt')}
               className="w-full max-w-[600px] h-auto object-contain"
             />
           </div>
 
           <h2 className="text-2xl font-bold mb-6 max-[400px]:text-lg max-[400px]:mb-4">
-            Բանկի բրենդբուքը
+            {t('about.brandbookTitle')}
           </h2>
           <p className="text-[15px] leading-relaxed text-gray-800 mb-6 max-[400px]:text-[13px] max-[400px]:mb-4">
-            Բրենդբուքում կգտնեք Բանկի լոգոյի կիրառման կանոնները, բրենդային գույները,
-            տառատեսակները և բրենդի այլ կարևոր տարրերը։
+            {t('about.brandbookText1')}
             <br />
-            Սա պարզապես ուղեցույց չէ, այլ ոգեշնչման աղբյուր՝ ուժեղ և ճանաչելի բրենդ
-            կառուցելու համար։
+            {t('about.brandbookText2')}
           </p>
           <a
             href={BRANDBOOK_URL}
@@ -238,43 +242,51 @@ function About() {
           </a>
 
           <h2 className="text-2xl font-bold mb-6 max-[400px]:text-lg max-[400px]:mb-4">
-            Բանկի կորպորատիվ գույները
+            {t('about.colorsTitle')}
           </h2>
           <p className="text-[15px] leading-relaxed text-gray-800 mb-6 max-[400px]:text-[13px] max-[400px]:mb-4">
-            Բանկի կորպորատիվ գույներն են՝ սպիտակը, մոխրագույնը և մանուշակագույնը։
+            {t('about.colorsText')}
           </p>
 
-          <div className="bg-white rounded-lg shadow-md p-6 flex flex-col gap-6 mb-6 max-[400px]:p-4 max-[400px]:gap-4">
-            {brandColors.map((c, i) => (
-              <div key={i} className="flex items-center gap-4 max-[400px]:gap-3">
-                <span className={`h-6 w-6 shrink-0 rounded-full ${c.dot} max-[400px]:h-5 max-[400px]:w-5`} />
-                <p className="text-[13px] text-gray-800 max-[400px]:text-[12px]">{c.text}</p>
-              </div>
-            ))}
-          </div>
+          {loading ? (
+            <p className="text-gray-500">{t('about.loading')}</p>
+          ) : (
+            <div className="bg-white rounded-lg shadow-md p-6 flex flex-col gap-6 mb-6 max-[400px]:p-4 max-[400px]:gap-4">
+              {brandColors.map((c) => (
+                <div key={c.id} className="flex items-center gap-4 max-[400px]:gap-3">
+                  <span className={`h-6 w-6 shrink-0 rounded-full ${c.dot} max-[400px]:h-5 max-[400px]:w-5`} />
+                  <p className="text-[13px] text-gray-800 max-[400px]:text-[12px]">{l(c.text)}</p>
+                </div>
+              ))}
+            </div>
+          )}
 
           <div className="w-full aspect-video mb-12 max-[400px]:mb-8">
-           
-            <iframe className='w-full h-full' src="https://www.youtube.com/embed/QTuqGz3USRE?si=JfAzlEFrhsnW4oTn" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+            <iframe
+              className="w-full h-full"
+              src="https://www.youtube.com/embed/QTuqGz3USRE?si=JfAzlEFrhsnW4oTn"
+              title="YouTube video player"
+              frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              referrerPolicy="strict-origin-when-cross-origin"
+              allowFullScreen
+            ></iframe>
           </div>
 
           <h2 className="text-2xl font-bold mb-6 max-[400px]:text-lg max-[400px]:mb-4">
-            ISO27001:2026 միջազգային հավաստագիր
+            {t('about.isoTitle')}
           </h2>
           <p className="text-[15px] leading-relaxed text-gray-800 mb-6 max-[400px]:text-[13px] max-[400px]:mb-4">
-            Evocabank-ը ստացել է ISO27001:2026 միջազգային հավաստագիր։
+            {t('about.isoText1')}
           </p>
           <p className="text-[15px] leading-relaxed text-gray-800 max-w-2xl max-[400px]:text-[13px]">
-            Հավաստագիրը վկայում է Բանկում ֆինանսական պրոդուկտների և ծառայությունների,
-            տվյալների բազաների, տեղեկատվության մշակման և պահպանման օբյեկտների,
-            հաճախորդների և բանկային հիմնական գործարքների վերաբերյալ ֆինանսական
-            տեղեկատվության անվտանգ կառավարման համակարգի առկայության մասին։
+            {t('about.isoText2')}
           </p>
         </div>
 
         <div className="max-w-6xl mx-auto px-6 mt-12 max-[400px]:px-4 max-[400px]:mt-8">
           <div className="border-t border-gray-200 pt-4 text-right text-xs text-gray-500 max-[400px]:text-[10px]">
-            Թարմացվել է՝ 18/08/2026 10:20
+            {t('about.updated', { date: '18/08/2026 10:20' })}
           </div>
         </div>
       </section>

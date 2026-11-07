@@ -8,8 +8,6 @@ import { useLocalized } from '../hooks/useLocalized.js';
 import { Header } from '../Components/Header';
 import Footer from '../Components/Footer';
 import EvocaCard from '../Components/PaymentCard.jsx';
-import { migratePaymentCards } from '../migratePayments.js';
-/* ===================== i18n ===================== */
 const paymentResources = {
   hy: { paymentPage: { loading: 'Բեռնվում է...', noData: 'Տվյալներ չկան', notFound: 'Էջը չի գտնվել', soon: 'Շուտով', continue: 'Շարունակել' } },
   en: { paymentPage: { loading: 'Loading...', noData: 'No data available', notFound: 'Page not found', soon: 'Coming soon', continue: 'Continue' } },

@@ -1,9 +1,45 @@
 import { useState } from "react";
+import i18n from "i18next";
+import { useTranslation } from "react-i18next";
+import { useLocalized } from "../hooks/useLocalized.js";
 import PromoCard from "./AboutCard.jsx";
+
+/* ===================== i18n ===================== */
+const historyResources = {
+  hy: {
+    historySlider: {
+      title: "Բանկի պատմությունը",
+      prev: "Նախորդ վեցյակ",
+      next: "Հաջորդ վեցյակ",
+      empty: "Այս տարվա տեքստը դեռ լրացված չէ։",
+    },
+  },
+  en: {
+    historySlider: {
+      title: "History of the Bank",
+      prev: "Previous six",
+      next: "Next six",
+      empty: "The text for this year has not been filled in yet.",
+    },
+  },
+  ru: {
+    historySlider: {
+      title: "История Банка",
+      prev: "Предыдущие шесть",
+      next: "Следующие шесть",
+      empty: "Текст за этот год ещё не заполнен.",
+    },
+  },
+};
+Object.entries(historyResources).forEach(([lng, tr]) => {
+  i18n.addResourceBundle(lng, "translation", tr, true, true);
+});
 
 const PAGE_SIZE = 6;
 
 export default function HistorySlider({ data }) {
+  const { t } = useTranslation();
+  const l = useLocalized();
   const [pageStart, setPageStart] = useState(0);
   const [activeIndex, setActiveIndex] = useState(0);
 
@@ -29,7 +65,7 @@ export default function HistorySlider({ data }) {
     <section className="w-full py-16 max-[400px]:py-10">
       <div className="max-w-6xl mx-auto px-6 max-[400px]:px-4">
         <h2 className="text-3xl font-bold mb-10 max-[400px]:text-2xl max-[400px]:mb-6 max-[400px]:text-center">
-          Բանկի պատմությունը
+          {t("historySlider.title")}
           <span className="block w-14 h-1 bg-[#6400dc] rounded-full mt-3 max-[400px]:mx-auto" />
         </h2>
 
@@ -42,7 +78,7 @@ export default function HistorySlider({ data }) {
                        text-gray-400 hover:text-[#6400dc] hover:border-[#6400dc]
                        disabled:opacity-30 disabled:hover:text-gray-400 disabled:hover:border-gray-200
                        transition-colors shrink-0"
-            aria-label="Նախորդ վեցյակ"
+            aria-label={t("historySlider.prev")}
           >
             ←
           </button>
@@ -88,7 +124,7 @@ export default function HistorySlider({ data }) {
             className="flex items-center justify-center w-9 h-9 rounded-full bg-[#6400dc]
                        text-white hover:bg-[#5300b8] disabled:opacity-30 disabled:hover:bg-[#6400dc]
                        transition-colors shrink-0"
-            aria-label="Հաջորդ վեցյակ"
+            aria-label={t("historySlider.next")}
           >
             →
           </button>
@@ -99,7 +135,7 @@ export default function HistorySlider({ data }) {
           <PromoCard
             image={active.image}
             imageAlt={`${active.year}`}
-            text={active.text || "Այս տարվա տեքստը դեռ լրացված չէ։"}
+            text={l(active.text) || t("historySlider.empty")}
           />
         </div>
       </div>
