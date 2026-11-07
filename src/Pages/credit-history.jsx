@@ -11,25 +11,41 @@ import i18n from "i18next";
 
 function CreditLoans() {
   const [menuItems, setMenuItems] = useState([]);
-  const [creditBlocks, setCreditBlocks] = useState([]);
+  const [blocks, setBlocks] = useState([]);
   const [creditdata, setCreditdata] = useState([]);
   const [loading, setLoading] = useState(true);
   const l = useLocalized();
 
+  // Ապահովում ենք, որ i18n լեզուն փոխվելիս էջը վերառենդերվի
+  const [, setForceUpdate] = useState(0);
+  useEffect(() => {
+    const handleLanguageChanged = () => setForceUpdate((prev) => prev + 1);
+    i18n.on("languageChanged", handleLanguageChanged);
+    return () => {
+      i18n.off("languageChanged", handleLanguageChanged);
+    };
+  }, []);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const menuSnap = await getDocs(
-          query(collection(db, "loansMenu"), orderBy("order"))
-        );
+        const [menuSnap, blocksSnap, dataSnap] = await Promise.all([
+          getDocs(query(collection(db, "loansMenu"), orderBy("order"))),
+          getDocs(query(collection(db, "creditBlocks"), orderBy("id"))), // id-ով կարգավորում, որ համընկնի բազայի հետ
+          getDocs(collection(db, "creditdata")),
+        ]);
+
         setMenuItems(menuSnap.docs.map((d) => ({ id: d.id, ...d.data() })));
 
-        const blocksSnap = await getDocs(
-          query(collection(db, "creditBlocks"), orderBy("id"))
+        setBlocks(
+          blocksSnap.docs.map((d) => {
+            const data = d.data();
+            return data.type === "table" && data.rows
+              ? { ...data, rows: data.rows.map((r) => r.cells || r) }
+              : data;
+          })
         );
-        setCreditBlocks(blocksSnap.docs.map((d) => ({ id: d.id, ...d.data() })));
 
-        const dataSnap = await getDocs(collection(db, "creditdata"));
         setCreditdata(dataSnap.docs.map((d) => ({ id: d.id, ...d.data() })));
       } catch (e) {
         console.error("Սխալ տվյալների բեռնման ժամանակ:", e);
@@ -41,7 +57,6 @@ function CreditLoans() {
     fetchData();
   }, []);
 
-  // Մենյուի կետերի թարգմանությունն ըստ ընտրված լեզվի
   const localizedMenuItems = useMemo(() => {
     const currentLang = i18n.language || "hy";
 
@@ -63,6 +78,32 @@ function CreditLoans() {
       };
     });
   }, [menuItems, l, i18n.language]);
+
+  const renderInline = (text) => {
+    const localizedText = l(text);
+    if (typeof localizedText !== "string") return localizedText || "";
+
+    return localizedText.split(/(\*\*[\s\S]+?\*\*|\[\[[\s\S]+?\]\])/g).map((part, i) => {
+      if (part.startsWith("**")) {
+        return <strong key={i}>{part.slice(2, -2)}</strong>;
+      }
+      if (part.startsWith("[[")) {
+        const [label, href] = part.slice(2, -2).split("|");
+        return (
+          <a
+            key={i}
+            href={href}
+            target="_blank"
+            rel="noreferrer"
+            className="break-words font-medium text-[#6d1fd1] underline"
+          >
+            {label}
+          </a>
+        );
+      }
+      return part;
+    });
+  };
 
   if (loading) {
     return (
@@ -86,25 +127,27 @@ function CreditLoans() {
 
           <section className="min-w-0 flex-1 text-[16px] leading-[26px] text-[#333] md:pl-[40px] max-[400px]:text-[14px] max-[400px]:leading-[22px]">
             <h1 className="mb-8 text-[32px] font-medium leading-[40px] text-[#333] max-[400px]:mb-6 max-[400px]:text-[24px] max-[400px]:leading-[30px]">
-              Կարևոր տեղեկատվություն վարկային պատմության վերաբերյալ
+              {l({
+                hy: "Կարևոր տեղեկատվություն վարկային պատմության վերաբերյալ",
+                en: "Important information regarding credit history",
+                ru: "Важная информация о кредитной истории",
+              })}
             </h1>
 
-            {creditBlocks.map((b) => {
+            {blocks.map((b, idx) => {
               if (b.type === "p") {
                 return (
-                  <p key={b.id} className="mb-6">
-                    {b.text.split("**").map((part, i) =>
-                      i % 2 ? <strong key={i}>{part}</strong> : part
-                    )}
+                  <p key={idx} className="mb-6 whitespace-pre-line">
+                    {renderInline(b.text)}
                   </p>
                 );
               }
 
               if (b.type === "sub") {
                 return (
-                  <div key={b.id} className="mb-4 mt-8 flex items-center gap-3">
+                  <div key={idx} className="mb-4 mt-8 flex items-center gap-3">
                     <span className="h-2.5 w-2.5 shrink-0 rounded-full bg-[#6d1fd1]" />
-                    <h3 className="text-[16px] font-bold text-black">{b.text}</h3>
+                    <h3 className="text-[16px] font-bold text-black">{renderInline(b.text)}</h3>
                   </div>
                 );
               }
@@ -112,12 +155,13 @@ function CreditLoans() {
               if (b.type === "list") {
                 return (
                   <ul
-                    key={b.id}
+                    key={idx}
                     className="mb-6 list-disc space-y-3 pl-6 marker:text-[#6d1fd1]"
                   >
-                    {b.items.map((item, i) => (
-                      <li key={i}>{item}</li>
-                    ))}
+                    {b.items &&
+                      b.items.map((item, i) => (
+                        <li key={i}>{renderInline(item)}</li>
+                      ))}
                   </ul>
                 );
               }
@@ -125,40 +169,49 @@ function CreditLoans() {
               if (b.type === "h2") {
                 return (
                   <h2
-                    key={b.id}
+                    key={idx}
                     className="mb-4 mt-10 text-[28px] font-medium text-[#333] max-[400px]:text-[22px]"
                   >
-                    {b.text}
+                    {renderInline(b.text)}
                   </h2>
                 );
               }
 
               if (b.type === "boldline") {
                 return (
-                  <p key={b.id} className="mb-4 font-bold text-black">
-                    {b.text}
+                  <p key={idx} className="mb-4 font-bold text-black">
+                    {renderInline(b.text)}
                   </p>
                 );
               }
 
               if (b.type === "links") {
                 return (
-                  <p key={b.id} className="mb-6">
-                    {b.before}
-                    {b.links.map((l, i) => (
-                      <React.Fragment key={i}>
-                        <a
-                          href={l.href}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="font-medium text-[#6d1fd1] underline"
-                        >
-                          {l.label}
-                        </a>
-                        {i < b.links.length - 2 ? ", " : i === b.links.length - 2 ? " և " : ""}
-                      </React.Fragment>
-                    ))}
-                    {b.after}
+                  <p key={idx} className="mb-6">
+                    {renderInline(b.before)}
+                    {b.links &&
+                      b.links.map((linkItem, i) => (
+                        <React.Fragment key={i}>
+                          <a
+                            href={linkItem.href}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="font-medium text-[#6d1fd1] underline"
+                          >
+                            {l(linkItem.label)}
+                          </a>
+                          {i < b.links.length - 2
+                            ? ", "
+                            : i === b.links.length - 2
+                            ? i18n.language === "ru"
+                              ? " и "
+                              : i18n.language === "en"
+                              ? " and "
+                              : " և "
+                            : ""}
+                        </React.Fragment>
+                      ))}
+                    {renderInline(b.after)}
                   </p>
                 );
               }
@@ -167,12 +220,16 @@ function CreditLoans() {
             })}
 
             <h2 className="mb-6 mt-10 text-xl font-bold text-gray-900">
-              Փաստաթղթեր
+              {l({
+                hy: "Փաստաթղթեր",
+                en: "Documents",
+                ru: "Документы",
+              })}
             </h2>
 
             <div className="space-y-5">
               {creditdata.map((r) => (
-                <DocumentCard key={r.id} title={r.title} url={r.url} />
+                <DocumentCard key={r.id} title={l(r.title)} url={r.url} />
               ))}
             </div>
           </section>
