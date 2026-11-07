@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
 import { doc, getDoc } from "firebase/firestore";
+import i18n from "i18next";
+import { useTranslation } from "react-i18next";
 import { db } from "../firebase";
+import { useLocalized } from "../hooks/useLocalized.js";
 import { Header } from "../Components/Header";
 import BusinessHeader from "../Components/Busines-Header.jsx";
 import Footer from "../Components/Footer";
@@ -13,14 +16,47 @@ import LoanDocuments from "../Components/LoanDocuments.jsx";
 import LoanSlider from "../Components/LoanSlider.jsx";
 import InfoBanner from "../Components/infoBanner.jsx";
 
-const tabs = [
-  { key: "about", label: "Վարկի մասին" },
-  { key: "conditions", label: "Պայմաններ",hideForBusiness: true, },
-  {
-    key: "documents",
-    label: "Պահանջվող փաստաթղթերի ցանկ",
-    hideForBusiness: true,
+/* ===================== i18n ===================== */
+const detailsResources = {
+  hy: {
+    loanDetails: {
+      tabAbout: "Վարկի մասին",
+      tabConditions: "Պայմաններ",
+      tabDocuments: "Պահանջվող փաստաթղթերի ցանկ",
+      loading: "Բեռնվում է...",
+      notFound: "Վարկը չի գտնվել",
+      loadError: "Չհաջողվեց բեռնել տվյալները",
+    },
   },
+  en: {
+    loanDetails: {
+      tabAbout: "About the loan",
+      tabConditions: "Conditions",
+      tabDocuments: "List of required documents",
+      loading: "Loading...",
+      notFound: "Loan not found",
+      loadError: "Failed to load data",
+    },
+  },
+  ru: {
+    loanDetails: {
+      tabAbout: "О кредите",
+      tabConditions: "Условия",
+      tabDocuments: "Перечень необходимых документов",
+      loading: "Загрузка...",
+      notFound: "Кредит не найден",
+      loadError: "Не удалось загрузить данные",
+    },
+  },
+};
+Object.entries(detailsResources).forEach(([lng, tr]) => {
+  i18n.addResourceBundle(lng, "translation", tr, true, true);
+});
+
+const tabs = [
+  { key: "about", labelKey: "loanDetails.tabAbout" },
+  { key: "conditions", labelKey: "loanDetails.tabConditions", hideForBusiness: true },
+  { key: "documents", labelKey: "loanDetails.tabDocuments", hideForBusiness: true },
 ];
 
 // «Evocabank» բառը ընդգծում է մանուշակագույնով
@@ -38,7 +74,6 @@ const renderHighlighted = (text = "") =>
 // Տվյալների աղբյուրը ըստ տիպի
 const fetchLoanById = async (id, isBusiness) => {
   if (isBusiness) {
-    // Բիզնես վարկերը մեկ փաստաթղթում են՝ loans զանգվածով
     const snap = await getDoc(doc(db, "businessLoansCollection", "main"));
     if (!snap.exists()) return null;
     const found = (snap.data().loans || []).find(
@@ -47,7 +82,6 @@ const fetchLoanById = async (id, isBusiness) => {
     return found ? { ...found, docId: String(found.id) } : null;
   }
 
-  // Սովորական վարկեր՝ առանձին փաստաթուղթ loans կոլեկցիայում
   const snap = await getDoc(doc(db, "loans", id));
   return snap.exists() ? { ...snap.data(), docId: snap.id } : null;
 };
@@ -56,16 +90,14 @@ const LoanDetails = () => {
   const { id } = useParams();
   const [searchParams] = useSearchParams();
   const isBusiness = searchParams.get("type") === "business";
+  const { t } = useTranslation();
+  const l = useLocalized();
 
   const [loan, setLoan] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState(null); // բանալի՝ notFound | loadError
   const [activeTab, setActiveTab] = useState("about");
 
-  const stats = loan?.stats ?? [];
-  const details = loan?.details ?? [];
-
-  // Բիզնես վարկերի համար «Փաստաթղթեր» tab-ը չի երևում
   const visibleTabs = tabs.filter((tab) => !(isBusiness && tab.hideForBusiness));
 
   useEffect(() => {
@@ -80,12 +112,12 @@ const LoanDetails = () => {
           setLoan(data);
         } else {
           setLoan(null);
-          setError("Վարկը չի գտնվել");
+          setError("notFound");
         }
       } catch (e) {
         console.error(e);
         setLoan(null);
-        setError("Չհաջողվեց բեռնել տվյալները");
+        setError("loadError");
       } finally {
         setLoading(false);
       }
@@ -94,21 +126,48 @@ const LoanDetails = () => {
     fetchLoan();
   }, [id, isBusiness]);
 
+  /* ---------- Թարգմանված տվյալներ ենթակոմպոնենտների համար ---------- */
+  const details = (loan?.details ?? []).map((p) => l(p));
+
+  const stats = (loan?.stats ?? []).map((s) => {
+    const out = { ...s, label: l(s.label), value: l(s.value) };
+    if (s.topText !== undefined) out.topText = l(s.topText);
+    return out;
+  });
+
+  const conditions = loan?.conditions
+    ? loan.conditions.map((c) => {
+        const out = { ...c, label: l(c.label) };
+        if ("value" in c) {
+          out.value = Array.isArray(c.value) ? c.value.map((v) => l(v)) : l(c.value);
+        }
+        if (Array.isArray(c.columns)) {
+          out.columns = c.columns.map((col) => ({ ...col, title: l(col.title), value: l(col.value) }));
+        }
+        if (Array.isArray(c.rows)) {
+          out.rows = c.rows.map((r) => l(r));
+        }
+        return out;
+      })
+    : loan?.conditions;
+
+  const documents = loan?.documents ? loan.documents.map((d) => l(d)) : loan?.documents;
+
   return (
     <>
       {isBusiness ? <BusinessHeader /> : <Header />}
 
       {loan && (
         <CardHero
-          title={loan.title}
-          description={loan.description}
+          title={l(loan.title)}
+          description={l(loan.description)}
           image={loan.imageSrc}
         />
       )}
 
       <div className="container mx-auto px-4 mt-10">
-        {loading && <p className="text-center">Բեռնվում է...</p>}
-        {error && <p className="text-center text-red-600">{error}</p>}
+        {loading && <p className="text-center">{t("loanDetails.loading")}</p>}
+        {error && <p className="text-center text-red-600">{t(`loanDetails.${error}`)}</p>}
 
         {loan && (
           <>
@@ -124,7 +183,7 @@ const LoanDetails = () => {
                       : "text-gray-500 border-transparent hover:text-gray-800"
                   }`}
                 >
-                  {tab.label}
+                  {t(tab.labelKey)}
                 </button>
               ))}
             </div>
@@ -155,20 +214,19 @@ const LoanDetails = () => {
               )}
 
               {activeTab === "conditions" && (
-                <LoanConditions conditions={loan.conditions} />
+                <LoanConditions conditions={conditions} />
               )}
 
               {activeTab === "documents" && !isBusiness && (
-                <LoanDocuments documents={loan.documents} />
+                <LoanDocuments documents={documents} />
               )}
             </div>
           </>
         )}
       </div>
 
-      {/* InfoBanner-ը աշխատում է 100% լայնությամբ */}
       {loan && activeTab === "about" && loan.bannersrc && (
-        <InfoBanner title={loan.bannertitle} imageSrc={loan.bannersrc} />
+        <InfoBanner title={l(loan.bannertitle)} imageSrc={loan.bannersrc} />
       )}
 
       {loan && (
@@ -177,7 +235,6 @@ const LoanDetails = () => {
         </div>
       )}
 
-      {/* Բիզնես էջում OnlineBanking-ը չի ցուցադրվում */}
       {!isBusiness && <OnlineBanking />}
       <Footer />
     </>
