@@ -12,8 +12,6 @@ import BannerNewsCard from '../Components/BannerNewsCard.jsx';
 import { useDeepLocalized } from '../Usedeeplocalized.js';
 import { db } from '../firebase';
 import { collection, getDocs } from 'firebase/firestore';
-
-/* ===================== i18n ===================== */
 const blogResources = {
   hy: {
     blog: {
@@ -170,11 +168,11 @@ function Blog() {
   const top = list[0];
   const totalPages = Math.ceil(list.length / pageSize);
   const pageItems = list.slice((page - 1) * pageSize, page * pageSize);
+console.log(bottomL);
 
   return (
     <>
       <Header />
-
       <main className="pt-12">
         <section className="mx-auto max-w-[1200px] px-6 pt-10 pb-10">
           <h1 className="text-[30px] font-extrabold text-[#1a1a1a]">{t('blog.title')}</h1>

@@ -14,7 +14,7 @@ import i18n from 'i18next';
 import { useTranslation } from 'react-i18next';
 import { useLocalized } from '../hooks/useLocalized.js';
 import { useDeepLocalized } from '../Usedeeplocalized.js';
-
+import { migrateNewsPage } from '../Migratenewspage.js';
 /* ===================== i18n ===================== */
 const newsResources = {
   hy: {
@@ -235,10 +235,12 @@ function News() {
   const totalPages = Math.ceil(list.length / PAGE_SIZE);
   const pageItems = list.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
+console.log(bottomL);
   return (
     <>
       <Header />
       
+       <button onClick={migrateNewsPage} className="m-4 px-4 py-2 bg-red-600 text-white rounded">Migrate blog content</button>
       <main className="pt-24">
         <section className="mx-auto max-w-[1200px] px-6 pt-10 pb-10">
           <h1 className="text-[30px] font-extrabold text-[#1a1a1a]">
