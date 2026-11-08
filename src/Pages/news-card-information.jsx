@@ -5,6 +5,7 @@ import { db } from "../firebase";
 import { Header } from "../Components/Header.jsx";
 import Footer from "../Components/Footer.jsx";
 import NewsCard from "../Components/NewsCard.jsx";
+import { useDeepLocalized } from "../Usedeeplocalized.js";
 
 const ALLOWED_COLLECTIONS = [
   'news',
@@ -18,34 +19,15 @@ const ALLOWED_COLLECTIONS = [
   'DepartmentCardNews',
 ];
 
-// Firestore-ից բեռնվող ստանդարտ նորությունների collection-ներ
 const FIRESTORE_COLLECTIONS = ALLOWED_COLLECTIONS.filter(
   (c) => c !== 'awards' && c !== 'DepartmentCardNews'
 );
 
-// Այս collection-ների հոդվածները պատկանում են Blog-ին
 const BLOG_COLLECTIONS = ['news1', 'newsFeautured2', 'newsBottom2'];
 
-// "26.10.2026" -> timestamp (դասավորելու համար)
 const toTime = (s) => {
   const [d, m, y] = String(s || "").trim().split(".").map(Number);
   return y ? new Date(y, m - 1, d).getTime() : 0;
-};
-
-// Collection-ը -> նորությունների հարթ ցանկ
-const loadCollection = async (name) => {
-  const snap = await getDocs(collection(db, name));
-  return snap.docs.flatMap((d) => {
-    const data = d.data();
-    if (Array.isArray(data.items)) {
-      return data.items.map((it, idx) => ({
-        ...it,
-        id: String(it.id ?? idx),
-        collection: name,
-      }));
-    }
-    return [{ ...data, id: d.id, collection: name }];
-  });
 };
 
 // **թավ** և *շեղ* տեքստը՝ երկուսն էլ մանուշակագույն
@@ -68,7 +50,6 @@ const renderInline = (text) =>
     return part;
   });
 
-// content դաշտը -> բլոկներ՝ պարբերություն, "## ենթավերնագիր", "- ցուցակ"
 const renderContent = (content) => {
   const blocks = [];
   String(content || "")
@@ -183,6 +164,7 @@ const SocialIcons = () => {
 
 export default function NewsCardInformation() {
   const { collection: collectionName, id } = useParams();
+  const deep = useDeepLocalized();
 
   const [item, setItem] = useState(null);
   const [others, setOthers] = useState([]);
@@ -199,6 +181,22 @@ export default function NewsCardInformation() {
     : "Վերադառնալ նորություններ";
   const othersTitle = isAwards ? "Այլ մրցանակներ" : "Այլ նորություններ";
 
+  const loadCollection = async (name) => {
+    const snap = await getDocs(collection(db, name));
+    const rawItems = snap.docs.flatMap((d) => {
+      const data = d.data();
+      if (Array.isArray(data.items)) {
+        return data.items.map((it, idx) => ({
+          ...it,
+          id: String(it.id ?? idx),
+          collection: name,
+        }));
+      }
+      return [{ ...data, id: d.id, collection: name }];
+    });
+    return rawItems.map((it) => deep(it));
+  };
+
   useEffect(() => {
     window.scrollTo(0, 0);
 
@@ -214,7 +212,6 @@ export default function NewsCardInformation() {
     const loadData = async () => {
       setLoading(true);
       try {
-        // 1. ՄԻԱՅՆ ՄՐՑԱՆԱԿՆԵՐԻ (awards / DepartmentCardNews) ԴԵՊՔՈՒՄ
         if (isAwards) {
           const docRef = doc(db, "DepartmentCardNews", id);
           const docSnap = await getDoc(docRef);
@@ -222,33 +219,35 @@ export default function NewsCardInformation() {
           if (cancelled) return;
 
           if (docSnap.exists()) {
-            setItem({ id: docSnap.id, ...docSnap.data() });
+            setItem(deep({ id: docSnap.id, ...docSnap.data() }));
           } else {
             setItem(null);
           }
 
-          // Բեռնում ենք մնացած մրցանակները որպես "Այլ մրցանակներ"
           const querySnapshot = await getDocs(collection(db, "DepartmentCardNews"));
-          const allAwards = querySnapshot.docs.map((d) => ({
-            id: d.id,
-            ...d.data(),
-            collection: collectionName,
-          }));
+          const allAwards = querySnapshot.docs.map((d) =>
+            deep({
+              id: d.id,
+              ...d.data(),
+              collection: collectionName,
+              image: d.data().image || d.data().logoUrl,
+            })
+          );
 
           setOthers(
             allAwards
               .filter((o) => String(o.id) !== String(id))
               .slice(0, 3)
-              .map((o) => ({ ...o, image: o.image || o.logoUrl }))
           );
-        } 
-        // 2. ՄՆԱՑԱԾ ԲՈԼՈՐ ՍՏԱՆԴԱՐՏ ՆՈՐՈՒԹՅՈՒՆՆԵՐԻ ԴԵՊՔՈՒՄ
-        else {
+        } else {
           const lists = await Promise.all(FIRESTORE_COLLECTIONS.map(loadCollection));
           if (cancelled) return;
 
-          const own = lists[FIRESTORE_COLLECTIONS.indexOf(collectionName)] || [];
-          setItem(own.find((o) => String(o.id) === String(id)) || null);
+          const ownListIndex = FIRESTORE_COLLECTIONS.indexOf(collectionName);
+          const own = lists[ownListIndex] || [];
+          const foundItem = own.find((o) => String(o.id) === String(id));
+          
+          setItem(foundItem || null);
 
           setOthers(
             lists
@@ -273,7 +272,7 @@ export default function NewsCardInformation() {
     return () => {
       cancelled = true;
     };
-  }, [collectionName, id, isAwards]);
+  }, [collectionName, id, isAwards]); // <- Վերացվեց անվերջանալի ցիկլի պատճառ դարձող deep կախվածությունը
 
   return (
     <>
