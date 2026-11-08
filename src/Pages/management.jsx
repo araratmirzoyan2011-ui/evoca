@@ -8,7 +8,6 @@ import { db } from '../firebase';
 import i18n from 'i18next';
 import { useTranslation } from 'react-i18next';
 import { useLocalized } from '../hooks/useLocalized.js';
-import { migrateManagement } from '../migrateShareholders.js';
 const managementResources = {
   hy: {
     managementPage: {
@@ -90,17 +89,6 @@ console.log(auditarr);
   return (
     <>
       <Header />
-      <button
-  onClick={() =>
-    migrateManagement().catch((e) => {
-      console.error('Migrate management error:', e);
-      alert('Սխալ տեղի ունեցավ, տես console-ը');
-    })
-  }
-  className="m-4 px-4 py-2 bg-red-600 text-white rounded"
->
-  Migrate management
-</button>
       <Navbar />
       <div className='w-full mt-[60px] flex justify-center'>
         <h1 className="text-3xl font-medium mb-10 max-[400px]:pl-0 max-[400px]:text-xl max-[400px]:mb-5">
