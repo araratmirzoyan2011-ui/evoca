@@ -142,7 +142,15 @@ const dict = Object.fromEntries(Object.entries(ITEMS).map(([k, v]) => [norm(k), 
 const COLLECTIONS = ['news', 'newsFeatured', 'newsBottom'];
 const FIELDS = ['title', 'description', 'content'];
 
-const hyOf = (v) => (v && typeof v === 'object' ? v.hy : v);
+// Ինդեքս՝ և՛ հայերեն, և՛ անգլերեն վերնագրով (Firestore-ում հիմա անգլերեն են)
+const index = {};
+for (const [hyKey, v] of Object.entries(ITEMS)) {
+  const entry = { hyKey, ...v };
+  index[norm(hyKey)] = entry;
+  index[norm(v.title.en)] = entry;
+}
+
+const titleText = (t) => (typeof t === 'string' ? t : t?.hy ?? t?.en ?? '');
 
 export async function migrateNewsPage() {
   const missing = [];
@@ -153,30 +161,37 @@ export async function migrateNewsPage() {
 
     for (const d of snap.docs) {
       const data = d.data();
-      const hyTitle = norm(hyOf(data.title));
-      const tr = dict[hyTitle];
+      const title = norm(titleText(data.title));
+      const tr = index[title];
       const patch = {};
 
       for (const f of FIELDS) {
-        // Միայն դեռ հայերեն string դաշտերը (արդեն թարգմանվածները չեն փոխվում)
-        if (typeof data[f] !== 'string' || !ARM.test(data[f])) continue;
+        const v = data[f];
+        if (typeof v !== 'string' || !v.trim()) continue; // արդեն օբյեկտ է կամ դատարկ
 
         if (!tr || !tr[f]) {
-          missing.push(`${name}/${d.id} ${f}${tr ? '' : ' (գրառումը ցանկում չկա)'} "${hyTitle.slice(0, 40)}"`);
+          missing.push(`${name}/${d.id} ${f}${tr ? '' : ' (գրառումը ցանկում չկա)'} "${title.slice(0, 40)}"`);
           continue;
         }
 
+        const isArm = ARM.test(v);
+        let hy, en, ru;
+
         if (f === 'content') {
-          const en = rebuild(data.content, tr.content.en);
-          const ru = rebuild(data.content, tr.content.ru);
-          if (!en || !ru) {
-            missing.push(`${name}/${d.id} content (հատվածների քանակը չի համընկնում)`);
-            continue;
-          }
-          patch.content = { hy: data.content, en, ru };
+          en = isArm ? rebuild(v, tr.content.en) : v;
+          ru = rebuild(v, tr.content.ru);
+          hy = isArm ? v : undefined;
         } else {
-          patch[f] = { hy: data[f], en: tr[f].en, ru: tr[f].ru };
+          en = isArm ? tr[f].en : v;
+          ru = tr[f].ru;
+          hy = isArm ? v : f === 'title' ? tr.hyKey : undefined;
         }
+
+        if (!en || !ru) {
+          missing.push(`${name}/${d.id} ${f} (հատվածների քանակը չի համընկնում)`);
+          continue;
+        }
+        patch[f] = hy ? { hy, en, ru } : { en, ru }; // undefined-ը Firestore-ը չի ընդունում
       }
 
       if (Object.keys(patch).length) {
@@ -188,28 +203,4 @@ export async function migrateNewsPage() {
 
   console.log('Թարգմանություն չկա՝', missing);
   alert(`Թարգմանվեց ${done} նորություն ✅` + (missing.length ? `\nԲաց թողնված՝ ${missing.length} (տես console)` : ''));
-}
-
-// Վերադարձ․ {hy,en,ru} դաշտերը նորից դարձնում է հայերեն string
-export async function revertNewsPage() {
-  let done = 0;
-
-  for (const name of COLLECTIONS) {
-    const snap = await getDocs(collection(db, name));
-
-    for (const d of snap.docs) {
-      const data = d.data();
-      const patch = {};
-      for (const f of FIELDS) {
-        const v = data[f];
-        if (v && typeof v === 'object' && typeof v.hy === 'string') patch[f] = v.hy;
-      }
-      if (Object.keys(patch).length) {
-        await updateDoc(doc(db, name, d.id), patch);
-        done++;
-      }
-    }
-  }
-
-  alert(`Վերադարձվեց ${done} նորություն ✅`);
 }

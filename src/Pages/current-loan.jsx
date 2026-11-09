@@ -16,7 +16,6 @@ import LoanDocuments from "../Components/LoanDocuments.jsx";
 import LoanSlider from "../Components/LoanSlider.jsx";
 import InfoBanner from "../Components/infoBanner.jsx";
 
-/* ===================== i18n ===================== */
 const detailsResources = {
   hy: {
     loanDetails: {
@@ -49,6 +48,7 @@ const detailsResources = {
     },
   },
 };
+
 Object.entries(detailsResources).forEach(([lng, tr]) => {
   i18n.addResourceBundle(lng, "translation", tr, true, true);
 });
@@ -59,7 +59,6 @@ const tabs = [
   { key: "documents", labelKey: "loanDetails.tabDocuments", hideForBusiness: true },
 ];
 
-// «Evocabank» բառը ընդգծում է մանուշակագույնով
 const renderHighlighted = (text = "") =>
   text.split(/(Evocabank)/g).map((part, i) =>
     part === "Evocabank" ? (
@@ -71,13 +70,13 @@ const renderHighlighted = (text = "") =>
     )
   );
 
-// Տվյալների աղբյուրը ըստ տիպի
+// Query parameter-ով տվյալների բեռնում
 const fetchLoanById = async (id, isBusiness) => {
   if (isBusiness) {
     const snap = await getDoc(doc(db, "businessLoansCollection", "main"));
     if (!snap.exists()) return null;
     const found = (snap.data().loans || []).find(
-      (l) => String(l.id) === String(id)
+      (l) => String(l.id) === String(id) || String(l.docId) === String(id)
     );
     return found ? { ...found, docId: String(found.id) } : null;
   }
@@ -89,13 +88,13 @@ const fetchLoanById = async (id, isBusiness) => {
 const LoanDetails = () => {
   const { id } = useParams();
   const [searchParams] = useSearchParams();
-  const isBusiness = searchParams.get("type") === "business";
+  const isBusiness = searchParams.get("type") === "business"; // Կարդում ենք search parameter-ը
   const { t } = useTranslation();
   const l = useLocalized();
 
   const [loan, setLoan] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null); // բանալի՝ notFound | loadError
+  const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState("about");
 
   const visibleTabs = tabs.filter((tab) => !(isBusiness && tab.hideForBusiness));
@@ -126,7 +125,6 @@ const LoanDetails = () => {
     fetchLoan();
   }, [id, isBusiness]);
 
-  /* ---------- Թարգմանված տվյալներ ենթակոմպոնենտների համար ---------- */
   const details = (loan?.details ?? []).map((p) => l(p));
 
   const stats = (loan?.stats ?? []).map((s) => {
@@ -171,7 +169,6 @@ const LoanDetails = () => {
 
         {loan && (
           <>
-            {/* Tab-երի տող */}
             <div className="flex gap-10 border-b border-gray-200 overflow-x-auto">
               {visibleTabs.map((tab) => (
                 <button

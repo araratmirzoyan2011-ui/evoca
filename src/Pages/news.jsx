@@ -234,8 +234,6 @@ function News() {
   const top = list[0];
   const totalPages = Math.ceil(list.length / PAGE_SIZE);
   const pageItems = list.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
-
-console.log(bottomL);
   return (
     <>
       <Header />
